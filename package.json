@@ -11,9 +11,11 @@
     "headless": "run-s 'xvfb run-s {@}' --",
     "lint": "ng lint",
     "ng": "ng",
-    "start": "ng serve -H 0.0.0.0",
-    "test": "ng test",
-    "test:once": "ng test --watch=false",
+    "start": "run-p serve:app serve:coverage",
+    "serve:coverage": "lite-server",
+    "serve:app": "ng serve -H 0.0.0.0",
+    "test": "ng test --code-coverage",
+    "test:once": "npm test -- --watch=false",
     "xvfb": "xvfb-run -a"
   },
   "dependencies": {
@@ -49,6 +51,7 @@
     "karma-coverage-istanbul-reporter": "^0.2.0",
     "karma-jasmine": "~1.1.0",
     "karma-jasmine-html-reporter": "^0.2.2",
+    "lite-server": "^2.3.0",
     "npm-run-all": "^4.0.2",
     "protractor": "~5.1.0",
     "protractor-console-plugin": "^0.1.1",
