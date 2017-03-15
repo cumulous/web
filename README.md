@@ -19,8 +19,16 @@ Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.
 
 ## Running end-to-end tests
 
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
+Run `ng e2e` to execute the end-to-end tests locally via [Protractor](http://www.protractortest.org/).
 Before running the tests make sure you are serving the app via `ng serve`.
+
+If you run these tests on a Linux system without a local display,
+then you need to use `npm run headless e2e` instead.
+This command starts a virtual framebuffer through Xvfb,
+so make sure that Xvfb is present on your system.
+
+Currently, Protractor is configured to test against the Chrome browser.
+Please make sure its most recent version (>= 55) is also installed.
 
 ## Further help
 
