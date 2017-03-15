@@ -10,6 +10,7 @@
     "e2e": "ng e2e",
     "headless": "run-s 'xvfb run-s {@}' --",
     "lint": "ng lint",
+    "lint:fix": "ng lint --fix",
     "ng": "ng",
     "start": "run-p serve:app serve:coverage",
     "serve:coverage": "lite-server",

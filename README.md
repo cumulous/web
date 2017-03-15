@@ -49,3 +49,8 @@ These commands start a virtual framebuffer through
 [Xvfb](https://www.x.org/archive/X11R7.6/doc/man/man1/Xvfb.1.xhtml),
 so make sure that [`xvfb-run`](http://manpages.ubuntu.com/manpages/trusty/man1/xvfb-run.1.html)
 is present on your system.
+
+### Linting
+
+To check style of the source files, use `npm run lint`.
+You can also attempt to fix some errors automatically with `npm run lint:fix`.
