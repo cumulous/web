@@ -4,13 +4,15 @@
   "license": "UNLICENSED",
   "private": true,
   "scripts": {
-    "ng": "ng",
-    "start": "ng serve -H 0.0.0.0",
     "build": "ng build",
+    "build:prod": "ng build -prod",
+    "e2e": "ng e2e",
     "headless": "run-s 'xvfb run-s {@}' --",
     "lint": "ng lint",
-    "e2e": "ng e2e",
+    "ng": "ng",
+    "start": "ng serve -H 0.0.0.0",
     "test": "ng test",
+    "test:once": "ng test --watch=false",
     "xvfb": "xvfb-run -a"
   },
   "dependencies": {
