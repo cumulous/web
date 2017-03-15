@@ -6,7 +6,9 @@ the Serverless Application System for Storage and analYsis (SASSY) of scientific
 It builds upon [Angular 2](https://angular.io/) framework for single-page applications.
 
 ## Development server
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+Run `npm start` for a dev server.
+Navigate to `http[s]://{YOUR_HOSTNAME}:8080/`.
+The app will automatically reload if you change any of the source files.
 
 ## Code scaffolding
 
