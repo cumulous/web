@@ -1,0 +1,12 @@
+version: 0.1
+phases:
+  install:
+    commands:
+      - npm install
+  pre_build:
+    commands:
+      - npm run headless test:once e2e
+  build:
+    commands:
+      - npm run build:prod
+      - aws s3 sync dist s3://${ARTIFACTS_BUCKET}/${ARTIFACTS_PREFIX}
