@@ -5,7 +5,18 @@ the Serverless Application System for Storage and analYsis (SASSY) of scientific
 
 It builds upon [Angular 2](https://angular.io/) framework for single-page applications.
 
-## Development server
+## Setting up
+
+### API client
+
+Prior to building the app or running any tests, you need to configure the API client.
+To do that on a Linux system, please run `npm run api <YOUR_API_ID> <YOUR_API_STAGE>`,
+and specify your AWS API Gateway ID and API Stage
+(you can get these values when you set up the backend on AWS).
+
+You can also rerun this command at any time to update your client to the latest version of the API.
+
+### Development server
 Run `npm start` for a dev server.
 Navigate to `http[s]://{YOUR_HOSTNAME}:8080/`.
 The app will automatically reload if you change any of the source files.
