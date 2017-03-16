@@ -10,7 +10,7 @@ SWAGGER_FILE="${WORKDIR}/swagger.json"
 CODEGEN_VERSION="2.2.2"
 CODEGEN_URL="http://central.maven.org/maven2/io/swagger/swagger-codegen-cli/\
 ${CODEGEN_VERSION}/swagger-codegen-cli-${CODEGEN_VERSION}.jar"
-CODEGEN_JAR="${WORKDIR}/codegen.jar"
+CODEGEN_JAR="${WORKDIR}/codegen-${CODEGEN_VERSION}.jar"
 CODEGEN_DEST="src/api"
 
 mkdir -p "${WORKDIR}"
