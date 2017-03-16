@@ -1,7 +1,7 @@
 import { StepDefinitions as Steps } from 'cucumber';
 
 export = function() {
-	const steps = <Steps>this;
+  const steps = <Steps>this;
 
   steps.Given(/^I am on the app page$/, () => {
     this.page.navigateTo('/');
