@@ -1,5 +1,7 @@
 #!/bin/sh
 
+set -e
+
 API_ID="$1"
 API_STAGE="latest"
 
