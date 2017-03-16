@@ -6,7 +6,7 @@ ARTIFACTS_BUCKET="$1"
 API_STAGE="beta"
 
 WORKDIR="tmp"
-SWAGGER_FILE="${WORKDIR}/swagger.json"
+SWAGGER_FILE="${WORKDIR}/swagger.yaml"
 SWAGGER_URI="s3://${ARTIFACTS_BUCKET}/api/${API_STAGE}/swagger.yaml"
 CODEGEN_VERSION="2.2.2"
 CODEGEN_URL="http://central.maven.org/maven2/io/swagger/swagger-codegen-cli/\
