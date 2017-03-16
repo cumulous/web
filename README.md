@@ -10,9 +10,8 @@ It builds upon [Angular 2](https://angular.io/) framework for single-page applic
 ### API client
 
 Prior to building the app or running any tests, you need to configure the API client.
-To do that on a Linux system, please run `npm run api <YOUR_API_ID> <YOUR_API_STAGE>`,
-and specify your AWS API Gateway ID and API Stage
-(you can get these values when you set up the backend on AWS).
+To do that on a Linux system, please run `npm run api <YOUR_API_ID>`,
+with API Gateway ID that you get when you set up the backend on AWS.
 
 You can also rerun this command at any time to update your client to the latest version of the API.
 

@@ -1,7 +1,7 @@
 #!/bin/sh
 
 API_ID="$1"
-API_STAGE="$2"
+API_STAGE="latest"
 
 WORKDIR="tmp"
 SWAGGER_FILE="${WORKDIR}/swagger.json"
