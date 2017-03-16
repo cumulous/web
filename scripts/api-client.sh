@@ -26,6 +26,8 @@ if [ ! -f "${CODEGEN_JAR}" ]; then
     wget "${CODEGEN_URL}" -O "${CODEGEN_JAR}"
 fi
 
+rm -rf "${CODEGEN_DEST}"
+
 java -jar "${CODEGEN_JAR}" generate \
     -i "${SWAGGER_FILE}" \
     -l typescript-angular2 \
