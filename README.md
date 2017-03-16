@@ -54,3 +54,7 @@ is present on your system.
 
 To check style of the source files, use `npm run lint`.
 You can also attempt to fix some errors automatically with `npm run lint:fix`.
+
+### Special Notes
+
+To reduce verbosity of the `npm run` commands, use `npm run -s` instead.
