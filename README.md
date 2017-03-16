@@ -10,8 +10,9 @@ It builds upon [Angular 2](https://angular.io/) framework for single-page applic
 ### API client
 
 Prior to building the app or running any tests, you need to configure the API client.
-To do that on a Linux system, please run `npm run api <YOUR_API_ID>`,
-with API Gateway ID that you get when you set up the backend on AWS.
+To do that on a Linux system, please run `npm run api <ARTIFACTS_BUCKET>`
+with the name of the S3 bucket where your artifacts are stored on AWS
+(you need to get access to that bucket's `api/beta/swagger.yaml` object first).
 
 You can also rerun this command at any time to update your client to the latest version of the API.
 
