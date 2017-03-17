@@ -10,11 +10,19 @@ It builds upon [Angular 2](https://angular.io/) framework for single-page applic
 ### API client
 
 Prior to building the app or running any tests, you need to configure the API client.
-To do that on a Linux system, please run `npm run api <ARTIFACTS_BUCKET>`
-with the name of the S3 bucket where your artifacts are stored on AWS
-(you need to get access to that bucket's `api/beta/swagger.yaml` object first).
+To do that in a [Bash](https://www.gnu.org/software/bash/) shell,
+please run `npm run api <ARTIFACTS_BUCKET> [<API_STAGE>]`
+with the name of the [S3](https://aws.amazon.com/s3/) bucket where your artifacts are stored on AWS
+(you need to get read access to that bucket's `api/<API_STAGE>/swagger.yaml` object first),
+and an optional name of the [API Gateway](https://aws.amazon.com/api-gateway/) stage
+for which to generate the client.
 
 You can also rerun this command at any time to update your client to the latest version of the API.
+We don't track the client in Git, instead we regenerate it on every build in
+[AWS CodeBuild](https://aws.amazon.com/codebuild/).
+This is done intentionally to ensure the client stays current with the API.
+You're encouraged to periodically update the local development version as described above,
+to discover potential compatibility issues before it reaches CodeBuild.
 
 ### Development server
 Run `npm start` for a dev server.

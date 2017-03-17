@@ -1,9 +1,9 @@
-#!/bin/sh
+#!/bin/bash
 
 set -e
 
 ARTIFACTS_BUCKET="$1"
-API_STAGE="beta"
+API_STAGE="${API_STAGE:-beta}"
 CODEGEN_VERSION="2.3"
 
 WORKDIR="tmp"
