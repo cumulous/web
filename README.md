@@ -11,10 +11,10 @@ It builds upon [Angular 2](https://angular.io/) framework for single-page applic
 
 Prior to building the app or running any tests, you need to configure the API client.
 To do that in a [Bash](https://www.gnu.org/software/bash/) shell,
-please run `npm run api <ARTIFACTS_BUCKET> [<API_STAGE>]`
+please run `npm run api <ARTIFACTS_BUCKET> [<BACKEND_STAGE>]`
 with the name of the [S3](https://aws.amazon.com/s3/) bucket where your artifacts are stored on AWS
-(you need to get read access to that bucket's `api/<API_STAGE>/swagger.yaml` object first),
-and an optional name of the [API Gateway](https://aws.amazon.com/api-gateway/) stage
+(you need to get read access to that bucket's `api/<BACKEND_STAGE>/swagger.yaml` object first),
+and an optional name of the backend stage (`beta` or `release`)
 for which to generate the client.
 
 You can also rerun this command at any time to update your client to the latest version of the API.

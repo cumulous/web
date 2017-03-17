@@ -3,12 +3,12 @@
 set -e
 
 ARTIFACTS_BUCKET="$1"
-API_STAGE="${API_STAGE:-beta}"
+BACKEND_STAGE="${BACKEND_STAGE:-release}"
 CODEGEN_VERSION="2.3"
 
 WORKDIR="tmp"
 SWAGGER_FILE="${WORKDIR}/swagger.yaml"
-SWAGGER_URI="s3://${ARTIFACTS_BUCKET}/api/${API_STAGE}/swagger.yaml"
+SWAGGER_URI="s3://${ARTIFACTS_BUCKET}/api/${BACKEND_STAGE}/swagger.yaml"
 CODEGEN_JAR="bin/codegen-${CODEGEN_VERSION}.jar"
 CODEGEN_DEST="src/api"
 
