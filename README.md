@@ -45,6 +45,12 @@ Please make sure the most recent version (>= 55) is installed.
 Run `npm run test` to execute unit tests via [Karma](https://karma-runner.github.io).
 To test only once, append `npm run test:once`.
 
+### Code coverage
+
+Running unit tests as above will also generate live code coverage reports.
+You can browse them by navigating to
+`http[s]://{YOUR_HOSTNAME}:8082/coverage/src/app/index.html`.
+
 ### End-to-end tests
 
 Run `npm run e2e` to execute end-to-end tests via [Protractor](http://www.protractortest.org/).
