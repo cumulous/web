@@ -4,23 +4,17 @@ set -e
 
 ARTIFACTS_BUCKET="$1"
 API_STAGE="beta"
+CODEGEN_VERSION="2.3"
 
 WORKDIR="tmp"
 SWAGGER_FILE="${WORKDIR}/swagger.yaml"
 SWAGGER_URI="s3://${ARTIFACTS_BUCKET}/api/${API_STAGE}/swagger.yaml"
-CODEGEN_VERSION="2.2.2"
-CODEGEN_URL="http://central.maven.org/maven2/io/swagger/swagger-codegen-cli/\
-${CODEGEN_VERSION}/swagger-codegen-cli-${CODEGEN_VERSION}.jar"
-CODEGEN_JAR="${WORKDIR}/codegen-${CODEGEN_VERSION}.jar"
+CODEGEN_JAR="bin/codegen-${CODEGEN_VERSION}.jar"
 CODEGEN_DEST="src/api"
 
 mkdir -p "${WORKDIR}"
 
 aws s3 cp "${SWAGGER_URI}" "${SWAGGER_FILE}"
-
-if [ ! -f "${CODEGEN_JAR}" ]; then
-    wget "${CODEGEN_URL}" -O "${CODEGEN_JAR}"
-fi
 
 rm -rf "${CODEGEN_DEST}"
 

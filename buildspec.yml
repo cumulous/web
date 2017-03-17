@@ -2,6 +2,7 @@ version: 0.1
 phases:
   install:
     commands:
+      - apt-get install -y default-jre-headless
       - npm install
   pre_build:
     commands:
