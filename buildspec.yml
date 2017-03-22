@@ -10,4 +10,6 @@ phases:
   build:
     commands:
       - npm run build:prod
-      - aws s3 sync dist s3://${ARTIFACTS_BUCKET}/${ARTIFACTS_PREFIX}
+  post_build
+    commands:
+      - aws s3 sync dist/ s3://${WEB_BUCKET}/app/ --exclude index.html
