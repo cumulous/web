@@ -9,6 +9,6 @@ phases:
   build:
     commands:
       - npm run build:prod
-  post_build
+  post_build:
     commands:
       - aws s3 sync dist/ s3://${WEB_BUCKET}/app/ --exclude index.html
