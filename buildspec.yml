@@ -6,7 +6,6 @@ phases:
       - npm install
   pre_build:
     commands:
-      - npm run api ${API_ID} ${BACKEND_STAGE}
       - npm run headless test:once e2e lint
   build:
     commands:
