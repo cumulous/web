@@ -3,7 +3,7 @@ phases:
   install:
     commands:
       - apt-get update
-      - apt-get install -y xvfb chromium-browser
+      - apt-get install -y --no-install-recommends xvfb chromium-browser
       - npm install
   pre_build:
     commands:
