@@ -7,7 +7,7 @@ phases:
       - npm install
   pre_build:
     commands:
-      - npm run headless test:once e2e lint
+      - CHROME_BIN=/usr/bin/chromium-browser npm run headless test:once e2e lint
   build:
     commands:
       - npm run build:prod
