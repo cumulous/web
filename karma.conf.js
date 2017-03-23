@@ -38,11 +38,11 @@ module.exports = function (config) {
     colors: true,
     logLevel: config.LOG_INFO,
     autoWatch: true,
-    browsers: ['ChromeNoSandbox'],
+    browsers: ['ChromeHeadless'],
     customLaunchers: {
       ChromeNoSandbox: {
         base: 'Chrome',
-        flags: ['--no-sandbox'],
+        flags: ['--headless'],
       },
     },
     singleRun: false
