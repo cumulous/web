@@ -2,12 +2,15 @@ version: 0.1
 phases:
   install:
     commands:
+      - wget -qO- https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add -
+      - "echo 'deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main' >> \
+          /etc/apt/sources.list.d/google.list"
       - apt-get update
-      - apt-get install -y --no-install-recommends chromium-browser xvfb
+      - apt-get install -y --no-install-recommends google-chrome-stable xvfb
       - npm install
   pre_build:
     commands:
-      - CHROME_BIN=/usr/bin/chromium-browser npm run headless test:once e2e lint
+      - CHROME_BIN=/usr/bin/google-chrome npm run headless test:once e2e lint
   build:
     commands:
       - npm run build:prod
