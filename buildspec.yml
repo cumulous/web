@@ -10,7 +10,7 @@ phases:
       - npm install
   pre_build:
     commands:
-      - xvfb-run -a ./node_modules/.bin/run-s test:once e2e lint
+      - npm run headless test:once e2e lint
   build:
     commands:
       - npm run build:prod
