@@ -7,9 +7,6 @@ exports.config = {
   ],
   capabilities: {
     browserName: 'chrome',
-    chromeOptions: {
-      args: ['--no-sandbox'],
-    },
   },
   directConnect: true,
   baseUrl: 'http://localhost:4200/',
