@@ -6,11 +6,11 @@ phases:
       - "echo 'deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main' >> \
           /etc/apt/sources.list.d/google.list"
       - apt-get update
-      - apt-get install -y --no-install-recommends xvfb google-chrome-stable
+      - apt-get install -y --no-install-recommends google-chrome-stable xvfb
       - npm install
   pre_build:
     commands:
-      - npm run headless test:once e2e lint
+      - xvfb-run -a run-s test:once e2e lint
   build:
     commands:
       - npm run build:prod
