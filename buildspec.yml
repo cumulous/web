@@ -2,11 +2,8 @@ version: 0.1
 phases:
   install:
     commands:
-      - wget -qO- https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add -
-      - "echo 'deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main' >> \
-          /etc/apt/sources.list.d/google.list"
       - apt-get update
-      - apt-get install -y --no-install-recommends google-chrome-stable xvfb
+      - apt-get install -y --no-install-recommends chromium-browser xvfb
       - npm install
   pre_build:
     commands:
