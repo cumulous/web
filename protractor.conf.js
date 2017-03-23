@@ -6,7 +6,10 @@ exports.config = {
     'e2e/features/*.feature',
   ],
   capabilities: {
-    'browserName': 'chrome'
+    browserName: 'chrome',
+    chromeOptions: {
+      args: ['--no-sandbox'],
+    },
   },
   directConnect: true,
   baseUrl: 'http://localhost:4200/',
