@@ -10,7 +10,7 @@ phases:
       - npm install
   pre_build:
     commands:
-      - npm run test:once
+      - npm run test:once e2e lint
   build:
     commands:
       - npm run build:prod

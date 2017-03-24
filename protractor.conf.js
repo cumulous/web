@@ -7,6 +7,12 @@ exports.config = {
   ],
   capabilities: {
     browserName: 'chrome',
+    chromeOptions: {
+      args: [
+        '--headless',
+        '--disable-gpu',
+      ],
+    },
   },
   directConnect: true,
   baseUrl: 'http://localhost:4200/',

@@ -1,5 +1,3 @@
-const chrome = require('./chrome');
-
 module.exports = function (config) {
   config.set({
     basePath: '',
@@ -41,7 +39,11 @@ module.exports = function (config) {
     customLaunchers: {
       ChromeHeadless: {
         base: 'Chrome',
-        flags: chrome.flags,
+        flags: [
+          '--headless',
+          '--disable-gpu',
+          '--remote-debugging-port=9222',
+        ],
       },
     },
     singleRun: false
