@@ -15,7 +15,7 @@
     "serve:coverage": "lite-server",
     "serve:app": "ng serve -H 0.0.0.0",
     "test": "ng test --code-coverage",
-    "test:once": "npm test -- --watch=false",
+    "test:once": "npm test -- --watch=false"
   },
   "dependencies": {
     "@angular/common": "^2.4.0",
