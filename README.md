@@ -11,13 +11,14 @@ It builds upon [Angular](https://angular.io/) framework for single-page applicat
 
 Prior to building the app or running any tests, you need to configure the API client.
 To do that in a [Bash](https://www.gnu.org/software/bash/) shell,
-please run `npm run api <ARTIFACTS_BUCKET> [<BACKEND_STAGE>]`
-with the name of the [S3](https://aws.amazon.com/s3/) bucket where your artifacts are stored on AWS
-(you need to get read access to that bucket's `api/<BACKEND_STAGE>/swagger.yaml` object first),
-and an optional name of the backend stage (`beta` or `release`)
-for which to generate the client.
+please run `npm run api`, then enter your API domain name,
+[Auth0](https://auth0.com/) domain name, Auth0 client ID and Auth0 client secret.
+You set/get these values when you deploy the backend through
+[CloudFormation](https://aws.amazon.com/cloudformation/).
 
 You can also rerun this command at any time to update your client to the latest version of the API.
+It will cache the above values in the `tmp` folder and reuse them, unless you delete that.
+
 We don't track the client in Git, instead we regenerate it on every build in
 [AWS CodeBuild](https://aws.amazon.com/codebuild/).
 This is done intentionally to ensure the client stays current with the API.
