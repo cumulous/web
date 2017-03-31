@@ -7,6 +7,13 @@ It builds upon [Angular](https://angular.io/) framework for single-page applicat
 
 ## Setting up
 
+### Environment
+
+Please run `npm install` before doing anything else. You need to have at least
+[Node.js](https://nodejs.org) 6.9 with NPM 3.10 to achieve that.
+
+In addition, you need JRE 7 or later to generate API client (see below).
+
 ### API client
 
 Prior to building the app or running any tests, you need to configure the API client.
