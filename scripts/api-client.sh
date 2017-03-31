@@ -6,6 +6,7 @@ WORKDIR="tmp"
 AUTH0_CONFIG="${WORKDIR}/.auth0.json"
 API_CONFIG="${WORKDIR}/.api.json"
 SWAGGER_FILE="${WORKDIR}/swagger.json"
+SWAGGER_UI="node_modules/swagger-ui/dist/index.html"
 
 CODEGEN_VERSION="2.3"
 CODEGEN_JAR="bin/codegen-${CODEGEN_VERSION}.jar"
@@ -53,3 +54,9 @@ java -jar "${CODEGEN_JAR}" generate \
   -i "${SWAGGER_FILE}" \
   -l typescript-angular2 \
   -o "${CODEGEN_DEST}"
+
+echo Updating Swagger UI...
+
+sed -i "s|url: url,|url: '../../../../${SWAGGER_FILE}',\n\
+        validatorUrl: null,|" "${SWAGGER_UI}"
+sed -i 's|docExpansion: "none"|docExpansion: "list"|' "${SWAGGER_UI}"
