@@ -3,7 +3,7 @@
 This project implements a web interface for
 the Serverless Application System for Storage and analYsis (SASSY) of scientific data.
 
-It builds upon [Angular 2](https://angular.io/) framework for single-page applications.
+It builds upon [Angular](https://angular.io/) framework for single-page applications.
 
 ## Setting up
 
