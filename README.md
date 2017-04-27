@@ -37,8 +37,8 @@ You're encouraged to periodically update the local development version as descri
 to discover potential compatibility issues before it reaches CodeBuild.
 
 ### Development server
-Run `npm start` for a dev server.
-Navigate to `http[s]://{YOUR_HOSTNAME}:8080/`.
+Run `HOST=<YOUR_PUBLIC_HOSTNAME> npm start` for a dev server.
+Navigate to `http[s]://<YOUR_PUBLIC_HOSTNAME>:8080/`.
 The app will automatically reload if you change any of the source files.
 
 ## Building
