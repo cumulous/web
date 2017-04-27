@@ -8,4 +8,9 @@ export class AppPage {
   elementText(selector: string) {
     return element(by.css(selector)).getText();
   }
+
+  location() {
+    return browser.getCurrentUrl()
+      .then(url => '/'.concat(url.split('/').slice(3).join('/')));
+  }
 }

@@ -9,4 +9,7 @@ export = function() {
   steps.Then(/^I should see a message saying that the app works$/, () => {
     this.page.elementText('app-root h1').should.become('app works!');
   });
+  steps.Then(/^I should be redirected to the \/datasets page$/, () => {
+    this.page.location().should.become('/datasets');
+  });
 };
