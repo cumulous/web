@@ -3,6 +3,9 @@ module.exports = {
   files: [
     'coverage/**/*.html',
   ],
+  server: {
+    baseDir: 'coverage',
+  },
   snippetOptions: {
     rule: {
       match: /(<!DOCTYPE html>|^)/i,
