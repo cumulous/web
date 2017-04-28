@@ -27,7 +27,7 @@ You can re-run this command at any time to update your client to the latest vers
 It will cache the above values in the `tmp` folder and reuse them, unless you delete that.
 
 You can also read API documentation by navigating to
-the `/node_modules/swagger-ui/dist/index.html` file in a browser.
+the `/node_modules/swagger-ui-dist/index.html` file in a browser.
 You won't be able to call any endpoints however.
 
 **Note:** We don't track the client in Git, instead we regenerate it on every build in
