@@ -29,7 +29,7 @@ describe('DatasetListComponent', () => {
 
   it('should render columns titles', () => {
     const table = selectElement(fixture, '.datasets-table-column-name');
-    expect(table.name).toEqual(name); // ??
+    expect(table).toEqual(name); // ??
   });
 
 });
