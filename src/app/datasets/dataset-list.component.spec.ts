@@ -22,4 +22,14 @@ describe('DatasetListComponent', () => {
     expect(table).toBeTruthy();
   });
 
+  it('should render columns with .datasets-table-column-name class', () => {
+    const table = selectElement(fixture, '.datasets-table-column-name');
+    expect(table).toBeTruthy();
+  });
+
+  it('should render columns titles', () => {
+    const table = selectElement(fixture, '.datasets-table-column-name');
+    expect(table.name).toEqual(name); // ??
+  });
+
 });
