@@ -1,5 +1,5 @@
 module.exports = {
-  port: 8082,
+  port: process.env['REPORTS_PORT'] || 8082,
   files: [
     'coverage/**/*.html',
   ],
