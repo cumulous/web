@@ -5,8 +5,16 @@ export class AppPage {
     return browser.get(location);
   }
 
+  private getElement(selector: string) {
+    return element(by.css(selector));
+  }
+
   elementText(selector: string) {
-    return element(by.css(selector)).getText();
+    return this.getElement(selector).getText();
+  }
+
+  elementPresent(selector: string) {
+    return this.getElement(selector).isPresent();
   }
 
   location() {
