@@ -1,12 +1,12 @@
-Feature: Opening the app page
+Feature: Opening the app
   As a user of our app
-  I want to navigate to the app page
+  I want to see the app
   So that I can do useful work
 
 Scenario: Loading the app
-  Given I am on the app page
+  When I open our app
   Then I should see a message saying that the app works
 
-Scenario: Initial loading of the Datasets page
-  Given I am on the app page
-  Then I should be redirected to the /datasets page
+Scenario: Initial loading of the "Datasets" page
+  When I open our app
+  Then I should see the "Datasets" page
