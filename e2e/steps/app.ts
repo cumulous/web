@@ -1,15 +1,13 @@
-import { StepDefinitions as Steps } from 'cucumber';
+import { $, location, locationOf, navigateTo, steps } from '../support/world';
 
-export = function() {
-  const steps = <Steps>this;
-
-  steps.Given(/^I am on the app page$/, () => {
-    this.page.navigateTo('/');
+steps(({When, Then}) => {
+  When(/^I open our app$/, () => {
+    navigateTo('/');
   });
-  steps.Then(/^I should see a message saying that the app works$/, () => {
-    this.page.elementText('app-root h1').should.become('app works!');
+  Then(/^I should see a message saying that the app works$/, () => {
+    $('app-root h1').getText().should.become('app works!');
   });
-  steps.Then(/^I should be redirected to the \/datasets page$/, () => {
-    this.page.location().should.become('/datasets');
+  Then(/^I should see the "(.*)" page$/, page => {
+    location().should.become(locationOf(page));
   });
-};
+});
