@@ -2,6 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { selectElement } from '../../testing';
 
+import { DatasetsModule } from './datasets.module';
 import { DatasetListComponent } from './dataset-list.component';
 
 describe('DatasetListComponent', () => {
@@ -9,7 +10,7 @@ describe('DatasetListComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [ DatasetListComponent ],
+      imports: [ DatasetsModule ],
     });
 
     fixture = TestBed.createComponent(DatasetListComponent);
@@ -21,15 +22,4 @@ describe('DatasetListComponent', () => {
     const table = selectElement(fixture, '#datasets-table');
     expect(table).toBeTruthy();
   });
-
-  it('should render columns with .datasets-table-column-name class', () => {
-    const table = selectElement(fixture, '.datasets-table-column-name');
-    expect(table).toBeTruthy();
-  });
-
-  it('should render columns titles', () => {
-    const table = selectElement(fixture, '.datasets-table-column-name');
-    expect(table).toEqual(name); // ??
-  });
-
 });

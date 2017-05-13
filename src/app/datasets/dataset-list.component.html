@@ -1,28 +1,5 @@
 <div>
   <ngx-datatable
-    id="datasets-table"
-    [rows]='rows'
-    [columnMode]="'force'"
-    [headerHeight]="50"
-    [footerHeight]="50"
-    [rowHeight]="50"
-    [scrollbarV]="true"
-    <!--(page)="onPage(event.offset)">-->
-
-    <ngx-datatable-column class="datasets-table-column-name" name="Name">
-      <ng-template let-value="value" ngx-datatable-cell-template>
-        <strong>{{value}}</strong>
-      </ng-template>
-    </ngx-datatable-column>
-    <ngx-datatable-column class="datasets-table-column-name" name="Date Created">
-      <ng-template let-value="value" ngx-datatable-cell-template>
-        <i>{{value}}</i>
-      </ng-template>
-    </ngx-datatable-column>
-    <ngx-datatable-column class="datasets-table-column-name" name="Description">
-      <ng-template let-value="value" ngx-datatable-cell-template>
-        {{value}}
-      </ng-template>
-    </ngx-datatable-column>
+    id="datasets-table">
   </ngx-datatable>
 </div>
