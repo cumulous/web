@@ -3,8 +3,8 @@ import * as chaiAsPromised from 'chai-as-promised';
 import { defineSupportCode as hooks } from 'cucumber';
 import { $, browser } from 'protractor';
 
-export { defineSupportCode as steps } from 'cucumber';
-export { $ } from 'protractor';
+export { defineSupportCode as steps, TableDefinition as Table } from 'cucumber';
+export { $, $$ } from 'protractor';
 
 hooks(({Before}) => {
   Before(() => {
