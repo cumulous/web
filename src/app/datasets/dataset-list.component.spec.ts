@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { selectElement } from '../../testing';
+import { selectElements } from '../../testing';
 
 import { DatasetsModule } from './datasets.module';
 import { DatasetListComponent } from './dataset-list.component';
@@ -18,8 +18,9 @@ describe('DatasetListComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should render table with #datasets-table id', () => {
-    const table = selectElement(fixture, '#datasets-table');
-    expect(table).toBeTruthy();
+  it('should render table with proper column names', () => {
+    const columnNames = selectElements(fixture, '.datasets-list-column')
+      .map(element => element.textContent.trim());
+    expect(columnNames).toEqual(['Date Created', 'Description']);
   });
 });
