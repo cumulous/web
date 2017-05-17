@@ -22,7 +22,7 @@ module.exports = function (config) {
       'text/x-typescript': ['ts','tsx']
     },
     coverageIstanbulReporter: {
-      reports: [ config.watch ? 'html' : 'text-summary', 'lcovonly' ],
+      reports: [ config.watch === false ? 'text-summary' : 'html', 'lcovonly' ],
       fixWebpackSourcePaths: true
     },
     angularCli: {
