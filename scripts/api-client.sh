@@ -34,9 +34,8 @@ if [ ! -f "${AUTH0_CONFIG}" ] || [ ! -f "${API_CONFIG}" ]; then
   " > "${AUTH0_CONFIG}"
 
   echo "
-    request = GET
     url = "https://${API_DOMAIN}/"
-    header = \"accept: application/json\"
+    compressed = true
     silent = true
   " > "${API_CONFIG}"
 fi
@@ -45,7 +44,7 @@ echo
 echo Authenticating...
 
 TOKEN=$(curl -K "${AUTH0_CONFIG}" | jq -r '.access_token')
-curl -K "${API_CONFIG}" --compressed -H "Authorization: ${TOKEN}" > "${SWAGGER_FILE}"
+curl -K "${API_CONFIG}" -H "Authorization: ${TOKEN}" > "${SWAGGER_FILE}"
 
 echo Generating API client...
 
