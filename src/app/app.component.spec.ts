@@ -32,7 +32,6 @@ describe('AppComponent', () => {
     location = TestBed.get(Location);
 
     router.initialNavigation();
-    tick();
     fixture.detectChanges();
   }));
 
