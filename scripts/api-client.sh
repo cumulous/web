@@ -52,7 +52,8 @@ rm -rf "${CODEGEN_DEST}"
 java -jar "${CODEGEN_JAR}" generate \
   -i "${SWAGGER_FILE}" \
   -l typescript-angular2 \
-  -o "${CODEGEN_DEST}"
+  -o "${CODEGEN_DEST}" \
+  --additional-properties modelPropertyNaming=original
 
 sed -i "s|InjectionToken<string> } from|InjectionToken } from|" \
   src/app/api/variables.ts
