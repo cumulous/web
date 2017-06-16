@@ -36,10 +36,12 @@
   },
   "lint": [
     {
-      "project": "src/tsconfig.lint.json"
+      "project": "src/tsconfig.app.json",
+      "exclude": "**/api/**/*"
     },
     {
-      "project": "src/tsconfig.spec.json"
+      "project": "src/tsconfig.spec.json",
+      "exclude": "**/api/**/*"
     },
     {
       "project": "e2e/tsconfig.json"
