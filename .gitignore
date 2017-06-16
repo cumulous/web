@@ -6,7 +6,7 @@
 
 # dependencies
 /node_modules
-/src/api
+/src/app/api
 
 # IDEs and editors
 /.idea
