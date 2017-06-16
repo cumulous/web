@@ -54,6 +54,9 @@ java -jar "${CODEGEN_JAR}" generate \
   -l typescript-angular2 \
   -o "${CODEGEN_DEST}"
 
+sed -i "s|InjectionToken<string> } from|InjectionToken } from|" \
+  src/app/api/variables.ts
+
 echo Updating Swagger UI...
 
 sed -i "s|url: .*petstore.*,|url: './../../${SWAGGER_FILE}',\n\
