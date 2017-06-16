@@ -10,7 +10,7 @@ SWAGGER_UI="node_modules/swagger-ui-dist/index.html"
 
 CODEGEN_VERSION="2.3"
 CODEGEN_JAR="bin/codegen-${CODEGEN_VERSION}.jar"
-CODEGEN_DEST="src/api"
+CODEGEN_DEST="src/app/api"
 
 mkdir -p "${WORKDIR}"
 
