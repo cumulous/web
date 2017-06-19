@@ -5,6 +5,7 @@
   "private": true,
   "scripts": {
     "api": "./scripts/api-client.sh",
+    "api:ci": "./scripts/api-client-ci.sh",
     "build": "ng build",
     "build:prod": "ng build -prod -bh /app/",
     "e2e": "ng e2e",
