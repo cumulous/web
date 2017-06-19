@@ -10,7 +10,7 @@ phases:
       - npm install
   pre_build:
     commands:
-      - scripts/api-client-ci.sh
+      - sh scripts/api-client-ci.sh
       - npm run test:once
       - npm run e2e
       - npm run lint
