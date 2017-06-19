@@ -9,6 +9,11 @@ import { selectElement } from '../testing';
 import { AppModule } from './app.module';
 import { AppComponent } from './app.component';
 
+import { environment } from '../environments/environment';
+
+import { APIS } from './api/api/api'; // :)
+import { Configuration as ApiConfig } from './api/configuration';
+
 describe('AppComponent', () => {
   let fixture: ComponentFixture<AppComponent>;
   let app: AppComponent;
@@ -16,7 +21,11 @@ describe('AppComponent', () => {
   let router: Router;
   let location: Location;
 
+  const fakeAccessToken = 'ey.12.ab';
+
   beforeEach(fakeAsync(() => {
+    localStorage.setItem('accessToken', fakeAccessToken);
+
     TestBed.configureTestingModule({
       imports: [
         AppModule,
@@ -49,5 +58,17 @@ describe('AppComponent', () => {
 
   it('should navigate to /datasets by default', () => {
     expect(location.path()).toEqual('/datasets');
+  });
+
+  it('should initialize ApiModule services with correct parameters', () => {
+    APIS.forEach(service => {
+      expect(TestBed.get(service).configuration).toEqual(new ApiConfig({
+        basePath: environment.apiRoot,
+        apiKeys: {
+          Authorization: fakeAccessToken,
+        },
+        withCredentials: true,
+      }));
+    });
   });
 });

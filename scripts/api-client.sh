@@ -38,6 +38,13 @@ if [ ! -f "${AUTH0_CONFIG}" ] || [ ! -f "${API_CONFIG}" ]; then
     compressed = true
     silent = true
   " > "${API_CONFIG}"
+
+  echo "
+    export const environment = {
+      production: true,
+      apiRoot: 'https://${API_DOMAIN}',
+    };
+  " > "src/environments/environment.prod.ts"
 fi
 
 echo
