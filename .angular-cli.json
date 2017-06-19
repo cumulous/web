@@ -52,7 +52,8 @@
       "exclude": [
         "src/app/api/**/*.ts",
         "src/polyfills.ts",
-        "src/test.ts"
+        "src/test.ts",
+        "src/testing/**/*.ts"
       ]
     },
     "karma": {
