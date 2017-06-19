@@ -44,7 +44,7 @@ if [ ! -f "${AUTH0_CONFIG}" ] || [ ! -f "${API_CONFIG}" ]; then
       production: true,
       apiRoot: 'https://${API_DOMAIN}',
     };
-  " > "src/environments/environment.prod.ts"
+  " | cut -c 5- > "src/environments/environment.prod.ts"
 fi
 
 echo
