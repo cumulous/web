@@ -3,8 +3,8 @@
 set -e
 
 WORKDIR="tmp"
-AUTH0_CONFIG="${WORKDIR}/.auth0.json"
-API_CONFIG="${WORKDIR}/.api.json"
+AUTH0_CONFIG="${WORKDIR}/.auth0.conf"
+API_CONFIG="${WORKDIR}/.api.conf"
 SWAGGER_FILE="${WORKDIR}/swagger.json"
 SWAGGER_UI="node_modules/swagger-ui-dist/index.html"
 
