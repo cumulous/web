@@ -74,7 +74,7 @@ describe('DatasetListComponent', () => {
     textRows.map((row, i) => {
       const createdAt = new Date(fakeDataset(i).created_at as string);
       const createdDate = createdAt.toLocaleDateString();
-      const createdTime = createdAt.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+      const createdTime = createdAt.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
       expect(row).toContain(createdDate + ', ' + createdTime);
     });
   });
