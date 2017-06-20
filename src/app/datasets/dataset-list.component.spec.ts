@@ -32,7 +32,7 @@ describe('DatasetListComponent', () => {
     id: dataset_ids[i],
     project_id: dataset_ids[i],
     creator_id: project_ids[i],
-    created_at: new Date((100 - i) * 1E10),
+    created_at: new Date((100 - i) * 1E10).toISOString(),
     description: 'Dataset ' + i,
     status: DatasetStatus.Created,
   });
@@ -72,8 +72,10 @@ describe('DatasetListComponent', () => {
 
   it('should correctly display dataset creation dates', () => {
     textRows.map((row, i) => {
-      const created_at = fakeDataset(i).created_at;
-      expect(row).toContain(created_at.toDateString() + ' ' + created_at.toTimeString());
+      const createdAt = new Date(fakeDataset(i).created_at as string);
+      const createdDate = createdAt.toLocaleDateString();
+      const createdTime = createdAt.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+      expect(row).toContain(createdDate + ', ' + createdTime);
     });
   });
 });
