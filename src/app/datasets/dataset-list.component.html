@@ -3,10 +3,10 @@
     class='material'
     [columnMode]="'force'"
     [headerHeight]="50"
-    [footerHeight]="0"
     [rowHeight]="50"
     [rows]="rows"
     [rowClass]="rowClass"
+    [scrollbarV]="true"
   >
     <ngx-datatable-column headerClass="datasets-list-column" name="Date Created" prop="created_at">
       <ng-template let-value="value" ngx-datatable-cell-template>
