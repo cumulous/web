@@ -13,7 +13,10 @@ module.exports = function (config) {
       clearContext: false // leave Jasmine Spec Runner output visible in browser
     },
     files: [
-      { pattern: './src/test.ts', watched: false }
+      { pattern: './src/test.ts', watched: false },
+      { pattern: './src/**/*.css' },
+      { pattern: './node_modules/@swimlane/ngx-datatable/release/**/+(index|material|icons).css',
+        watched: false, included: false },
     ],
     preprocessors: {
       './src/test.ts': ['@angular/cli']
