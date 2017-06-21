@@ -3,6 +3,8 @@ const ini = require('ini');
 const protractorPath = require.resolve('protractor-cucumber-framework');
 const request = require('request-promise-native');
 
+const chromeSandboxed = !process.env.CODEBUILD_BUILD_ID;
+
 exports.config = {
   allScriptsTimeout: 11000,
   specs: [
@@ -15,7 +17,7 @@ exports.config = {
         '--headless',
         '--disable-gpu',
         '--disable-web-security',
-      ],
+      ].concat(chromeSandboxed ? [] : '--no-sandbox'),
     },
   },
   directConnect: true,

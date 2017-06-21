@@ -1,3 +1,5 @@
+const chromeSandboxed = !process.env.CODEBUILD_BUILD_ID;
+
 module.exports = function (config) {
   config.set({
     basePath: '',
@@ -46,8 +48,7 @@ module.exports = function (config) {
           '--headless',
           '--disable-gpu',
           '--remote-debugging-port=9222',
-          '--no-sandbox',
-        ],
+        ].concat(chromeSandboxed ? [] : '--no-sandbox'),
       },
     },
     singleRun: false
