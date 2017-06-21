@@ -1,4 +1,7 @@
+const fs = require('fs');
+const ini = require('ini');
 const protractorPath = require.resolve('protractor-cucumber-framework');
+const request = require('request-promise-native');
 
 exports.config = {
   allScriptsTimeout: 11000,
@@ -27,6 +30,7 @@ exports.config = {
       project: 'e2e/tsconfig.json',
     });
   },
+  onPrepare: authenticate,
   plugins: [{
     package: 'protractor-console-plugin',
     exclude: [
@@ -35,4 +39,16 @@ exports.config = {
       'gravatar',
     ],
   }],
+};
+
+function authenticate() {
+  const authConfig = ini.parse(fs.readFileSync('tmp/.auth0.conf', 'utf-8'));
+  browser.driver.get('http://localhost:49152/favicon.ico');
+  return request.post(authConfig.url, {
+      body: JSON.parse(authConfig.data),
+      json: true,
+    })
+    .then(data => browser.driver.executeScript(
+      `localStorage.setItem('accessToken', '${data.access_token}')`
+    ));
 };
