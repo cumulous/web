@@ -21,7 +21,7 @@ describe('DatasetListComponent', () => {
   let spyOnListDatasets: jasmine.Spy;
   let textRows: string[];
 
-  const fakeDatasetCount = 5;
+  const fakeDatasetCount = 100;
 
   const uuids = () => Array.from({length: fakeDatasetCount}, (d, i) => uuid());
 
@@ -29,11 +29,13 @@ describe('DatasetListComponent', () => {
   const project_ids = uuids();
   const creator_ids = uuids();
 
+  const now = new Date().getTime();
+
   const fakeDataset = (i: number): Dataset => ({
     id: dataset_ids[i],
     project_id: dataset_ids[i],
     creator_id: project_ids[i],
-    created_at: new Date((100 - i) * 1E10).toISOString(),
+    created_at: new Date(now - i * 1E9).toISOString(),
     description: 'Dataset ' + i,
     status: DatasetStatus.Created,
   });
@@ -49,9 +51,11 @@ describe('DatasetListComponent', () => {
 
     const datasetsService = fixture.debugElement.injector.get(DatasetsService);
     spyOnListDatasets = spyOn(datasetsService, 'listDatasets')
-      .and.returnValue(Observable.of({
-        items: Array.from({length: fakeDatasetCount}, (d, i) => fakeDataset(i)),
-      }));
+      .and.callFake((projectId, descriptionContains, status, sort, offset?: number, limit?: number) => {
+        return Observable.of({
+          items: Array.from({length: limit}, (d, i) => fakeDataset(i)),
+        });
+      });
 
     fixture.detectChanges();
 
@@ -64,7 +68,7 @@ describe('DatasetListComponent', () => {
   });
 
   it('should load the correct number of datasets', () => {
-    expect(component.rows.length).toEqual(fakeDatasetCount);
+    expect(component.rows.length).toEqual(component.pageSize);
   });
 
   it('should correctly display dataset descriptions', () => {

@@ -9,6 +9,8 @@ import { ListOfDatasets } from '../api/model/listOfDatasets';
 })
 export class DatasetListComponent implements OnInit {
 
+  readonly pageSize = 50;
+
   rows: Dataset[];
 
   constructor(private datasetsService: DatasetsService) { }
@@ -18,9 +20,10 @@ export class DatasetListComponent implements OnInit {
   }
 
   loadPage() {
-    this.datasetsService.listDatasets().subscribe((data: ListOfDatasets) => {
-      this.rows = data.items;
-    });
+    this.datasetsService.listDatasets(undefined, undefined, undefined, undefined, 0, this.pageSize)
+      .subscribe((data: ListOfDatasets) => {
+        this.rows = data.items;
+      });
   }
 
   rowClass(row: Dataset) {
