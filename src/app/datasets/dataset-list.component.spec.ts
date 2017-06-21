@@ -17,6 +17,7 @@ import { DatasetStatus } from '../api/model/datasetStatus';
 
 describe('DatasetListComponent', () => {
   let fixture: ComponentFixture<DatasetListComponent>;
+  let component: DatasetListComponent;
   let spyOnListDatasets: jasmine.Spy;
   let textRows: string[];
 
@@ -44,6 +45,7 @@ describe('DatasetListComponent', () => {
     });
 
     fixture = TestBed.createComponent(DatasetListComponent);
+    component = fixture.componentInstance;
 
     const datasetsService = fixture.debugElement.injector.get(DatasetsService);
     spyOnListDatasets = spyOn(datasetsService, 'listDatasets')
@@ -61,8 +63,8 @@ describe('DatasetListComponent', () => {
     expect(columnNames).toEqual(['Date Created', 'Description']);
   });
 
-  it('should display the correct number of datasets', () => {
-    expect(textRows.length).toEqual(fakeDatasetCount);
+  it('should load the correct number of datasets', () => {
+    expect(component.rows.length).toEqual(fakeDatasetCount);
   });
 
   it('should correctly display dataset descriptions', () => {
