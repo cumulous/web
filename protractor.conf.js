@@ -14,6 +14,7 @@ exports.config = {
       args: [
         '--headless',
         '--disable-gpu',
+        '--disable-web-security',
       ],
     },
   },
