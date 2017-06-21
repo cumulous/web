@@ -18,7 +18,6 @@ exports.config = {
     },
   },
   directConnect: true,
-  baseUrl: 'http://localhost:4200/',
   framework: 'custom',
   frameworkPath: protractorPath,
   cucumberOpts: {
@@ -33,11 +32,6 @@ exports.config = {
   onPrepare: authenticate,
   plugins: [{
     package: 'protractor-console-plugin',
-    exclude: [
-      'favicon',
-      'geoloc',
-      'gravatar',
-    ],
   }],
 };
 
