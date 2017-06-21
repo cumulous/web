@@ -8,7 +8,7 @@
     "api:ci": "./scripts/api-client-ci.sh",
     "build": "ng build",
     "build:prod": "ng build -prod -bh /app/",
-    "e2e": "ng e2e",
+    "e2e": "ng e2e -e prod",
     "lint": "ng lint",
     "lint:fix": "ng lint --fix",
     "ng": "ng",
