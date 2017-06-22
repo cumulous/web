@@ -9,7 +9,7 @@ import { ListOfDatasets } from '../api/model/listOfDatasets';
 })
 export class DatasetListComponent implements OnInit {
 
-  readonly pageSize = 50;
+  readonly pageSize = 30;
 
   private lastPage = -1;
 
