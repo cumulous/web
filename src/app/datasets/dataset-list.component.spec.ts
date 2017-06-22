@@ -6,7 +6,7 @@ import 'rxjs/add/observable/of';
 
 import * as uuid from 'uuid';
 
-import { elementsText } from '../../testing';
+import { elementsText, debugElement } from '../../testing';
 
 import { DatasetsModule } from './datasets.module';
 import { DatasetListComponent } from './dataset-list.component';
@@ -40,6 +40,14 @@ describe('DatasetListComponent', () => {
     status: DatasetStatus.Created,
   });
 
+  const fakeDatasets = (start: number, count: number) =>
+    Array.from({length: count}, (d, i) => fakeDataset(start + i));
+
+  const componentRows = () => component.rows.map(row => {
+    const { id, project_id, creator_id, created_at, description, status } = row;
+    return { id, project_id, creator_id, created_at, description, status } as Dataset;
+  });
+
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [ DatasetsModule, HttpModule ],
@@ -53,7 +61,7 @@ describe('DatasetListComponent', () => {
     spyOnListDatasets = spyOn(datasetsService, 'listDatasets')
       .and.callFake((projectId, descriptionContains, status, sort, offset?: number, limit?: number) => {
         return Observable.of({
-          items: Array.from({length: limit}, (d, i) => fakeDataset(i)),
+          items: fakeDatasets(offset * component.pageSize, limit),
         });
       });
 
@@ -67,8 +75,8 @@ describe('DatasetListComponent', () => {
     expect(columnNames).toEqual(['Date Created', 'Description']);
   });
 
-  it('should load the correct number of datasets', () => {
-    expect(component.rows.length).toEqual(component.pageSize);
+  it('should load the correct datasets', () => {
+    expect(componentRows()).toEqual(fakeDatasets(0, component.pageSize));
   });
 
   it('should correctly display dataset descriptions', () => {
@@ -83,5 +91,20 @@ describe('DatasetListComponent', () => {
       const createdTime = createdAt.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
       expect(row).toContain(createdDate + ', ' + createdTime);
     });
+  });
+
+  it('should load the second page of datasets on (page) event', () => {
+    debugElement(fixture, '#datasets-list')
+      .triggerEventHandler('page', { offset: 1 });
+    fixture.detectChanges();
+    expect(componentRows().slice(component.pageSize, 2 * component.pageSize))
+      .toEqual(fakeDatasets(component.pageSize, component.pageSize));
+  });
+
+  it('should not load the same page twice', () => {
+    debugElement(fixture, '#datasets-list')
+      .triggerEventHandler('page', { offset: 0 });
+    fixture.detectChanges();
+    expect(componentRows()).toEqual(fakeDatasets(0, component.pageSize));
   });
 });

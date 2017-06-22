@@ -11,18 +11,28 @@ export class DatasetListComponent implements OnInit {
 
   readonly pageSize = 50;
 
-  rows: Dataset[];
+  private lastPage = -1;
+
+  rows: Dataset[] = [];
 
   constructor(private datasetsService: DatasetsService) { }
 
   ngOnInit() {
-    this.loadPage();
+    this.onPage(0);
   }
 
-  loadPage() {
-    this.datasetsService.listDatasets(undefined, undefined, undefined, undefined, 0, this.pageSize)
+  onPage(pageIndex: number) {
+    if (pageIndex === this.lastPage + 1) {
+      this.lastPage++;
+      this.loadPage(pageIndex);
+    }
+  }
+
+  private loadPage(pageIndex: number) {
+    this.datasetsService.listDatasets(
+        undefined, undefined, undefined, undefined, pageIndex, this.pageSize)
       .subscribe((data: ListOfDatasets) => {
-        this.rows = data.items;
+        this.rows = this.rows.concat(data.items);
       });
   }
 

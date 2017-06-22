@@ -1,8 +1,12 @@
 import { ComponentFixture } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 
+export function debugElement<T> (fixture: ComponentFixture<T>, locator: string) {
+  return fixture.debugElement.query(By.css(locator));
+}
+
 export function selectElement<T> (fixture: ComponentFixture<T>, locator: string) {
-  return fixture.debugElement.query(By.css(locator)).nativeElement;
+  return debugElement(fixture, locator).nativeElement;
 }
 
 export function selectElements<T> (fixture: ComponentFixture<T>, locator: string) {

@@ -1,5 +1,6 @@
 <div>
   <ngx-datatable
+    id="datasets-list"
     class='material'
     [columnMode]="'force'"
     [headerHeight]="50"
@@ -7,6 +8,7 @@
     [rows]="rows"
     [rowClass]="rowClass"
     [scrollbarV]="true"
+    (page)="onPage($event.offset)"
   >
     <ngx-datatable-column headerClass="datasets-list-column" name="Date Created" prop="created_at">
       <ng-template let-value="value" ngx-datatable-cell-template>
