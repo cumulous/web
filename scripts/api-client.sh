@@ -35,6 +35,7 @@ if [ ! -f "${AUTH0_CONFIG}" ] || [ ! -f "${API_CONFIG}" ]; then
 
   echo "
     url = "https://${API_DOMAIN}/"
+    header = \"accept: application/json\"
     compressed
     silent = true
   " > "${API_CONFIG}"
