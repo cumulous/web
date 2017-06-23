@@ -107,4 +107,15 @@ describe('DatasetListComponent', () => {
     fixture.detectChanges();
     expect(componentRows()).toEqual(fakeDatasets(0, component.pageSize));
   });
+
+  it('should enable loading indicator during page load', () => {
+    spyOnListDatasets.and.callFake(() => {
+      expect(component.loadingIndicator).toBe(true);
+      return Observable.of({ items: [] });
+    });
+    debugElement(fixture, '#datasets-list')
+      .triggerEventHandler('page', { offset: 1 });
+    fixture.detectChanges();
+    expect(component.loadingIndicator).toBe(false);
+  });
 });

@@ -11,6 +11,8 @@ export class DatasetListComponent implements OnInit {
 
   readonly pageSize = 30;
 
+  loadingIndicator: boolean;
+
   private lastPage = -1;
 
   rows: Dataset[] = [];
@@ -29,10 +31,12 @@ export class DatasetListComponent implements OnInit {
   }
 
   private loadPage(pageIndex: number) {
+    this.loadingIndicator = true;
     this.datasetsService.listDatasets(
         undefined, undefined, undefined, undefined, pageIndex, this.pageSize)
       .subscribe((data: ListOfDatasets) => {
         this.rows = this.rows.concat(data.items);
+        this.loadingIndicator = false;
       });
   }
 

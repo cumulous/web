@@ -8,6 +8,7 @@
     [rows]="rows"
     [rowClass]="rowClass"
     [scrollbarV]="true"
+    [loadingIndicator]="loadingIndicator"
     (page)="onPage($event.offset)"
   >
     <ngx-datatable-column headerClass="datasets-list-column" name="Date Created" prop="created_at">
