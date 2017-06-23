@@ -112,6 +112,7 @@ describe('DatasetListComponent', () => {
       .triggerEventHandler('page', { offset: 0 });
     fixture.detectChanges();
     expect(componentRows()).toEqual(fakeDatasets(0, component.pageSize));
+    expect(spyOnListDatasets).toHaveBeenCalledTimes(1);
   });
 
   it('should enable loading indicator during page load', () => {
