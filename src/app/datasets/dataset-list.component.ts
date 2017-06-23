@@ -33,7 +33,8 @@ export class DatasetListComponent implements OnInit {
   private loadPage(pageIndex: number) {
     this.loadingIndicator = true;
     this.datasetsService.listDatasets(
-        undefined, undefined, undefined, undefined, pageIndex, this.pageSize)
+        undefined, undefined, undefined, undefined,
+        pageIndex * this.pageSize, this.pageSize)
       .subscribe((data: ListOfDatasets) => {
         this.rows = this.rows.concat(data.items);
         this.loadingIndicator = false;

@@ -61,7 +61,7 @@ describe('DatasetListComponent', () => {
     spyOnListDatasets = spyOn(datasetsService, 'listDatasets')
       .and.callFake((projectId, descriptionContains, status, sort, offset?: number, limit?: number) => {
         return Observable.of({
-          items: fakeDatasets(offset * component.pageSize, limit),
+          items: fakeDatasets(offset, limit),
         });
       });
 
