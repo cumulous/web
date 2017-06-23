@@ -15,7 +15,7 @@ export class DatasetListComponent implements OnInit {
 
   private lastPage = -1;
 
-  rows: Dataset[] = [];
+  readonly rows: Dataset[] = [];
 
   constructor(private datasetsService: DatasetsService) { }
 
@@ -36,7 +36,7 @@ export class DatasetListComponent implements OnInit {
         undefined, undefined, undefined, undefined,
         pageIndex * this.pageSize, this.pageSize)
       .subscribe((data: ListOfDatasets) => {
-        this.rows = this.rows.concat(data.items);
+        this.rows.push(...data.items);
         this.loadingIndicator = false;
       });
   }
