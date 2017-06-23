@@ -21,7 +21,7 @@ describe('DatasetListComponent', () => {
   let spyOnListDatasets: jasmine.Spy;
   let textRows: string[];
 
-  const fakeDatasetCount = 100;
+  const fakeDatasetCount = 60;
 
   const uuids = () => Array.from({length: fakeDatasetCount}, (d, i) => uuid());
 
