@@ -37,7 +37,7 @@ describe('DatasetListComponent', () => {
     creator_id: project_ids[i],
     created_at: new Date(now - i * 1E9).toISOString(),
     description: 'Dataset ' + i,
-    status: DatasetStatus.Created,
+    status: i % 2 ? DatasetStatus.Created : DatasetStatus.Available,
   });
 
   const fakeDatasets = (start: number, count: number) =>
@@ -72,7 +72,7 @@ describe('DatasetListComponent', () => {
 
   it('should render table with proper column names', () => {
     const columnNames = elementsText(fixture, '.datasets-list-column');
-    expect(columnNames).toEqual(['Date Created', 'Description']);
+    expect(columnNames).toEqual(['Date Created', 'Description', 'Status']);
   });
 
   it('should load the correct datasets', () => {
@@ -90,6 +90,12 @@ describe('DatasetListComponent', () => {
       const createdDate = createdAt.toLocaleDateString();
       const createdTime = createdAt.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
       expect(row).toContain(createdDate + ', ' + createdTime);
+    });
+  });
+
+  it('should correctly display dataset statuses', () => {
+    textRows.map((row, i) => {
+      expect(row).toContain(i % 2 ? 'created' : 'available');
     });
   });
 
