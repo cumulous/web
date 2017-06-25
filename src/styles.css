@@ -17,4 +17,5 @@ ngx-datatable {
 
 ngx-datatable .progress-linear {
   position: fixed !important;
+  bottom: 0px;
 }
