@@ -9,6 +9,12 @@ import { debugElement, elementsText, fakeUUIDs } from '../../testing';
 import { SharedModule } from './shared.module';
 import { ListBaseComponent, ListColumn } from './list-base.component';
 
+export function pageSize(fixture: ComponentFixture<ListBaseComponent<any>>) {
+  const page = debugElement(fixture, '.list').nativeElement;
+  const component = fixture.componentInstance;
+  return Math.ceil((page.offsetHeight - component.headerHeight) / component.rowHeight);
+}
+
 describe('ListBaseComponent', () => {
 
   interface Item {
@@ -17,10 +23,9 @@ describe('ListBaseComponent', () => {
     description: string;
   }
 
-  const itemListLimit = 5;
-  const itemRowHeight = 55;
+  const itemPageSurplus = 2;
 
-  const item_ids = fakeUUIDs(itemListLimit * 2);
+  const item_ids = fakeUUIDs(100);
   const now = new Date().getTime();
 
   const fakeItem = (i: number): Item => ({
@@ -37,8 +42,7 @@ describe('ListBaseComponent', () => {
   })
   class ItemListComponent extends ListBaseComponent<Item> implements OnInit {
 
-    protected readonly rowHeight: number = itemRowHeight;
-    readonly pageLimit: number = itemListLimit;
+    pageLimit: number;
 
     isLoading: boolean;
     readonly rows: Item[] = [];
@@ -68,7 +72,6 @@ describe('ListBaseComponent', () => {
 
   let fixture: ComponentFixture<ItemListComponent>;
   let component: ItemListComponent;
-  let rowsText: string[];
 
   const triggerScroll = (offsetY: number) => debugElement(fixture, '.list')
     .triggerEventHandler('scroll', { offsetY });
@@ -89,39 +92,68 @@ describe('ListBaseComponent', () => {
     fixture = TestBed.createComponent(ItemListComponent);
     component = fixture.componentInstance;
 
-    fixture.detectChanges();
-
-    rowsText = elementsText(fixture, '.list-row');
+    component.pageLimit = pageSize(fixture) + itemPageSurplus;
   });
 
   it('correctly displays column names', () => {
+    fixture.detectChanges();
     const columnNames = elementsText(fixture, '.list-column');
     expect(columnNames).toEqual(['Date Created', 'Description']);
   });
 
-  it('loads correct items', () => {
-    expect(componentRows()).toEqual(fakeItems(0, itemListLimit));
+  describe('loads correct items if', () => {
+    let limit: number;
+    let pSize: number;
+    beforeEach(() => {
+      pSize = pageSize(fixture);
+    });
+    afterEach(() => {
+      fixture.detectChanges();
+      expect(componentRows()).toEqual(fakeItems(0, limit));
+    });
+    it('pageSize < pageLimit', () => {
+      component.pageLimit = pSize + 1;
+      limit = component.pageLimit;
+    });
+    it('pageSize = pageLimit', () => {
+      component.pageLimit = pSize;
+      limit = pSize;
+    });
+    it('pageSize > pageLimit', () => {
+      component.pageLimit = pSize - 1;
+      limit = pSize;
+    });
   });
 
-  it('correctly displays item descriptions', () => {
-    rowsText.map((rowText, i) =>
-      expect(rowText).toContain(fakeItem(i).description));
-  });
-
-  it('correctly displays item creation dates', () => {
-    rowsText.map((rowText, i) => {
-      const createdAt = new Date(fakeItem(i).created_at);
-      const createdDate = createdAt.toLocaleDateString();
-      const createdTime = createdAt.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
-      expect(rowText).toContain(createdDate + ', ' + createdTime);
+  describe('displays correct', () => {
+    let rowsText: string[];
+    beforeEach(() => {
+      fixture.detectChanges();
+      rowsText = elementsText(fixture, '.list-row');
+    });
+    it('number of items', () => {
+      expect(rowsText.length).toEqual(pageSize(fixture));
+    });
+    it('item descriptions', () => {
+      rowsText.map((rowText, i) => {
+        expect(rowText).toContain(fakeItem(i).description);
+      });
+    });
+    it('item creation dates', () => {
+      rowsText.map((rowText, i) => {
+        const createdAt = new Date(fakeItem(i).created_at);
+        const createdDate = createdAt.toLocaleDateString();
+        const createdTime = createdAt.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
+        expect(rowText).toContain(createdDate + ', ' + createdTime);
+      });
     });
   });
 
   it('loads the second page of items on (scroll) event', () => {
-    debugElement(fixture, '.list')
-      .triggerEventHandler('scroll', { offsetY: itemRowHeight });
     fixture.detectChanges();
-    expect(componentRows()).toEqual(fakeItems(0, 2 * itemListLimit));
+    triggerScroll((itemPageSurplus + 1) * component.rowHeight);
+    fixture.detectChanges();
+    expect(componentRows()).toEqual(fakeItems(0, 2 * component.pageLimit));
   });
 
   describe('does not load the same page twice', () => {
@@ -129,23 +161,22 @@ describe('ListBaseComponent', () => {
     beforeEach(() => {
       spyOnItemsList = spyOn(ItemListComponent, 'fakeItems').and.callThrough();
     });
-    it('if the page is already loaded', () => {
-      triggerScroll(0);
+    afterEach(() => {
       fixture.detectChanges();
-      expect(componentRows()).toEqual(fakeItems(0, itemListLimit));
-      expect(spyOnItemsList).not.toHaveBeenCalled();
+      expect(componentRows()).toEqual(fakeItems(0, component.pageLimit));
+      expect(spyOnItemsList).toHaveBeenCalledTimes(1);
+    });
+    it('if the page is already loaded', () => {
+      fixture.detectChanges();
+      triggerScroll(0);
     });
     it('while the page is being loaded', () => {
       spyOnItemsList.and.callFake((offset: number, limit: number) => {
-        triggerScroll(itemRowHeight);
+        triggerScroll(0);
         return Observable.of({
           items: fakeItems(offset, limit),
         });
       });
-      triggerScroll(itemRowHeight);
-      fixture.detectChanges();
-      expect(componentRows()).toEqual(fakeItems(0, 2 * itemListLimit));
-      expect(spyOnItemsList).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -154,8 +185,6 @@ describe('ListBaseComponent', () => {
       expect(component.isLoading).toBe(true);
       return Observable.of({ items: [] });
     });
-    debugElement(fixture, '#datasets-list');
-    triggerScroll(itemRowHeight);
     fixture.detectChanges();
     expect(component.isLoading).toBe(false);
   });

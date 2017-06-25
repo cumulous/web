@@ -6,6 +6,8 @@ import 'rxjs/add/observable/of';
 
 import { elementsText, fakeUUIDs } from '../../testing';
 
+import { pageSize } from '../shared/list-base.component.spec';
+
 import { DatasetsModule } from './datasets.module';
 import { DatasetListComponent } from './dataset-list.component';
 
@@ -69,8 +71,9 @@ describe('DatasetListComponent', () => {
   });
 
   it('loads correct datasets', () => {
+    const limit = Math.max(pageSize(fixture), component.pageLimit);
     expect(spyOnListDatasets).toHaveBeenCalledWith(
-      undefined, undefined, undefined, undefined, 0, component.pageLimit);
-    expect(componentRows()).toEqual(fakeDatasets(0, component.pageLimit));
+      undefined, undefined, undefined, undefined, 0, limit);
+    expect(componentRows()).toEqual(fakeDatasets(0, limit));
   });
 });

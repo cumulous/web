@@ -15,9 +15,8 @@ export abstract class ListBaseComponent<Item> implements OnInit {
 
   @ViewChild('dateTemplate') protected readonly dateTemplate: TemplateRef<any>;
 
-  protected readonly headerHeight: number = 50;
-  protected readonly rowHeight: number = 50;
-
+  readonly headerHeight: number = 50;
+  readonly rowHeight: number = 50;
   readonly pageLimit: number = 10;
 
   protected isLoading: boolean;
@@ -34,15 +33,20 @@ export abstract class ListBaseComponent<Item> implements OnInit {
   private onScroll(offsetY: number) {
     const viewHeight = this.el.nativeElement.getBoundingClientRect().height - this.headerHeight;
     if (!this.isLoading && offsetY + viewHeight >= this.rows.length * this.rowHeight) {
-      this.loadPage();
+      let limit = this.pageLimit;
+      if (this.rows.length === 0) {
+        const pageSize = Math.ceil(viewHeight / this.rowHeight);
+        limit = Math.max(pageSize, this.pageLimit);
+      }
+      this.loadPage(limit);
     }
   }
 
   protected abstract list(offset: number, limit: number): Observable<{ items: Item[] }>;
 
-  private loadPage() {
+  private loadPage(limit: number) {
     this.isLoading = true;
-    this.list(this.rows.length, this.pageLimit).subscribe(data => {
+    this.list(this.rows.length, limit).subscribe(data => {
       this.rows.push(...data.items);
       this.isLoading = false;
     });
