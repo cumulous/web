@@ -1,0 +1,16 @@
+<ngx-datatable
+  class='material list'
+  [columns]="columns"
+  [columnMode]="'force'"
+  [headerHeight]="headerHeight"
+  [rows]="rows"
+  [rowHeight]="rowHeight"
+  [rowClass]="rowClass"
+  [scrollbarV]="true"
+  [loadingIndicator]="isLoading"
+  (scroll)="onScroll($event.offsetY)"
+></ngx-datatable>
+
+<ng-template #dateTemplate let-value="value">
+  {{value | date:'short'}}
+</ng-template>
