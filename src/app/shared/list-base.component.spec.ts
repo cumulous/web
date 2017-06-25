@@ -44,9 +44,6 @@ describe('ListBaseComponent', () => {
 
     pageLimit: number;
 
-    isLoading: boolean;
-    readonly rows: Item[] = [];
-
     static fakeItems(offset: number, limit: number) {
       return Observable.of({
         items: fakeItems(offset, limit),

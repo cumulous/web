@@ -19,10 +19,9 @@ export abstract class ListBaseComponent<Item> implements OnInit {
   readonly rowHeight: number = 50;
   readonly pageLimit: number = 10;
 
-  protected isLoading: boolean;
-  protected readonly columns: ListColumn[] = [];
-
+  readonly columns: ListColumn[] = [];
   readonly rows: Item[] = [];
+  isLoading: boolean;
 
   constructor(private el: ElementRef) {}
 
@@ -30,7 +29,7 @@ export abstract class ListBaseComponent<Item> implements OnInit {
     this.onScroll(0);
   }
 
-  private onScroll(offsetY: number) {
+  onScroll(offsetY: number) {
     const viewHeight = this.el.nativeElement.getBoundingClientRect().height - this.headerHeight;
     if (!this.isLoading && offsetY + viewHeight >= this.rows.length * this.rowHeight) {
       let limit = this.pageLimit;
@@ -52,7 +51,7 @@ export abstract class ListBaseComponent<Item> implements OnInit {
     });
   }
 
-  private rowClass() {
+  rowClass() {
     return {
       'list-row': true,
     };
