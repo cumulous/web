@@ -9,6 +9,6 @@ steps(({Given, When, Then}) => {
     $('app-root h1').getText().should.become('app works!'));
   Then(/^I should see the "(.*)" page$/, page =>
     location().should.become(locationOf(page)));
-  Then(/^I should see a tabulated list of (.*) with columns$/, (item: string, table: Table) =>
-    $$(`.${item}-list-column`).getText().should.become(table.raw()[0]));
+  Then(/^I should see a tabulated list of .* with columns$/, (table: Table) =>
+    $$(`.list-column`).getText().should.become(table.raw()[0]));
 });

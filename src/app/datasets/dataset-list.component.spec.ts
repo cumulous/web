@@ -4,9 +4,7 @@ import { HttpModule } from '@angular/http';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/observable/of';
 
-import * as uuid from 'uuid';
-
-import { elementsText, debugElement } from '../../testing';
+import { elementsText, fakeUUIDs } from '../../testing';
 
 import { DatasetsModule } from './datasets.module';
 import { DatasetListComponent } from './dataset-list.component';
@@ -19,29 +17,26 @@ describe('DatasetListComponent', () => {
   let fixture: ComponentFixture<DatasetListComponent>;
   let component: DatasetListComponent;
   let spyOnListDatasets: jasmine.Spy;
-  let textRows: string[];
 
-  const fakeDatasetCount = 60;
+  const fakeDatasetCount = 20;
 
-  const uuids = () => Array.from({length: fakeDatasetCount}, (d, i) => uuid());
-
-  const dataset_ids = uuids();
-  const project_ids = uuids();
-  const creator_ids = uuids();
+  const dataset_ids = fakeUUIDs(fakeDatasetCount);
+  const project_ids = fakeUUIDs(fakeDatasetCount);
+  const creator_ids = fakeUUIDs(fakeDatasetCount);
 
   const now = new Date().getTime();
 
   const fakeDataset = (i: number): Dataset => ({
     id: dataset_ids[i],
-    project_id: dataset_ids[i],
-    creator_id: project_ids[i],
+    project_id: project_ids[i],
+    creator_id: creator_ids[i],
     created_at: new Date(now - i * 1E9).toISOString(),
     description: 'Dataset ' + i,
     status: i % 2 ? DatasetStatus.Created : DatasetStatus.Available,
   });
 
-  const fakeDatasets = (start: number, count: number) =>
-    Array.from({length: count}, (d, i) => fakeDataset(start + i));
+  const fakeDatasets = (offset: number, limit: number) =>
+    Array.from({length: limit}, (d, i) => fakeDataset(offset + i));
 
   const componentRows = () => component.rows.map(row => {
     const { id, project_id, creator_id, created_at, description, status } = row;
@@ -59,70 +54,23 @@ describe('DatasetListComponent', () => {
 
     const datasetsService = fixture.debugElement.injector.get(DatasetsService);
     spyOnListDatasets = spyOn(datasetsService, 'listDatasets')
-      .and.callFake((projectId, descriptionContains, status, sort, offset?: number, limit?: number) => {
+      .and.callFake((projectId, descriptionContains, status, sort, offset, limit) => {
         return Observable.of({
           items: fakeDatasets(offset, limit),
         });
       });
 
     fixture.detectChanges();
-
-    textRows = elementsText(fixture, '.datasets-list-row');
   });
 
-  it('should render table with proper column names', () => {
-    const columnNames = elementsText(fixture, '.datasets-list-column');
+  it('correctly displays column names', () => {
+    const columnNames = elementsText(fixture, '.list-column');
     expect(columnNames).toEqual(['Date Created', 'Description', 'Status']);
   });
 
-  it('should load the correct datasets', () => {
-    expect(componentRows()).toEqual(fakeDatasets(0, component.pageSize));
-  });
-
-  it('should correctly display dataset descriptions', () => {
-    textRows.map((row, i) =>
-      expect(row).toContain(fakeDataset(i).description as string));
-  });
-
-  it('should correctly display dataset creation dates', () => {
-    textRows.map((row, i) => {
-      const createdAt = new Date(fakeDataset(i).created_at as string);
-      const createdDate = createdAt.toLocaleDateString();
-      const createdTime = createdAt.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
-      expect(row).toContain(createdDate + ', ' + createdTime);
-    });
-  });
-
-  it('should correctly display dataset statuses', () => {
-    textRows.map((row, i) => {
-      expect(row).toContain(i % 2 ? 'created' : 'available');
-    });
-  });
-
-  it('should load the second page of datasets on (page) event', () => {
-    debugElement(fixture, '#datasets-list')
-      .triggerEventHandler('page', { offset: 1 });
-    fixture.detectChanges();
-    expect(componentRows().slice(component.pageSize, 2 * component.pageSize))
-      .toEqual(fakeDatasets(component.pageSize, component.pageSize));
-  });
-
-  it('should not load the same page twice', () => {
-    debugElement(fixture, '#datasets-list')
-      .triggerEventHandler('page', { offset: 0 });
-    fixture.detectChanges();
-    expect(componentRows()).toEqual(fakeDatasets(0, component.pageSize));
-    expect(spyOnListDatasets).toHaveBeenCalledTimes(1);
-  });
-
-  it('should enable loading indicator during page load', () => {
-    spyOnListDatasets.and.callFake(() => {
-      expect(component.loadingIndicator).toBe(true);
-      return Observable.of({ items: [] });
-    });
-    debugElement(fixture, '#datasets-list')
-      .triggerEventHandler('page', { offset: 1 });
-    fixture.detectChanges();
-    expect(component.loadingIndicator).toBe(false);
+  it('loads correct datasets', () => {
+    expect(spyOnListDatasets).toHaveBeenCalledWith(
+      undefined, undefined, undefined, undefined, 0, component.pageLimit);
+    expect(componentRows()).toEqual(fakeDatasets(0, component.pageLimit));
   });
 });

@@ -1,49 +1,31 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit } from '@angular/core';
 
 import { DatasetsService } from '../api/api/datasets.service';
 import { Dataset } from '../api/model/dataset';
 import { ListOfDatasets } from '../api/model/listOfDatasets';
 
+import { ListBaseComponent, ListColumn } from '../shared/list-base.component';
+
 @Component({
-  templateUrl: './dataset-list.component.html',
+  templateUrl: '../shared/list-base.component.html',
 })
-export class DatasetListComponent implements OnInit {
+export class DatasetListComponent extends ListBaseComponent<Dataset> implements OnInit {
 
-  readonly pageSize = 30;
-
-  loadingIndicator: boolean;
-
-  private lastPage = -1;
-
-  readonly rows: Dataset[] = [];
-
-  constructor(private datasetsService: DatasetsService) { }
+  constructor(private datasetsService: DatasetsService, element: ElementRef) {
+    super(element);
+  }
 
   ngOnInit() {
-    this.onPage(0);
+    this.columns.push(
+      new ListColumn('created_at', 'Date Created', this.dateTemplate),
+      new ListColumn('description'),
+      new ListColumn('status'),
+    );
+    super.ngOnInit();
   }
 
-  onPage(pageIndex: number) {
-    if (pageIndex === this.lastPage + 1) {
-      this.lastPage++;
-      this.loadPage(pageIndex);
-    }
-  }
-
-  private loadPage(pageIndex: number) {
-    this.loadingIndicator = true;
-    this.datasetsService.listDatasets(
-        undefined, undefined, undefined, undefined,
-        pageIndex * this.pageSize, this.pageSize)
-      .subscribe((data: ListOfDatasets) => {
-        this.rows.push(...data.items);
-        this.loadingIndicator = false;
-      });
-  }
-
-  rowClass(row: Dataset) {
-    return {
-      'datasets-list-row': true,
-    };
+  protected list(offset: number, limit: number) {
+    return this.datasetsService.listDatasets(
+      undefined, undefined, undefined, undefined, offset, limit);
   }
 }
