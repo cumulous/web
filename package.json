@@ -19,11 +19,14 @@
     "test:once": "npm test -- --watch=false"
   },
   "dependencies": {
+    "@angular/animations": "^4.3.2",
+    "@angular/cdk": "^2.0.0-beta.8",
     "@angular/common": "^4.1.0",
     "@angular/compiler": "^4.1.0",
     "@angular/core": "^4.1.0",
     "@angular/forms": "^4.1.0",
     "@angular/http": "^4.1.0",
+    "@angular/material": "^2.0.0-beta.8",
     "@angular/platform-browser": "^4.1.0",
     "@angular/platform-browser-dynamic": "^4.1.0",
     "@angular/router": "^4.1.0",
