@@ -1,4 +1,5 @@
 import { NgModule } from '@angular/core';
+import { MdTabsModule } from '@angular/material';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
@@ -13,6 +14,7 @@ import { DatasetsModule } from './datasets/datasets.module';
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
+    MdTabsModule,
     CoreModule,
     DatasetsModule,
     AppRoutingModule,
