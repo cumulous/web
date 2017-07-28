@@ -24,14 +24,14 @@ describe('DatasetListComponent', () => {
 
   const dataset_ids = fakeUUIDs(fakeDatasetCount);
   const project_ids = fakeUUIDs(fakeDatasetCount);
-  const creator_ids = fakeUUIDs(fakeDatasetCount);
+  const created_bys = fakeUUIDs(fakeDatasetCount);
 
   const now = new Date().getTime();
 
   const fakeDataset = (i: number): Dataset => ({
     id: dataset_ids[i],
     project_id: project_ids[i],
-    creator_id: creator_ids[i],
+    created_by: created_bys[i],
     created_at: new Date(now - i * 1E9).toISOString(),
     description: 'Dataset ' + i,
     status: i % 2 ? DatasetStatus.Created : DatasetStatus.Available,
@@ -41,8 +41,8 @@ describe('DatasetListComponent', () => {
     Array.from({length: limit}, (d, i) => fakeDataset(offset + i));
 
   const componentRows = () => component.rows.map(row => {
-    const { id, project_id, creator_id, created_at, description, status } = row;
-    return { id, project_id, creator_id, created_at, description, status } as Dataset;
+    const { id, project_id, created_by, created_at, description, status } = row;
+    return { id, project_id, created_by, created_at, description, status } as Dataset;
   });
 
   beforeEach(() => {
