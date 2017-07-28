@@ -35,7 +35,6 @@ describe('AppComponent', () => {
 
     fixture = TestBed.createComponent(AppComponent);
     app = fixture.componentInstance;
-    h1 = selectElement(fixture, 'h1');
 
     router = TestBed.get(Router);
     location = TestBed.get(Location);
@@ -46,14 +45,6 @@ describe('AppComponent', () => {
 
   it('should create the app', () => {
     expect(app).toBeTruthy();
-  });
-
-  it(`should have as title 'app works!'`, () => {
-    expect(app.title).toEqual('app works!');
-  });
-
-  it('should render title in a h1 tag', () => {
-    expect(h1.textContent).toContain('app works!');
   });
 
   it('should navigate to /datasets by default', () => {
