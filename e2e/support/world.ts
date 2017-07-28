@@ -1,7 +1,7 @@
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import { defineSupportCode as hooks } from 'cucumber';
-import { $, browser } from 'protractor';
+import { $, element, browser, by } from 'protractor';
 
 export { defineSupportCode as steps, TableDefinition as Table } from 'cucumber';
 export { $, $$ } from 'protractor';
@@ -25,3 +25,6 @@ export const location = () =>
       .slice(3)
       .join('/')
     ));
+
+export const link = (text: string) =>
+  element(by.linkText(text));
