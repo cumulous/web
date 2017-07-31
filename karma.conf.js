@@ -5,11 +5,12 @@ module.exports = function (config) {
     basePath: '',
     frameworks: ['jasmine', '@angular/cli'],
     plugins: [
-      require('karma-jasmine'),
       require('karma-chrome-launcher'),
-      require('karma-jasmine-html-reporter'),
       require('karma-coverage-istanbul-reporter'),
-      require('@angular/cli/plugins/karma')
+      require('karma-jasmine'),
+      require('karma-jasmine-html-reporter'),
+      require('karma-scss-preprocessor'),
+      require('@angular/cli/plugins/karma'),
     ],
     client:{
       clearContext: false // leave Jasmine Spec Runner output visible in browser
@@ -17,11 +18,13 @@ module.exports = function (config) {
     files: [
       { pattern: './src/test.ts', watched: false },
       { pattern: './src/**/*.css' },
+      { pattern: './src/theme.scss', included: true, watched: true },
       { pattern: './node_modules/@swimlane/ngx-datatable/release/**/+(index|material|icons).css',
         watched: false, included: false },
     ],
     preprocessors: {
-      './src/test.ts': ['@angular/cli']
+      './src/test.ts': ['@angular/cli'],
+      './src/theme.scss': ['scss'],
     },
     mime: {
       'text/x-typescript': ['ts','tsx']
