@@ -17,7 +17,6 @@ import { Configuration as ApiConfig } from './api/configuration';
 describe('AppComponent', () => {
   let fixture: ComponentFixture<AppComponent>;
   let app: AppComponent;
-  let h1: HTMLElement;
   let router: Router;
   let location: Location;
 
