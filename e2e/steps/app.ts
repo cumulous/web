@@ -17,4 +17,15 @@ steps(({Given, When, Then}) => {
     Promise.all(tabs.raw()[0].map(tab =>
       link(tab).click()
         .then(() => location().should.become(locationOf(tab))))));
+
+  Then(/^the (.*) should be sorted by date in descending order$/, page => {
+    return $$('.list-row').getText().then(rows => {
+      const timestamp = row => new Date(row.split('\n')[0]).getTime();
+      rows.length.should.be.above(0);
+      (rows as any).reduce((last, next) => {
+        timestamp(next).should.be.at.most(timestamp(last));
+        return next;
+      });
+    });
+  });
 });

@@ -10,4 +10,4 @@ Scenario: Initial loading of the "Datasets" page
 Scenario: Navigating using tabs
   When I open our app
   Then I should be able to navigate using the tabs
-    | Datasets |
+    | Datasets | Analyses |
