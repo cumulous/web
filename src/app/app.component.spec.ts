@@ -4,7 +4,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { Location } from '@angular/common';
 import { Router } from '@angular/router';
 
-import { elementsText, selectElement, selectElements } from '../testing';
+import { selectElement, selectElements } from '../testing';
 
 import { AppModule } from './app.module';
 import { AppComponent } from './app.component';
@@ -55,19 +55,10 @@ describe('AppComponent', () => {
     expect(nav).toBeTruthy();
   });
 
-  it('should display <a> elements for the tabs', () => {
-    const links = elementsText(fixture, 'nav a');
-    expect(links).toEqual(['Datasets']);
-  });
-
-  it('should navigate correctly when we click on the tabs', () => {
+  it('should display correct <a> elements for navigation', () => {
     const links = selectElements(fixture, 'nav a');
-    const routes = ['/datasets'];
-    links.forEach((link, i) => {
-      link.click();
-      fixture.detectChanges();
-      expect(location.path()).toEqual(routes[i]);
-    });
+    expect(links.map(link => link.textContent.trim())).toEqual(['Datasets', 'Analyses']);
+    expect(links.map(link => link.pathname)).toEqual(['/datasets', '/analyses']);
   });
 
   it('should initialize ApiModule services with correct parameters', () => {

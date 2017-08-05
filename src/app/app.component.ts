@@ -9,5 +9,8 @@ export class AppComponent {
   navLinks = [{
     route: '/datasets',
     label: 'Datasets',
+  }, {
+    route: '/analyses',
+    label: 'Analyses',
   }];
 }

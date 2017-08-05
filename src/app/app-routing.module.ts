@@ -3,6 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 
 const routes: Routes = [
   { path: '', redirectTo: '/datasets', pathMatch: 'full' },
+  { path: 'analyses', loadChildren: 'app/analyses/analyses.module#AnalysesModule' },
 ];
 
 @NgModule({
