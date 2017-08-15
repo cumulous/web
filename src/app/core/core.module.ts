@@ -3,10 +3,16 @@ import { NgModule, Optional, SkipSelf } from '@angular/core';
 import { ApiModule } from '../api/api.module';
 import { Configuration as ApiConfig } from '../api/configuration';
 
+import { AuthModule } from '../auth/auth.module';
+import { AuthConfig } from '../auth/auth.config';
+
 import { environment } from '../../environments/environment';
 
 @NgModule({
-  imports: [ ApiModule.forConfig(apiConfig) ],
+  imports: [
+    ApiModule.forConfig(apiConfig),
+    AuthModule.forRoot(authConfig),
+  ],
 })
 export class CoreModule {
   constructor (@Optional() @SkipSelf() parentModule: CoreModule) {
@@ -25,4 +31,11 @@ export function apiConfig() {
     },
     withCredentials: true,
   });
+}
+
+export function authConfig() {
+  return new AuthConfig(
+    environment.auth.clientId,
+    environment.auth.domain,
+  );
 }

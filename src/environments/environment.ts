@@ -6,4 +6,8 @@
 export const environment = {
   production: false,
   apiRoot: 'https://api.example.org',
+  auth: {
+    clientId: 'example1234',
+    domain: 'example.auth.us-east-1.amazoncognito.com',
+  },
 };

@@ -14,6 +14,9 @@ import { environment } from '../environments/environment';
 import { APIS } from './api/api/api'; // :)
 import { Configuration as ApiConfig } from './api/configuration';
 
+import { AuthService } from './auth/auth.service';
+import { CognitoAuth } from 'amazon-cognito-auth-js/dist/amazon-cognito-auth';
+
 describe('AppComponent', () => {
   let fixture: ComponentFixture<AppComponent>;
   let app: AppComponent;
@@ -71,5 +74,15 @@ describe('AppComponent', () => {
         withCredentials: true,
       }));
     });
+  });
+
+  it('should initialize AuthModule with correct parameters', () => {
+    expect(TestBed.get(AuthService).auth).toEqual(new CognitoAuth({
+      ClientId: environment.auth.clientId,
+      AppWebDomain: environment.auth.domain,
+      TokenScopesArray: [],
+      RedirectUriSignIn: '/',
+      RedirectUriSignOut: '/',
+    }));
   });
 });
