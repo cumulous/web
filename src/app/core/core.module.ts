@@ -6,12 +6,15 @@ import { Configuration as ApiConfig } from '../api/configuration';
 import { AuthModule } from '../auth/auth.module';
 import { AuthConfig } from '../auth/auth.config';
 
+import { LoginModule } from '../login/login.module';
+
 import { environment } from '../../environments/environment';
 
 @NgModule({
   imports: [
     ApiModule.forConfig(apiConfig),
     AuthModule.forRoot(authConfig),
+    LoginModule,
   ],
 })
 export class CoreModule {
