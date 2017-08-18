@@ -45,7 +45,9 @@ if [ ! -f "${AUTH_CONFIG}" ] || [ ! -f "${API_CONFIG}" ]; then
         domain: '${AUTH_DOMAIN}',
       }
     };
-  " | cut -c 5- > "src/environments/environment.prod.ts"
+  " | cut -c 5- \
+    | tee "src/environments/environment.ts" > \
+          "src/environments/environment.prod.ts"
 fi
 
 echo
