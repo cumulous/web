@@ -11,7 +11,7 @@ import 'rxjs/add/operator/filter';
 export class AppComponent {
   private readonly links = ['datasets', 'analyses'];
 
-  private linkActive$ = this.router.events
+  readonly linkActive$ = this.router.events
     .filter(event => event instanceof NavigationEnd)
     .map((event: NavigationEnd) =>
       this.links.includes(event.urlAfterRedirects.substr(1))
