@@ -14,7 +14,9 @@ describe('AuthService', () => {
   const fakePath = '/fake/path';
 
   const fakeConfig = () => {
-    return new AuthConfig(fakeClientID, fakeDomain);
+    return new AuthConfig(fakeClientID, fakeDomain, {
+      Authorization: 'unused-key',
+    });
   };
 
   const fakeSession = (isValid: boolean) => {
@@ -124,6 +126,28 @@ describe('AuthService', () => {
     });
   });
 
+  describe('sets Authorization key to correct value upon', () => {
+    let expected: string;
+    beforeEach(() => {
+      auth.userhandler.onSuccess(fakeSession(true));
+    });
+    it('successful login', () => {
+      expected = fakeAccessToken;
+    });
+    it('unsuccessful login', () => {
+      auth.userhandler.onFailure();
+      expected = undefined;
+    });
+    it('logout', () => {
+      spyOn(auth, 'signOut');
+      service.logout();
+      expected = undefined;
+    });
+    afterEach(() => {
+      expect((service as any).config.apiKeys.Authorization).toBe(expected);
+    });
+  });
+
   describe('navigates to correct path upon successful authentication ' +
            'if localStorage.guardedUrl was', () => {
     let expectedPath: string;
@@ -149,21 +173,5 @@ describe('AuthService', () => {
     localStorage.removeItem('guardedUrl');
     service.guardedUrl = fakePath;
     expect(localStorage.getItem('guardedUrl')).toBe(fakePath);
-  });
-
-  describe('accessToken returns correct value after', () => {
-    let expected: string;
-    it('successful login', () => {
-      auth.userhandler.onSuccess(fakeSession(true));
-      expected = fakeAccessToken;
-    });
-    it('logout', () => {
-      spyOn(auth, 'signOut');
-      service.logout();
-      expected = undefined;
-    });
-    afterEach(() => {
-      expect(service.accessToken).toBe(expected);
-    });
   });
 });

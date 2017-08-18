@@ -42,5 +42,6 @@ export function authConfig() {
   return new AuthConfig(
     environment.auth.clientId,
     environment.auth.domain,
+    apiKeys,
   );
 }

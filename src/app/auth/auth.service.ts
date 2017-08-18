@@ -10,7 +10,7 @@ export class AuthService {
   private readonly auth: CognitoAuth;
   private session;
 
-  constructor(config: AuthConfig, private router: Router) {
+  constructor(private config: AuthConfig, private router: Router) {
     this.auth = new CognitoAuth({
       ClientId: config.clientId,
       AppWebDomain: config.domain,
@@ -35,6 +35,7 @@ export class AuthService {
 
   logout() {
     this.session = undefined;
+    this.token = undefined;
     this.auth.signOut();
   }
 
@@ -44,11 +45,13 @@ export class AuthService {
 
   private onSuccess(session) {
     this.session = session;
+    this.token = session.getAccessToken().getJwtToken();
     this.router.navigateByUrl(this.guardedUrl);
   }
 
   private onFailure() {
     this.session = undefined;
+    this.token = undefined;
   }
 
   set guardedUrl(url: string) {
@@ -59,7 +62,7 @@ export class AuthService {
     return localStorage.getItem('guardedUrl') || '/';
   }
 
-  get accessToken() {
-    return this.session && this.session.getAccessToken().getJwtToken();
+  private set token(key: string) {
+    this.config.apiKeys.Authorization = key;
   }
 }
