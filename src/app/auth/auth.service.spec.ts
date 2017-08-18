@@ -8,6 +8,7 @@ import { AuthConfig } from '../auth/auth.config';
 import { AuthService } from '../auth/auth.service';
 
 describe('AuthService', () => {
+  const fakeAccessToken = 'ey.12.ab';
   const fakeClientID = 'client-12345';
   const fakeDomain = 'login.example.org';
   const fakePath = '/fake/path';
@@ -17,8 +18,11 @@ describe('AuthService', () => {
   };
 
   const fakeSession = (isValid: boolean) => {
-    const spyOnSession = jasmine.createSpyObj('session', ['isValid']);
+    const spyOnSession = jasmine.createSpyObj('session', ['isValid', 'getAccessToken']);
     spyOnSession.isValid = () => isValid;
+    spyOnSession.getAccessToken = () => ({
+      getJwtToken: () => fakeAccessToken,
+    });
     return spyOnSession;
   };
 
@@ -145,5 +149,21 @@ describe('AuthService', () => {
     localStorage.removeItem('guardedUrl');
     service.guardedUrl = fakePath;
     expect(localStorage.getItem('guardedUrl')).toBe(fakePath);
+  });
+
+  describe('accessToken returns correct value after', () => {
+    let expected: string;
+    it('successful login', () => {
+      auth.userhandler.onSuccess(fakeSession(true));
+      expected = fakeAccessToken;
+    });
+    it('logout', () => {
+      spyOn(auth, 'signOut');
+      service.logout();
+      expected = undefined;
+    });
+    afterEach(() => {
+      expect(service.accessToken).toBe(expected);
+    });
   });
 });

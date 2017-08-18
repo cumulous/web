@@ -58,4 +58,8 @@ export class AuthService {
   get guardedUrl() {
     return localStorage.getItem('guardedUrl') || '/';
   }
+
+  get accessToken() {
+    return this.session && this.session.getAccessToken().getJwtToken();
+  }
 }
