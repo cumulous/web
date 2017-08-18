@@ -1,26 +1,51 @@
-import { ComponentFixture, fakeAsync, TestBed } from '@angular/core/testing';
+import { Component, Injectable, NgModule, NgModuleFactoryLoader } from '@angular/core';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { BrowserDynamicTestingModule } from '@angular/platform-browser-dynamic/testing';
+import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 
-import { Location } from '@angular/common';
-import { Router } from '@angular/router';
-
-import { selectElement, selectElements } from '../testing';
+import { debugElement, selectElements } from '../testing';
 
 import { AppModule } from './app.module';
 import { AppComponent } from './app.component';
+
+import { AuthGuardService } from './auth/auth-guard.service';
 
 import { environment } from '../environments/environment';
 
 import { APIS } from './api/api/api'; // :)
 import { Configuration as ApiConfig } from './api/configuration';
 
+@Component({
+  template: '',
+})
+class MockLoginComponent {}
+
+@Component({
+  template: '',
+})
+class MockComponent {}
+
+@NgModule({
+  declarations: [
+    MockComponent,
+  ],
+})
+class MockModule {}
+
+@Injectable()
+class MockAuthGuard {
+  canActivate() { return true; }
+  canActivateChild() { return true; }
+  canLoad() { return true; }
+};
+
 describe('AppComponent', () => {
+  const fakeAccessToken = 'ey.12.ab';
+
   let fixture: ComponentFixture<AppComponent>;
   let app: AppComponent;
   let router: Router;
-  let location: Location;
-
-  const fakeAccessToken = 'ey.12.ab';
 
   beforeEach(fakeAsync(() => {
     localStorage.setItem('accessToken', fakeAccessToken);
@@ -30,30 +55,75 @@ describe('AppComponent', () => {
         AppModule,
         RouterTestingModule,
       ],
+      declarations: [
+        MockLoginComponent,
+      ],
+      providers: [
+        { provide: AuthGuardService, useClass: MockAuthGuard },
+      ],
+    });
+
+    TestBed.overrideModule(BrowserDynamicTestingModule, {
+      set: {
+        entryComponents: [ MockLoginComponent ]
+      }
     });
 
     fixture = TestBed.createComponent(AppComponent);
     app = fixture.componentInstance;
 
+    const loader = TestBed.get(NgModuleFactoryLoader);
+    loader.stubbedModules = {
+      datasets: MockModule,
+      analyses: MockModule,
+    };
+
     router = TestBed.get(Router);
-    location = TestBed.get(Location);
+    router.resetConfig(router.config.map(route => {
+      if (route.loadChildren) {
+        route.loadChildren = route.path;
+      } else if (route.path === 'login') {
+        route.component = MockLoginComponent;
+      }
+      return route;
+    }));
 
     router.initialNavigation();
     fixture.detectChanges();
   }));
+
+  beforeEach(() => {
+    fixture.detectChanges();
+  });
 
   it('should create the app', () => {
     expect(app).toBeTruthy();
   });
 
   it('should navigate to /datasets by default', () => {
-    expect(location.path()).toEqual('/datasets');
+    expect(router.url).toEqual('/datasets');
   });
 
-  it('should display <nav> element', () => {
-    const nav = selectElement(fixture, 'nav');
-    expect(nav).toBeTruthy();
+  describe('should display <nav> element if the route is', () => {
+    let url: string;
+    it('/datasets', () => url = '/datasets');
+    it('/analyses', () => url = '/analyses');
+    afterEach(fakeAsync(() => {
+      router.navigateByUrl(url);
+      tick();
+      fixture.detectChanges();
+      const nav = debugElement(fixture, 'nav');
+      expect(nav).toBeTruthy();
+    }));
   });
+
+  it('should not display <nav> element if the route starts with /login', fakeAsync(() => {
+    router.navigateByUrl('/login#test');
+    tick();
+    fixture.detectChanges();
+    const nav = debugElement(fixture, 'nav');
+    expect(nav).toBeFalsy();
+  }));
 
   it('should display correct <a> elements for navigation', () => {
     const links = selectElements(fixture, 'nav a');

@@ -1,4 +1,7 @@
 import { Component } from '@angular/core';
+import { NavigationEnd, Router } from '@angular/router';
+
+import 'rxjs/add/operator/filter';
 
 @Component({
   selector: 'app-root',
@@ -6,11 +9,13 @@ import { Component } from '@angular/core';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  navLinks = [{
-    route: '/datasets',
-    label: 'Datasets',
-  }, {
-    route: '/analyses',
-    label: 'Analyses',
-  }];
+  private readonly links = ['datasets', 'analyses'];
+
+  private linkActive$ = this.router.events
+    .filter(event => event instanceof NavigationEnd)
+    .map((event: NavigationEnd) =>
+      this.links.includes(event.urlAfterRedirects.substr(1))
+    );
+
+  constructor(private readonly router: Router) {}
 }
