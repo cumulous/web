@@ -11,11 +11,6 @@ import { AppComponent } from './app.component';
 
 import { AuthGuardService } from './auth/auth-guard.service';
 
-import { environment } from '../environments/environment';
-
-import { APIS } from './api/api/api'; // :)
-import { Configuration as ApiConfig } from './api/configuration';
-
 @Component({
   template: '',
 })
@@ -41,15 +36,11 @@ class MockAuthGuard {
 };
 
 describe('AppComponent', () => {
-  const fakeAccessToken = 'ey.12.ab';
-
   let fixture: ComponentFixture<AppComponent>;
   let app: AppComponent;
   let router: Router;
 
   beforeEach(fakeAsync(() => {
-    localStorage.setItem('accessToken', fakeAccessToken);
-
     TestBed.configureTestingModule({
       imports: [
         AppModule,
@@ -129,17 +120,5 @@ describe('AppComponent', () => {
     const links = selectElements(fixture, 'nav a');
     expect(links.map(link => link.textContent.trim())).toEqual(['Datasets', 'Analyses']);
     expect(links.map(link => link.pathname)).toEqual(['/datasets', '/analyses']);
-  });
-
-  it('should initialize ApiModule services with correct parameters', () => {
-    APIS.forEach(service => {
-      expect(TestBed.get(service).configuration).toEqual(new ApiConfig({
-        basePath: environment.apiRoot,
-        apiKeys: {
-          Authorization: fakeAccessToken,
-        },
-        withCredentials: true,
-      }));
-    });
   });
 });

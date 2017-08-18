@@ -26,13 +26,15 @@ export class CoreModule {
   }
 }
 
+export const apiKeys = {
+  Authorization: undefined,
+};
+
 export function apiConfig() {
   return new ApiConfig({
     basePath: environment.apiRoot,
-    apiKeys: {
-      Authorization: localStorage.getItem('accessToken'),
-    },
     withCredentials: true,
+    apiKeys,
   });
 }
 
