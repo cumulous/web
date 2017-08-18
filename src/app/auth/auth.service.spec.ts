@@ -88,6 +88,12 @@ describe('AuthService', () => {
     });
   });
 
+  it('logout() calls auth.signOut() once', () => {
+    const spyOnSignOut = spyOn(auth, 'signOut');
+    service.logout();
+    expect(spyOnSignOut).toHaveBeenCalledTimes(1);
+  });
+
   describe('sets isAuthenticated status upon', () => {
     it('successful authentication', () => {
       auth.userhandler.onSuccess(fakeSession(true));

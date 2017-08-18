@@ -29,16 +29,12 @@ export class AuthService {
   }
 
   login() {
-    this.parseResponse();
-    this.getSession();
-  }
-
-  private parseResponse() {
     this.auth.parseCognitoWebResponse(this.router.url);
+    this.auth.getSession();
   }
 
-  private getSession() {
-    this.auth.getSession();
+  logout() {
+    this.auth.signOut();
   }
 
   isAuthenticated() {
