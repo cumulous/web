@@ -95,13 +95,28 @@ describe('AuthService', () => {
   });
 
   describe('sets isAuthenticated status upon', () => {
-    it('successful authentication', () => {
+    let expected: boolean;
+    beforeEach(() => {
       auth.userhandler.onSuccess(fakeSession(true));
-      expect(service.isAuthenticated()).toBeTruthy();
     });
-    it('unsuccessful authentication', () => {
+    it('successful login', () => {
+      expected = true;
+    });
+    it('unsuccessful login', () => {
       auth.userhandler.onFailure();
-      expect(service.isAuthenticated()).toBeFalsy();
+      expected = false;
+    });
+    it('login invalidation', () => {
+      auth.userhandler.onSuccess(fakeSession(false));
+      expected = false;
+    });
+    it('logout', () => {
+      spyOn(auth, 'signOut');
+      service.logout();
+      expected = false;
+    });
+    afterEach(() => {
+      expect(service.isAuthenticated()).toBe(expected);
     });
   });
 

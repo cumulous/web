@@ -34,11 +34,12 @@ export class AuthService {
   }
 
   logout() {
+    this.session = undefined;
     this.auth.signOut();
   }
 
   isAuthenticated() {
-    return this.session && this.session.isValid();
+    return !!this.session && this.session.isValid();
   }
 
   private onSuccess(session) {
@@ -47,7 +48,7 @@ export class AuthService {
   }
 
   private onFailure() {
-    this.session = null;
+    this.session = undefined;
   }
 
   set guardedUrl(url: string) {
