@@ -2,9 +2,13 @@ import { NgModule, ModuleWithProviders } from '@angular/core';
 
 import { AuthConfig } from './auth.config';
 import { AuthService } from './auth.service';
+import { AuthGuardService } from './auth-guard.service';
 
 @NgModule({
-  providers: [ AuthService ],
+  providers: [
+    AuthService,
+    AuthGuardService,
+  ],
 })
 export class AuthModule {
   public static forRoot(configFactory: () => AuthConfig): ModuleWithProviders {
