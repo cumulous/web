@@ -115,7 +115,6 @@ describe('AuthGuardService', () => {
   });
 
   describe('navigates to /login when auth.isAuthenticated() is "false" for', () => {
-    let expected: string;
     let route: any;
     let state: any;
 
