@@ -4,7 +4,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { DatasetListComponent } from './dataset-list.component';
 
 const routes: Routes = [
-  { path: 'datasets', component: DatasetListComponent },
+  { path: '', component: DatasetListComponent },
 ];
 
 @NgModule({
