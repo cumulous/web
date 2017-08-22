@@ -2,176 +2,135 @@ import { TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Router } from '@angular/router';
 
-import { CognitoAuth } from 'amazon-cognito-auth-js/dist/amazon-cognito-auth';
+import { AuthService } from './auth.service';
+import { AuthProviderService } from './auth-provider.service';
 
-import { AuthConfig } from '../auth/auth.config';
-import { AuthService } from '../auth/auth.service';
+import { Configuration as ApiConfig } from '../api/configuration';
 
 describe('AuthService', () => {
-  const fakeAccessToken = 'ey.12.ab';
-  const fakeClientID = 'client-12345';
-  const fakeDomain = 'login.example.org';
-  const fakePath = '/fake/path';
+  const fakeAccessToken = 'fake-access-token';
+  const fakeGuardedUrl = '/fake/guarded/url';
 
-  const fakeConfig = () => {
-    return new AuthConfig(fakeClientID, fakeDomain, {
-      Authorization: 'unused-key',
-    });
-  };
+  const fakeApiConfig = () => new ApiConfig({
+    basePath: 'fake-api',
+    withCredentials: true,
+    apiKeys: {
+      Authorization: undefined,
+    },
+  });
 
-  const fakeSession = (isValid: boolean) => {
-    const spyOnSession = jasmine.createSpyObj('session', ['isValid', 'getAccessToken']);
-    spyOnSession.isValid = () => isValid;
-    spyOnSession.getAccessToken = () => ({
-      getJwtToken: () => fakeAccessToken,
-    });
-    return spyOnSession;
-  };
-
+  let apiConfig: ApiConfig;
+  let auth: AuthProviderService;
   let service: AuthService;
-  let auth: CognitoAuth;
   let router: Router;
 
-  let spyOnNavigate: jasmine.Spy;
-
   beforeEach(() => {
+    auth = jasmine.createSpyObj('AuthProviderService',
+      ['signIn', 'signOut', 'getAccessToken', 'isValid']);
+    apiConfig = fakeApiConfig();
+
     TestBed.configureTestingModule({
       imports: [
         RouterTestingModule,
       ],
       providers: [
         AuthService,
-        { provide: AuthConfig, useValue: fakeConfig() },
+        { provide: AuthProviderService, useValue: auth },
+        { provide: ApiConfig, useValue: apiConfig },
       ],
     });
 
     service = TestBed.get(AuthService);
-    auth = (service as any).auth;
-
     router = TestBed.get(Router);
-    spyOnNavigate = spyOn(router, 'navigateByUrl');
-  });
-
-  it('constructs CognitoAuth object with correct parameters', () => {
-    expect(auth).toEqual(Object.assign(new CognitoAuth({
-      ClientId: fakeClientID,
-      AppWebDomain: fakeDomain,
-      TokenScopesArray: [],
-      RedirectUriSignIn: window.location.origin + '/login',
-      RedirectUriSignOut: window.location.origin + '/login',
-    }), {
-      userhandler: {
-        onSuccess: jasmine.any(Function),
-        onFailure: jasmine.any(Function),
-      },
-    }));
   });
 
   describe('login()', () => {
-    let spyOnCallOrder: jasmine.Spy;
-    let spyOnParseResponse: jasmine.Spy;
-    let spyOnGetSession: jasmine.Spy;
-
-    beforeEach(() => {
-      spyOnCallOrder = jasmine.createSpy('callOrder');
-      spyOnParseResponse = spyOn(auth, 'parseCognitoWebResponse')
-        .and.callFake(() => spyOnCallOrder('parseCognitoWebResponse'));
-      spyOnGetSession = spyOn(auth, 'getSession')
-        .and.callFake(() => spyOnCallOrder('getSession'));
-
+    it('calls auth.signIn() once with correct parameters', () => {
       service.login();
+      expect(auth.signIn).toHaveBeenCalledWith(
+        router.url,
+        jasmine.any(Function),
+        jasmine.any(Function),
+      );
+      expect(auth.signIn).toHaveBeenCalledTimes(1);
     });
-
-    it('calls auth.parseCognitoWebResponse() with correct parameters first', () => {
-      expect(spyOnParseResponse).toHaveBeenCalledWith(router.url);
-      expect(spyOnParseResponse).toHaveBeenCalledTimes(1);
-      expect(spyOnCallOrder.calls.first().args[0]).toBe('parseCognitoWebResponse');
+    describe('supplies an onSuccess() callback that', () => {
+      let spyOnNavigate: jasmine.Spy;
+      beforeEach(() => {
+        (auth.signIn as jasmine.Spy).and.callFake((url, onSuccess) => onSuccess());
+        spyOnNavigate = spyOn(router, 'navigateByUrl');
+      });
+      it('sets Authorization key to the value of access token', () => {
+        (auth.getAccessToken as jasmine.Spy).and.returnValue(fakeAccessToken);
+        apiConfig.apiKeys.Authorization = undefined;
+        service.login();
+        expect(apiConfig.apiKeys.Authorization).toBe(fakeAccessToken);
+      });
+      it('calls router.navigateByUrl() once with guardedUrl', () => {
+        service.guardedUrl = fakeGuardedUrl;
+        service.login();
+        expect(spyOnNavigate).toHaveBeenCalledWith(fakeGuardedUrl);
+        expect(spyOnNavigate).toHaveBeenCalledTimes(1);
+      });
     });
-
-    it('calls auth.getSession() last', () => {
-      expect(spyOnGetSession).toHaveBeenCalledTimes(1);
-      expect(spyOnCallOrder.calls.mostRecent().args[0]).toBe('getSession');
+    it('supplies an onFailure() callback that calls logout()', () => {
+      const spyOnLogout = spyOn(service, 'logout');
+      (auth.signIn as jasmine.Spy).and.callFake((url, onSuccess, onFailure) => onFailure());
+      service.login();
+      expect(spyOnLogout).toHaveBeenCalledTimes(1);
     });
   });
 
-  it('logout() calls auth.signOut() once', () => {
-    const spyOnSignOut = spyOn(auth, 'signOut');
-    service.logout();
-    expect(spyOnSignOut).toHaveBeenCalledTimes(1);
-  });
-
-  describe('sets isAuthenticated status upon', () => {
-    let expected: boolean;
-    beforeEach(() => {
-      auth.userhandler.onSuccess(fakeSession(true));
-    });
-    it('successful login', () => {
-      expected = true;
-    });
-    it('unsuccessful login', () => {
-      auth.userhandler.onFailure();
-      expected = false;
-    });
-    it('login invalidation', () => {
-      auth.userhandler.onSuccess(fakeSession(false));
-      expected = false;
-    });
-    it('logout', () => {
-      spyOn(auth, 'signOut');
+  describe('logout()', () => {
+    it('unsets Authorization key', () => {
+      apiConfig.apiKeys.Authorization = fakeAccessToken;
       service.logout();
-      expected = false;
+      expect(apiConfig.apiKeys.Authorization).toBeUndefined();
     });
-    afterEach(() => {
-      expect(service.isAuthenticated()).toBe(expected);
+    it('calls auth.signOut() once', () => {
+      service.logout();
+      expect(auth.signOut).toHaveBeenCalledTimes(1);
     });
   });
 
-  describe('sets Authorization key to correct value upon', () => {
+  describe('isAuthenticated()', () => {
+    it('calls auth.isValid() once', () => {
+      service.isAuthenticated();
+      expect(auth.isValid).toHaveBeenCalledTimes(1);
+    });
+    describe('returns', () => {
+      let expected: boolean;
+      it('"true" if auth.isValid() returns "true"', () => expected = true);
+      it('"false" if auth.isValid() returns "false"', () => expected = false);
+      afterEach(() => {
+        (auth.isValid as jasmine.Spy).and.returnValue(expected);
+        expect(service.isAuthenticated()).toBe(expected);
+      });
+    });
+  });
+
+  it('set guardedUrl sets sessionStorage.guardedUrl to correct path', () => {
+    sessionStorage.removeItem('guardedUrl');
+    service.guardedUrl = fakeGuardedUrl;
+    expect(sessionStorage.getItem('guardedUrl')).toBe(fakeGuardedUrl);
+  });
+
+  describe('gets correct guardedUrl if sessionStorage.guardedUrl', () => {
     let expected: string;
-    beforeEach(() => {
-      auth.userhandler.onSuccess(fakeSession(true));
+    it('does not exist', () => {
+      sessionStorage.removeItem('guardedUrl');
+      expected = '/';
     });
-    it('successful login', () => {
-      expected = fakeAccessToken;
+    it('is empty', () => {
+      sessionStorage.setItem('guardedUrl', '');
+      expected = '/';
     });
-    it('unsuccessful login', () => {
-      auth.userhandler.onFailure();
-      expected = undefined;
-    });
-    it('logout', () => {
-      spyOn(auth, 'signOut');
-      service.logout();
-      expected = undefined;
+    it('is non-empty', () => {
+      sessionStorage.setItem('guardedUrl', fakeGuardedUrl);
+      expected = fakeGuardedUrl;
     });
     afterEach(() => {
-      expect((service as any).config.apiKeys.Authorization).toBe(expected);
+      expect(service.guardedUrl).toBe(expected);
     });
-  });
-
-  describe('navigates to correct path upon successful authentication ' +
-           'if localStorage.guardedUrl was', () => {
-    let expectedPath: string;
-    afterEach(() => {
-      auth.userhandler.onSuccess(fakeSession(true));
-      expect(spyOnNavigate).toHaveBeenCalledWith(expectedPath);
-    });
-    it('non-empty', () => {
-      localStorage.setItem('guardedUrl', fakePath);
-      expectedPath = fakePath;
-    });
-    it('undefined', () => {
-      localStorage.removeItem('guardedUrl');
-      expectedPath = '/';
-    });
-    it('empty', () => {
-      localStorage.setItem('guardedUrl', '');
-      expectedPath = '/';
-    });
-  });
-
-  it('guardedUrl sets localStorage.guardedUrl to correct path', () => {
-    localStorage.removeItem('guardedUrl');
-    service.guardedUrl = fakePath;
-    expect(localStorage.getItem('guardedUrl')).toBe(fakePath);
   });
 });

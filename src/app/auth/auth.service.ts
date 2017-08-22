@@ -1,68 +1,53 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 
-import { CognitoAuth } from 'amazon-cognito-auth-js/dist/amazon-cognito-auth';
+import { AuthProviderService } from './auth-provider.service';
 
-import { AuthConfig } from './auth.config';
+import { Configuration as ApiConfig } from '../api/configuration';
 
 @Injectable()
 export class AuthService {
-  private readonly auth: CognitoAuth;
-  private session;
-
-  constructor(private config: AuthConfig, private router: Router) {
-    this.auth = new CognitoAuth({
-      ClientId: config.clientId,
-      AppWebDomain: config.domain,
-      TokenScopesArray: [],
-      RedirectUriSignIn: this.callbackUrl,
-      RedirectUriSignOut: this.callbackUrl,
-    });
-    this.auth.userhandler = {
-      onSuccess: session => this.onSuccess(session),
-      onFailure: () => this.onFailure(),
-    };
-  }
-
-  private get callbackUrl() {
-    return window.location.href.split('/').slice(0, 3).concat('login').join('/');
-  }
+  constructor(
+    private readonly auth: AuthProviderService,
+    private readonly apiConfig: ApiConfig,
+    private readonly router: Router,
+  ) {}
 
   login() {
-    this.auth.parseCognitoWebResponse(this.router.url);
-    this.auth.getSession();
+    this.auth.signIn(
+      this.router.url,
+      this.onSignInSuccess,
+      this.onSignInFailure,
+    );
   }
 
   logout() {
-    this.session = undefined;
-    this.token = undefined;
+    this.apiKey = undefined;
     this.auth.signOut();
   }
 
   isAuthenticated() {
-    return !!this.session && this.session.isValid();
-  }
-
-  private onSuccess(session) {
-    this.session = session;
-    this.token = session.getAccessToken().getJwtToken();
-    this.router.navigateByUrl(this.guardedUrl);
-  }
-
-  private onFailure() {
-    this.session = undefined;
-    this.token = undefined;
+    return this.auth.isValid();
   }
 
   set guardedUrl(url: string) {
-    localStorage.setItem('guardedUrl', url);
+    sessionStorage.setItem('guardedUrl', url);
   }
 
   get guardedUrl() {
-    return localStorage.getItem('guardedUrl') || '/';
+    return sessionStorage.getItem('guardedUrl') || '/';
   }
 
-  private set token(key: string) {
-    this.config.apiKeys.Authorization = key;
+  private readonly onSignInSuccess = () => {
+    this.apiKey = this.auth.getAccessToken();
+    this.router.navigateByUrl(this.guardedUrl);
+  }
+
+  private readonly onSignInFailure = (err: Error) => {
+    this.logout();
+  }
+
+  private set apiKey(token: string) {
+    this.apiConfig.apiKeys.Authorization = token;
   }
 }

@@ -1,8 +1,13 @@
 import { NgModule, ModuleWithProviders } from '@angular/core';
 
-import { AuthConfig } from './auth.config';
+import { AuthProviderService } from './auth-provider.service';
+import { AuthProviderConfig } from './auth-provider.config';
 import { AuthService } from './auth.service';
 import { AuthGuardService } from './auth-guard.service';
+
+import { CognitoAuthProviderService } from './cognito-auth-provider.service';
+
+import { Configuration as ApiConfig } from '../api/configuration';
 
 @NgModule({
   providers: [
@@ -11,10 +16,14 @@ import { AuthGuardService } from './auth-guard.service';
   ],
 })
 export class AuthModule {
-  public static forRoot(configFactory: () => AuthConfig): ModuleWithProviders {
+  static forRoot(authProviderConfig: AuthProviderConfig, apiConfigFactory: () => ApiConfig): ModuleWithProviders {
     return {
       ngModule: AuthModule,
-      providers: [ { provide: AuthConfig, useFactory: configFactory }]
+      providers: [
+        { provide: AuthProviderService, useClass: CognitoAuthProviderService },
+        { provide: AuthProviderConfig, useValue: authProviderConfig },
+        { provide: ApiConfig, useFactory: apiConfigFactory },
+      ],
     };
   }
 }

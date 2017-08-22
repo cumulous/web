@@ -3,15 +3,18 @@ import { RouterTestingModule } from '@angular/router/testing';
 
 import { apiKeys, CoreModule } from './core.module';
 
-import { APIS } from '../api/api/api'; // :)
+import { ApiModule } from '../api/api.module';
 import { Configuration as ApiConfig } from '../api/configuration';
 
+import { AuthModule } from '../auth/auth.module';
 import { AuthService } from '../auth/auth.service';
-import { AuthConfig } from '../auth/auth.config';
+import { AuthProviderConfig } from '../auth/auth-provider.config';
 
 import { environment } from '../../environments/environment';
 
 describe('CoreModule', () => {
+  let spyOnApiConfig: jasmine.Spy;
+
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [
@@ -29,25 +32,39 @@ describe('CoreModule', () => {
     }
   });
 
-  it('initializes ApiModule services with correct parameters', () => {
-    APIS.forEach(apiService => {
-      const config = TestBed.get(apiService).configuration;
-      expect(config).toEqual(new ApiConfig({
-        basePath: environment.apiRoot,
-        withCredentials: true,
-        apiKeys,
-      }));
-      expect(config.apiKeys).toBe(apiKeys);
+  const testApiConfig = () => {
+    const config = TestBed.get(ApiConfig);
+    expect(config).toEqual(new ApiConfig({
+      basePath: environment.apiRoot,
+      withCredentials: true,
+      apiKeys,
+    }));
+    expect(config.apiKeys).toBe(apiKeys);
+  };
+
+  it('correctly configures ApiModule', () => {
+    TestBed.overrideModule(CoreModule, {
+      remove: {
+        imports: [ AuthModule ],
+      },
     });
+    testApiConfig();
   });
 
-  it('initializes AuthModule with correct parameters', () => {
-    const config = TestBed.get(AuthService).config;
-    expect(config).toEqual(new AuthConfig(
-      environment.auth.clientId,
-      environment.auth.domain,
-      apiKeys,
-    ));
-    expect(config.apiKeys).toBe(apiKeys);
+  describe('correctly configures AuthModule with', () => {
+    beforeEach(() => {
+      TestBed.overrideModule(CoreModule, {
+        remove: {
+          imports: [ ApiModule ],
+        },
+      });
+    });
+    it('ApiConfig', () => {
+      testApiConfig();
+    });
+    it('AuthProviderConfig', () => {
+      const config = TestBed.get(AuthProviderConfig);
+      expect(config).toEqual(environment.auth);
+    });
   });
 });

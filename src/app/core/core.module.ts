@@ -4,7 +4,6 @@ import { ApiModule } from '../api/api.module';
 import { Configuration as ApiConfig } from '../api/configuration';
 
 import { AuthModule } from '../auth/auth.module';
-import { AuthConfig } from '../auth/auth.config';
 
 import { LoginModule } from '../login/login.module';
 
@@ -13,7 +12,7 @@ import { environment } from '../../environments/environment';
 @NgModule({
   imports: [
     ApiModule.forConfig(apiConfig),
-    AuthModule.forRoot(authConfig),
+    AuthModule.forRoot(environment.auth, apiConfig),
     LoginModule,
   ],
 })
@@ -36,12 +35,4 @@ export function apiConfig() {
     withCredentials: true,
     apiKeys,
   });
-}
-
-export function authConfig() {
-  return new AuthConfig(
-    environment.auth.clientId,
-    environment.auth.domain,
-    apiKeys,
-  );
 }
