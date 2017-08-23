@@ -121,4 +121,9 @@ describe('AppComponent', () => {
     expect(links.map(link => link.textContent.trim())).toEqual(['Datasets', 'Analyses']);
     expect(links.map(link => link.pathname)).toEqual(['/datasets', '/analyses']);
   });
+
+  it('should display SessionComponent as part of the navigation bar', () => {
+    const component = debugElement(fixture, 'nav session-control');
+    expect(component).toBeTruthy();
+  });
 });

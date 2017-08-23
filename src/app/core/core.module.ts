@@ -7,6 +7,7 @@ import { Configuration as ApiConfig } from '../api/configuration';
 import { AuthModule } from '../auth/auth.module';
 
 import { LoginModule } from '../login/login.module';
+import { SessionModule } from '../session/session.module';
 
 import { environment } from '../../environments/environment';
 
@@ -16,9 +17,11 @@ import { environment } from '../../environments/environment';
     AuthModule.forRoot(environment.auth, apiConfig),
     MdTabsModule,
     LoginModule,
+    SessionModule,
   ],
   exports: [
     MdTabsModule,
+    SessionModule,
   ],
 })
 export class CoreModule {
