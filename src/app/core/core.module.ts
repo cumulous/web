@@ -1,4 +1,5 @@
 import { NgModule, Optional, SkipSelf } from '@angular/core';
+import { MdTabsModule } from '@angular/material';
 
 import { ApiModule } from '../api/api.module';
 import { Configuration as ApiConfig } from '../api/configuration';
@@ -13,7 +14,11 @@ import { environment } from '../../environments/environment';
   imports: [
     ApiModule.forConfig(apiConfig),
     AuthModule.forRoot(environment.auth, apiConfig),
+    MdTabsModule,
     LoginModule,
+  ],
+  exports: [
+    MdTabsModule,
   ],
 })
 export class CoreModule {
