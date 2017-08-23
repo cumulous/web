@@ -3,14 +3,16 @@
 set -e
 
 WORKDIR="tmp"
-AUTH_CONFIG="${WORKDIR}/.auth.conf"
 API_CONFIG="${WORKDIR}/.api.conf"
+AUTH_CONFIG="${WORKDIR}/.auth.conf"
 SWAGGER_FILE="${WORKDIR}/swagger.json"
 SWAGGER_UI="node_modules/swagger-ui-dist/index.html"
 
 CODEGEN_VERSION="2.3"
 CODEGEN_JAR="bin/codegen-${CODEGEN_VERSION}.jar"
 CODEGEN_DEST="src/app/api"
+
+TOKEN_LIFETIME_DEFAULT=36000
 
 mkdir -p "${WORKDIR}"
 
@@ -20,6 +22,7 @@ if [ ! -f "${AUTH_CONFIG}" ] || [ ! -f "${API_CONFIG}" ]; then
   read -p "Web client ID: " WEB_CLIENT_ID
   read -p "Command-line client ID: " CLI_CLIENT_ID
   read -p "Command-line client secret: " -s CLI_CLIENT_SECRET
+  read -p "Token lifetime in sec [${TOKEN_LIFETIME_DEFAULT}]: " TOKEN_LIFETIME
 
   echo "
     request = POST
@@ -54,6 +57,7 @@ if [ ! -f "${AUTH_CONFIG}" ] || [ ! -f "${API_CONFIG}" ]; then
       auth: {
         clientId: '${WEB_CLIENT_ID}',
         domain: '${AUTH_DOMAIN}',
+        expiresIn: ${TOKEN_LIFETIME:-${TOKEN_LIFETIME_DEFAULT}},
       }
     };
   " | cut -c 5- \
