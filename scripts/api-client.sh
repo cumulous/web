@@ -38,7 +38,18 @@ if [ ! -f "${AUTH_CONFIG}" ] || [ ! -f "${API_CONFIG}" ]; then
 
   echo "
     export const environment = {
+  " | cut -c 5- \
+    | tee "src/environments/environment.ts" > "src/environments/environment.prod.ts"
+
+  echo "
+      production: false,
+  " | cut -c 5- > "src/environments/environment.ts"
+
+  echo "
       production: true,
+  " | cut -c 5- > "src/environments/environment.prod.ts"
+
+  echo "
       apiRoot: 'https://${API_DOMAIN}',
       auth: {
         clientId: '${WEB_CLIENT_ID}',
@@ -46,8 +57,7 @@ if [ ! -f "${AUTH_CONFIG}" ] || [ ! -f "${API_CONFIG}" ]; then
       }
     };
   " | cut -c 5- \
-    | tee "src/environments/environment.ts" > \
-          "src/environments/environment.prod.ts"
+    | tee "src/environments/environment.ts" > "src/environments/environment.prod.ts"
 fi
 
 echo
