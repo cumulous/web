@@ -15,8 +15,8 @@ export abstract class ListBaseComponent<Item> implements OnInit {
 
   @ViewChild('dateTemplate') protected readonly dateTemplate: TemplateRef<any>;
 
-  readonly headerHeight: number = 50;
-  readonly rowHeight: number = 50;
+  readonly headerHeight: number = 42;
+  readonly rowHeight: number = 45;
   readonly pageLimit: number = 10;
 
   readonly columns: ListColumn[] = [];
