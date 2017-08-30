@@ -11,8 +11,8 @@ phases:
       - chmod -R +x scripts/
   pre_build:
     commands:
-      - npm run lint
       - npm run api:ci
+      - npm run lint
       - npm run test:once
       - npm run e2e
   build:
