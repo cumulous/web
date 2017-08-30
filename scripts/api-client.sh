@@ -18,18 +18,18 @@ mkdir -p "${WORKDIR}"
 
 if [ ! -f "${AUTH_CONFIG}" ] || [ ! -f "${API_CONFIG}" ]; then
   read -p "API domain: " API_DOMAIN
-  read -p "Auth domain: " AUTH_DOMAIN
+  read -p "Token domain: " TOKEN_DOMAIN
+  read -p "Token lifetime in sec [${TOKEN_LIFETIME_DEFAULT}]: " TOKEN_LIFETIME
   read -p "Web client ID: " WEB_CLIENT_ID
   read -p "Command-line client ID: " CLI_CLIENT_ID
   read -p "Command-line client secret: " -s CLI_CLIENT_SECRET
-  read -p "Token lifetime in sec [${TOKEN_LIFETIME_DEFAULT}]: " TOKEN_LIFETIME
 
   echo "
     request = POST
-    url = \"https://${AUTH_DOMAIN}/oauth2/token\"
+    url = \"https://${TOKEN_DOMAIN}/oauth2/token\"
     header = \"Content-Type: application/x-www-form-urlencoded\"
     header = \"Authorization: Basic $(printf ${CLI_CLIENT_ID}:${CLI_CLIENT_SECRET} | base64 -w0)\"
-    data = "grant_type=client_credentials"
+    data = \"grant_type=client_credentials\"
     silent = true
   " > "${AUTH_CONFIG}"
 
@@ -46,22 +46,22 @@ if [ ! -f "${AUTH_CONFIG}" ] || [ ! -f "${API_CONFIG}" ]; then
 
   echo "
       production: false,
-  " | cut -c 5- > "src/environments/environment.ts"
+  " | cut -c 5- >> "src/environments/environment.ts"
 
   echo "
       production: true,
-  " | cut -c 5- > "src/environments/environment.prod.ts"
+  " | cut -c 5- >> "src/environments/environment.prod.ts"
 
   echo "
       apiRoot: 'https://${API_DOMAIN}',
       auth: {
         clientId: '${WEB_CLIENT_ID}',
-        domain: '${AUTH_DOMAIN}',
+        domain: '${TOKEN_DOMAIN}',
         expiresIn: ${TOKEN_LIFETIME:-${TOKEN_LIFETIME_DEFAULT}},
       }
     };
   " | cut -c 5- \
-    | tee "src/environments/environment.ts" > "src/environments/environment.prod.ts"
+    | tee -a "src/environments/environment.ts" >> "src/environments/environment.prod.ts"
 fi
 
 echo
