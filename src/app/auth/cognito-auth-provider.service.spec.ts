@@ -111,7 +111,7 @@ describe('CognitoAuthProviderService', () => {
     let session: CognitoAuthSession;
     let token: CognitoAccessToken;
 
-    beforeEach(() =>{
+    beforeEach(() => {
       session = jasmine.createSpyObj('CognitoAuthSession', ['getAccessToken']);
       token = jasmine.createSpyObj('CognitoAccessToken', ['getJwtToken']);
       session.getAccessToken.and.returnValue(token);
@@ -155,7 +155,7 @@ describe('CognitoAuthProviderService', () => {
 
     let spyOnGetAccessToken: jasmine.Spy;
 
-    beforeEach(() =>{
+    beforeEach(() => {
       spyOnGetAccessToken = spyOn(service, 'getAccessToken')
         .and.callFake(() => fakeJwt(iat));
     });

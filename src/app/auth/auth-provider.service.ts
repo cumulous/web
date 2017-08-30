@@ -13,6 +13,6 @@ export abstract class AuthProviderService {
   abstract isValid(): boolean;
 
   protected getCallbackUrl() {
-    return "https://" + window.location.hostname + '/login';
+    return 'https://' + window.location.hostname + '/login';
   }
 }

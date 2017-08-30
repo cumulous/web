@@ -3,7 +3,7 @@ import { Component } from '@angular/core';
 import { AuthService } from '../auth/auth.service';
 
 @Component({
-  selector: 'session-control',
+  selector: 'app-session-control',
   templateUrl: './session.component.html'
 })
 export class SessionComponent {

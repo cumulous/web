@@ -11,20 +11,7 @@ export { $, $$ } from 'protractor';
 
 const authConfig = parse(readFileSync('tmp/.auth.conf', 'utf-8'));
 
-hooks(({Before}) => {
-  Before(() => {
-    chai.use(chaiAsPromised).should();
-    return authorize();
-  });
-});
-
 let token: string;
-
-const authorize = () =>
-  token ? login(token) : fetchToken().then(login);
-
-const login = token =>
-  browser.get(`/login#access_token=${token}`);
 
 const fetchToken = () => {
   return post(authConfig.url, {
@@ -37,6 +24,19 @@ const fetchToken = () => {
     json: true,
   }).then(data => token = data.access_token);
 };
+
+const login = accessToken =>
+  browser.get(`/login#access_token=${accessToken}`);
+
+const authorize = () =>
+  token ? login(token) : fetchToken().then(login);
+
+hooks(({Before}) => {
+  Before(() => {
+    chai.use(chaiAsPromised).should();
+    return authorize();
+  });
+});
 
 export const navigateTo = location =>
   browser.get(location);

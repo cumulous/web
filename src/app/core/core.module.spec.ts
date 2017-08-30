@@ -13,8 +13,6 @@ import { AuthProviderConfig } from '../auth/auth-provider.config';
 import { environment } from '../../environments/environment';
 
 describe('CoreModule', () => {
-  let spyOnApiConfig: jasmine.Spy;
-
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [

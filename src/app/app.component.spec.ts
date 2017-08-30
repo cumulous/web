@@ -123,7 +123,7 @@ describe('AppComponent', () => {
   });
 
   it('should display SessionComponent as part of the navigation bar', () => {
-    const component = debugElement(fixture, 'nav session-control');
+    const component = debugElement(fixture, 'nav app-session-control');
     expect(component).toBeTruthy();
   });
 });
