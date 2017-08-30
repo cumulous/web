@@ -39,29 +39,23 @@ if [ ! -f "${AUTH_CONFIG}" ] || [ ! -f "${API_CONFIG}" ]; then
     silent = true
   " > "${API_CONFIG}"
 
-  echo "
-    export const environment = {
-  " | cut -c 5- \
-    | tee "src/environments/environment.ts" > "src/environments/environment.prod.ts"
-
-  echo "
-      production: false,
-  " | cut -c 5- >> "src/environments/environment.ts"
-
-  echo "
-      production: true,
-  " | cut -c 5- >> "src/environments/environment.prod.ts"
-
-  echo "
-      apiRoot: 'https://${API_DOMAIN}',
-      auth: {
-        clientId: '${WEB_CLIENT_ID}',
-        domain: '${TOKEN_DOMAIN}',
-        expiresIn: ${TOKEN_LIFETIME:-${TOKEN_LIFETIME_DEFAULT}},
+  configure_environment() {
+    local production="$1"
+    local suffix="$2"
+    echo "
+      export const environment = {
+        production: ${production},
+        apiRoot: 'https://${API_DOMAIN}',
+        auth: {
+          clientId: '${WEB_CLIENT_ID}',
+          domain: '${TOKEN_DOMAIN}',
+          expiresIn: ${TOKEN_LIFETIME:-${TOKEN_LIFETIME_DEFAULT}},
+        }
       }
-    };
-  " | cut -c 5- \
-    | tee -a "src/environments/environment.ts" >> "src/environments/environment.prod.ts"
+    " | cut -c 5- > "src/environments/environment${suffix}.ts"
+  }
+  configure_environment false
+  configure_environment true .prod
 fi
 
 echo
