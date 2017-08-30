@@ -42,6 +42,8 @@ if [ ! -f "${AUTH_CONFIG}" ] || [ ! -f "${API_CONFIG}" ]; then
   configure_environment() {
     local production="$1"
     local suffix="$2"
+
+    mkdir -p "src/environments"
     echo "
       export const environment = {
         production: ${production},
