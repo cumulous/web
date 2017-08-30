@@ -20,5 +20,5 @@ phases:
       - npm run build:prod
   post_build:
     commands:
-      - aws s3 sync dist/ s3://${WEB_BUCKET}/app/ --exclude index.html
-      - aws s3 cp dist/index.html s3://${WEB_BUCKET}/app/
+      - aws s3 sync dist/ s3://${WEB_BUCKET}/ --exclude index.html
+      - aws s3 cp dist/index.html s3://${WEB_BUCKET}/
