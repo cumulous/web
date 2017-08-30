@@ -2,7 +2,7 @@ import { $, $$, link, location, locationOf, navigateTo, steps, Table } from '../
 
 steps(({Given, When, Then}) => {
   Given(/^I am on the "(.*)" page$/, page =>
-    navigateTo((locationOf(page))));
+    navigateTo(locationOf(page)));
 
   When(/^I open our app$/, () =>
     navigateTo('/'));
