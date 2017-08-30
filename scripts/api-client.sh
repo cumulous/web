@@ -51,8 +51,8 @@ if [ ! -f "${AUTH_CONFIG}" ] || [ ! -f "${API_CONFIG}" ]; then
           domain: '${TOKEN_DOMAIN}',
           expiresIn: ${TOKEN_LIFETIME:-${TOKEN_LIFETIME_DEFAULT}},
         }
-      }
-    " | cut -c 5- > "src/environments/environment${suffix}.ts"
+      };
+    " | cut -c 7- > "src/environments/environment${suffix}.ts"
   }
   configure_environment false
   configure_environment true .prod
