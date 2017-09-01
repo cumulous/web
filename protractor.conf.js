@@ -22,7 +22,6 @@ exports.config = {
   frameworkPath: protractorPath,
   cucumberOpts: {
     require: 'e2e/**/*.ts',
-    format: 'pretty',
   },
   beforeLaunch: function() {
     require('ts-node').register({
