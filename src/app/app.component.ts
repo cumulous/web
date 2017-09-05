@@ -13,10 +13,10 @@ export class AppComponent {
   private readonly links = [{
     path: 'datasets',
     label: 'Datasets',
-  },{
+  }, {
     path: 'analyses',
     label: 'Analyses',
-  },{
+  }, {
     path: 'api',
     label: 'API',
   }];
