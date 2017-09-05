@@ -41,13 +41,14 @@ if [ ! -f "${AUTH_CONFIG}" ] || [ ! -f "${API_CONFIG}" ]; then
 
   configure_environment() {
     local production="$1"
-    local suffix="$2"
+    local api_root="$2"
+    local suffix="$3"
 
     mkdir -p "src/environments"
     echo "
       export const environment = {
         production: ${production},
-        apiRoot: 'https://${API_DOMAIN}',
+        apiRoot: '${api_root}',
         auth: {
           clientId: '${WEB_CLIENT_ID}',
           domain: '${TOKEN_DOMAIN}',
@@ -56,8 +57,8 @@ if [ ! -f "${AUTH_CONFIG}" ] || [ ! -f "${API_CONFIG}" ]; then
       };
     " | cut -c 7- > "src/environments/environment${suffix}.ts"
   }
-  configure_environment false
-  configure_environment true .prod
+  configure_environment false "/api-proxy"
+  configure_environment true "https://${API_DOMAIN}" .prod
 fi
 
 echo

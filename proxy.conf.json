@@ -1,0 +1,8 @@
+{
+  "/api-proxy": {
+    "target": "https://api.beta.nanowell.org",
+    "secure": true,
+    "changeOrigin": true,
+    "pathRewrite": { "^/api-proxy": "" }
+  }
+}
