@@ -34,7 +34,6 @@ describe('CoreModule', () => {
     const config = TestBed.get(ApiConfig);
     expect(config).toEqual(new ApiConfig({
       basePath: environment.apiRoot,
-      withCredentials: true,
       apiKeys,
     }));
     expect(config.apiKeys).toBe(apiKeys);

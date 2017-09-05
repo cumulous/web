@@ -40,7 +40,6 @@ export const apiKeys = {
 export function apiConfig() {
   return new ApiConfig({
     basePath: environment.apiRoot,
-    withCredentials: true,
     apiKeys,
   });
 }
