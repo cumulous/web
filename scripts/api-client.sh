@@ -6,7 +6,6 @@ WORKDIR="tmp"
 API_CONFIG="${WORKDIR}/.api.conf"
 AUTH_CONFIG="${WORKDIR}/.auth.conf"
 SWAGGER_FILE="${WORKDIR}/swagger.json"
-SWAGGER_UI="node_modules/swagger-ui-dist/index.html"
 
 CODEGEN_VERSION="2.3"
 CODEGEN_JAR="bin/codegen-${CODEGEN_VERSION}.jar"
@@ -78,8 +77,3 @@ java -jar "${CODEGEN_JAR}" generate \
 
 sed -i "s|InjectionToken<string> } from|InjectionToken } from|" \
   src/app/api/variables.ts
-
-echo Updating Swagger UI...
-
-sed -i "s|url: .*petstore.*,|url: './../../${SWAGGER_FILE}',\n\
-    validatorUrl: null,|" "${SWAGGER_UI}"

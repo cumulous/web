@@ -1,6 +1,7 @@
 @import '../node_modules/@swimlane/ngx-datatable/release/index.css';
 @import '../node_modules/@swimlane/ngx-datatable/release/themes/material.css';
 @import '../node_modules/@swimlane/ngx-datatable/release/assets/icons.css';
+@import '../node_modules/swagger-ui-dist/swagger-ui.css';
 
 body {
   font-family: 'RobotoDraft', 'Roboto', 'Helvetica Neue, Helvetica, Arial', sans-serif;

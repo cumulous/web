@@ -67,6 +67,7 @@ describe('AppComponent', () => {
     loader.stubbedModules = {
       datasets: MockModule,
       analyses: MockModule,
+      api: MockModule,
     };
 
     router = TestBed.get(Router);
@@ -99,6 +100,7 @@ describe('AppComponent', () => {
     let url: string;
     it('/datasets', () => url = '/datasets');
     it('/analyses', () => url = '/analyses');
+    it('/api', () => url = '/api');
     afterEach(fakeAsync(() => {
       router.navigateByUrl(url);
       tick();
@@ -118,8 +120,12 @@ describe('AppComponent', () => {
 
   it('should display correct <a> elements for navigation', () => {
     const links = selectElements(fixture, 'nav a');
-    expect(links.map(link => link.textContent.trim())).toEqual(['Datasets', 'Analyses']);
-    expect(links.map(link => link.pathname)).toEqual(['/datasets', '/analyses']);
+    expect(links.map(link => link.textContent.trim())).toEqual([
+      'Datasets', 'Analyses', 'API',
+    ]);
+    expect(links.map(link => link.pathname)).toEqual([
+      '/datasets', '/analyses', '/api',
+    ]);
   });
 
   it('should display SessionComponent as part of the navigation bar', () => {

@@ -21,6 +21,13 @@ const routes: Routes = [
     loadChildren: 'app/analyses/analyses.module#AnalysesModule',
   },
   {
+    path: 'api',
+    canActivate: [AuthGuard],
+    canActivateChild: [AuthGuard],
+    canLoad: [AuthGuard],
+    loadChildren: 'app/swagger/swagger.module#SwaggerModule',
+  },
+  {
     path: 'login',
     component: LoginComponent,
   },

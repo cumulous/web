@@ -1,9 +1,9 @@
 <nav *ngIf="linkActive$ | async" md-tab-nav-bar>
   <a md-tab-link *ngFor="let link of links"
-    [routerLink]="'/' + link"
+    [routerLink]="'/' + link.path"
     routerLinkActive #rla="routerLinkActive"
     [active]="rla.isActive">
-    {{link | titlecase}}
+    {{link.label}}
   </a>
   <app-session-control></app-session-control>
 </nav>

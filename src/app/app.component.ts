@@ -9,13 +9,24 @@ import 'rxjs/add/operator/filter';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  private readonly links = ['datasets', 'analyses'];
+
+  private readonly links = [{
+    path: 'datasets',
+    label: 'Datasets',
+  },{
+    path: 'analyses',
+    label: 'Analyses',
+  },{
+    path: 'api',
+    label: 'API',
+  }];
 
   readonly linkActive$ = this.router.events
     .filter(event => event instanceof NavigationEnd)
-    .map((event: NavigationEnd) =>
-      this.links.includes(event.urlAfterRedirects.substr(1))
-    );
+    .map((event: NavigationEnd) => {
+      return this.links.map(link => link.path)
+        .includes(event.urlAfterRedirects.substr(1));
+    });
 
   constructor(private readonly router: Router) {}
 }
