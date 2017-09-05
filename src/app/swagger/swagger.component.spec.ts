@@ -68,18 +68,24 @@ describe('SwaggerComponent', () => {
   });
 
   describe('ngAfterViewInit() sets spec.host and spec.basePath to correct values', () => {
-    it('if ApiService.configuration.basePath starts with https://', () => {
+    it('if ApiService.configuration.basePath contains both host and basePath', () => {
       expect(apiSpec.host).toBe(fakeApiHost);
+      expect(apiSpec.basePath).toBe(fakeApiPath);
     });
-    it('if ApiService.configuration.basePath starts with /', fakeAsync(() => {
+    it('if ApiService.configuration.basePath contains only host', fakeAsync(() => {
+      apiService.configuration.basePath = 'https://' + fakeApiHost;
+      component.ngAfterViewInit();
+      tick();
+      expect(apiSpec.host).toBe(fakeApiHost);
+      expect(apiSpec.basePath).toBeUndefined();
+    }));
+    it('if ApiService.configuration.basePath contains only basePath', fakeAsync(() => {
       apiService.configuration.basePath = fakeApiPath;
       component.ngAfterViewInit();
       tick();
       expect(apiSpec.host).toBeUndefined();
-    }));
-    afterEach(() => {
       expect(apiSpec.basePath).toBe(fakeApiPath);
-    });
+    }));
   });
 
   it('ngAfterViewInit() constructs SwaggerUIBundle once with correct parameters', () => {

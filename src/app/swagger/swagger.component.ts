@@ -28,7 +28,7 @@ export class SwaggerComponent implements AfterViewInit {
 
   private setApiPath(spec) {
     const apiPath = this.apiService.configuration.basePath;
-    const paths = apiPath.match(/^(https:\/\/([^\/]+))?(\/.*)/);
+    const paths = apiPath.match(/^(https:\/\/([^\/]+))?(\/.*)?/);
     spec['host'] = paths[2];
     spec['basePath'] = paths[3];
   }
