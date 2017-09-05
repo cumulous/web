@@ -9,6 +9,7 @@
   [scrollbarV]="true"
   [loadingIndicator]="isLoading"
   (scroll)="onScroll($event.offsetY)"
+  [class.progress-bottom]="progressBottom"
 ></ngx-datatable>
 
 <ng-template #dateTemplate let-value="value">

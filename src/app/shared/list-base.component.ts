@@ -22,6 +22,7 @@ export abstract class ListBaseComponent<Item> implements OnInit {
   readonly columns: ListColumn[] = [];
   readonly rows: Item[] = [];
   isLoading: boolean;
+  progressBottom = false;
 
   constructor(private el: ElementRef) {}
 
@@ -48,6 +49,7 @@ export abstract class ListBaseComponent<Item> implements OnInit {
     this.list(this.rows.length, limit).subscribe(data => {
       this.rows.push(...data.items);
       this.isLoading = false;
+      this.progressBottom = true;
     });
   }
 

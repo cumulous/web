@@ -185,4 +185,16 @@ describe('ListBaseComponent', () => {
     fixture.detectChanges();
     expect(component.isLoading).toBe(false);
   });
+
+  it('applies "progress-bottom" style to the list after the initial loading', () => {
+    const page = debugElement(fixture, '.list').nativeElement;
+    spyOn(ItemListComponent, 'fakeItems').and.callFake(() => {
+      expect(component.progressBottom).toBe(false);
+      expect(page.classList).not.toContain('progress-bottom');
+      return Observable.of({ items: [] });
+    });
+    fixture.detectChanges();
+    expect(component.progressBottom).toBe(true);
+    expect(page.classList).toContain('progress-bottom');
+  });
 });
