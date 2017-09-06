@@ -11,6 +11,9 @@ import 'rxjs/add/operator/filter';
 export class AppComponent {
 
   private readonly links = [{
+    path: 'projects',
+    label: 'Projects',
+  }, {
     path: 'datasets',
     label: 'Datasets',
   }, {

@@ -65,6 +65,7 @@ describe('AppComponent', () => {
 
     const loader = TestBed.get(NgModuleFactoryLoader);
     loader.stubbedModules = {
+      projects: MockModule,
       datasets: MockModule,
       analyses: MockModule,
       api: MockModule,
@@ -98,6 +99,7 @@ describe('AppComponent', () => {
 
   describe('should display <nav> element if the route is', () => {
     let url: string;
+    it('/projects', () => url = '/projects');
     it('/datasets', () => url = '/datasets');
     it('/analyses', () => url = '/analyses');
     it('/api', () => url = '/api');
@@ -121,10 +123,10 @@ describe('AppComponent', () => {
   it('should display correct <a> elements for navigation', () => {
     const links = selectElements(fixture, 'nav a');
     expect(links.map(link => link.textContent.trim())).toEqual([
-      'Datasets', 'Analyses', 'API',
+      'Projects', 'Datasets', 'Analyses', 'API',
     ]);
     expect(links.map(link => link.pathname)).toEqual([
-      '/datasets', '/analyses', '/api',
+      '/projects', '/datasets', '/analyses', '/api',
     ]);
   });
 

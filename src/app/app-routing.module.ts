@@ -7,6 +7,13 @@ import { LoginComponent } from './login/login.component';
 
 const routes: Routes = [
   {
+    path: 'projects',
+    canActivate: [AuthGuard],
+    canActivateChild: [AuthGuard],
+    canLoad: [AuthGuard],
+    loadChildren: 'app/projects/projects.module#ProjectsModule',
+  },
+  {
     path: 'datasets',
     canActivate: [AuthGuard],
     canActivateChild: [AuthGuard],
