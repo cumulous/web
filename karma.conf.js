@@ -18,9 +18,10 @@ module.exports = function (config) {
     files: [
       { pattern: './src/test.ts', watched: false },
       { pattern: './src/**/*.css' },
-      { pattern: './src/theme.scss', included: true, watched: true },
+      { pattern: './src/theme.scss', watched: true, included: true },
       { pattern: './node_modules/@swimlane/ngx-datatable/release/**/+(index|material|icons).css',
         watched: false, included: false },
+      { pattern: './node_modules/swagger-ui-dist/swagger-ui.css', watched: false, included: false },
     ],
     preprocessors: {
       './src/test.ts': ['@angular/cli'],
