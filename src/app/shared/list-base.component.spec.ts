@@ -9,6 +9,54 @@ import { debugElement, elementsText, fakeUUIDs } from '../../testing';
 import { SharedModule } from './shared.module';
 import { ListBaseComponent, ListColumn } from './list-base.component';
 
+interface Item {
+  id: string;
+  created_at: string;
+  description: string;
+}
+
+const item_ids = fakeUUIDs(100);
+const now = new Date().getTime();
+
+const fakeItem = (i: number): Item => ({
+  id: item_ids[i],
+  created_at: new Date(now - i * 1E9).toISOString(),
+  description: 'Item ' + i,
+});
+
+const fakeItems = (offset: number, limit: number) =>
+  Array.from({length: limit}, (d, i) => fakeItem(offset + i));
+
+@Component({
+  templateUrl: './list-base.component.html',
+})
+class ItemListComponent extends ListBaseComponent<Item> implements OnInit {
+
+  pageLimit: number;
+
+  static fakeItems(offset: number, limit: number) {
+    return Observable.of({
+      items: fakeItems(offset, limit),
+    });
+  }
+
+  constructor(element: ElementRef) {
+    super(element);
+  }
+
+  ngOnInit() {
+    this.columns.push(
+      new ListColumn('created_at', 'Date Created', this.dateTemplate),
+      new ListColumn('description'),
+    );
+    super.ngOnInit();
+  }
+
+  protected list(offset: number, limit: number) {
+    return ItemListComponent.fakeItems(offset, limit);
+  }
+}
+
 export function pageSize(fixture: ComponentFixture<ListBaseComponent<any>>) {
   const page = debugElement(fixture, '.list').nativeElement;
   const component = fixture.componentInstance;
@@ -16,56 +64,7 @@ export function pageSize(fixture: ComponentFixture<ListBaseComponent<any>>) {
 }
 
 describe('ListBaseComponent', () => {
-
-  interface Item {
-    id: string;
-    created_at: string;
-    description: string;
-  }
-
   const itemPageSurplus = 2;
-
-  const item_ids = fakeUUIDs(100);
-  const now = new Date().getTime();
-
-  const fakeItem = (i: number): Item => ({
-    id: item_ids[i],
-    created_at: new Date(now - i * 1E9).toISOString(),
-    description: 'Item ' + i,
-  });
-
-  const fakeItems = (offset: number, limit: number) =>
-    Array.from({length: limit}, (d, i) => fakeItem(offset + i));
-
-  @Component({
-    templateUrl: './list-base.component.html',
-  })
-  class ItemListComponent extends ListBaseComponent<Item> implements OnInit {
-
-    pageLimit: number;
-
-    static fakeItems(offset: number, limit: number) {
-      return Observable.of({
-        items: fakeItems(offset, limit),
-      });
-    }
-
-    constructor(element: ElementRef) {
-      super(element);
-    }
-
-    ngOnInit() {
-      this.columns.push(
-        new ListColumn('created_at', 'Date Created', this.dateTemplate),
-        new ListColumn('description'),
-      );
-      super.ngOnInit();
-    }
-
-    protected list(offset: number, limit: number) {
-      return ItemListComponent.fakeItems(offset, limit);
-    }
-  }
 
   let fixture: ComponentFixture<ItemListComponent>;
   let component: ItemListComponent;
