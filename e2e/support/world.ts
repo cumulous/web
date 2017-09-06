@@ -1,7 +1,7 @@
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import { defineSupportCode as hooks } from 'cucumber';
-import { readFileSync } from 'fs';
+import { createWriteStream, readFileSync } from 'fs';
 import { parse } from 'ini';
 import { $, browser, by, element } from 'protractor';
 import { post } from 'request-promise-native';
@@ -60,3 +60,17 @@ export const elementsWithText = (selector: string, text: string) =>
 
 export const waitFor = condition =>
   browser.wait(condition);
+
+
+const screenshotPrefix = 'tmp/screenshot';
+
+const writeScreenShot = (data: string, index: number) => {
+  const stream = createWriteStream(screenshotPrefix + '.' + index + '.png');
+  stream.write(new Buffer(data, 'base64'));
+  stream.end();
+};
+
+export const takeScreenshot = (index: number, scrollTo = 0) =>
+  browser.executeScript('window.scrollTo(0, arguments[0]);', scrollTo)
+    .then(() => browser.takeScreenshot())
+    .then(data => writeScreenShot(data, index));
