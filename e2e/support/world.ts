@@ -3,7 +3,7 @@ import * as chaiAsPromised from 'chai-as-promised';
 import { defineSupportCode as hooks } from 'cucumber';
 import { readFileSync } from 'fs';
 import { parse } from 'ini';
-import { $, element, browser, by } from 'protractor';
+import { $, browser, by, element } from 'protractor';
 import { post } from 'request-promise-native';
 
 export { defineSupportCode as steps, TableDefinition as Table } from 'cucumber';
@@ -54,3 +54,9 @@ export const location = () =>
 
 export const link = (text: string) =>
   element(by.linkText(text));
+
+export const elementsWithText = (selector: string, text: string) =>
+  element.all(by.cssContainingText(selector, text));
+
+export const waitFor = condition =>
+  browser.wait(condition);
