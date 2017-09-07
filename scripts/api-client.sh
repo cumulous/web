@@ -58,6 +58,17 @@ if [ ! -f "${AUTH_CONFIG}" ] || [ ! -f "${API_CONFIG}" ]; then
   }
   configure_environment false "/api-proxy"
   configure_environment true "https://${API_DOMAIN}" .prod
+
+  echo "
+    {
+      \"/api-proxy\": {
+        \"target\": \"https://${API_DOMAIN}\",
+        \"secure\": true,
+        \"changeOrigin\": true,
+        \"pathRewrite\": { \"^/api-proxy\": \"\" }
+      }
+    }
+  " | cut -c 5- > "tmp/proxy.conf.json"
 fi
 
 echo
