@@ -17,7 +17,7 @@ export class DatasetListComponent extends ListBaseComponent<Dataset> implements 
 
   ngOnInit() {
     this.columns.push(
-      new ListColumn('created_at', 'Date Created', this.dateTemplate),
+      new ListColumn('created_at', 'Date Created', this.dateTemplate, 'item-date'),
       new ListColumn('description'),
       new ListColumn('status'),
     );

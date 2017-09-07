@@ -19,7 +19,7 @@ export class ProjectListComponent extends ListBaseComponent<Project> implements 
     this.columns.push(
       new ListColumn('name'),
       new ListColumn('description'),
-      new ListColumn('created_at', 'Date Created', this.dateTemplate),
+      new ListColumn('created_at', 'Date Created', this.dateTemplate, 'item-date'),
       new ListColumn('status'),
     );
     super.ngOnInit();

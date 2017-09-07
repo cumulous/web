@@ -18,11 +18,11 @@ steps(({Given, When, Then}) => {
       link(tab).click()
         .then(() => location().should.become(locationOf(tab))))));
 
-  Then(/^the (.*) should be sorted by date in descending order$/, page => {
-    return $$('.list-row').getText().then(rows => {
-      const timestamp = row => new Date(row.split('\n')[0]).getTime();
-      rows.length.should.be.above(0);
-      (rows as any).reduce((last, next) => {
+  Then(/^the .* should be sorted by date in descending order$/, () => {
+    return $$('.item-date').getText().then(dates => {
+      dates.length.should.be.above(0);
+      const timestamp = date => new Date(date).getTime();
+      (dates as any).reduce((last, next) => {
         timestamp(next).should.be.at.most(timestamp(last));
         return next;
       });
