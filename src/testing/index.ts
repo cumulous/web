@@ -1,13 +1,19 @@
+import { Type } from '@angular/core';
 import { ComponentFixture } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 
 import * as uuid from 'uuid';
 
-export function debugElement<T> (fixture: ComponentFixture<T>, locator: string) {
-  return fixture.debugElement.query(By.css(locator));
+export function debugElement<T> (fixture: ComponentFixture<T>, locator: string | Type<any>) {
+  const root = fixture.debugElement;
+  if (typeof locator === 'string') {
+    return root.query(By.css(locator));
+  } else {
+    return root.query(By.directive(locator));
+  }
 }
 
-export function selectElement<T> (fixture: ComponentFixture<T>, locator: string) {
+export function selectElement<T> (fixture: ComponentFixture<T>, locator: string | Type<any>) {
   return debugElement(fixture, locator).nativeElement;
 }
 

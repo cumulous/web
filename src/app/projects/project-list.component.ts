@@ -6,6 +6,7 @@ import { Project } from '../api/model/project';
 import { ListBaseComponent, ListColumn } from '../shared/list-base.component';
 
 @Component({
+  selector: 'app-project-list',
   templateUrl: '../shared/list-base.component.html',
 })
 export class ProjectListComponent extends ListBaseComponent<Project> implements OnInit {
