@@ -1,10 +1,10 @@
 import { Component, ElementRef, OnInit } from '@angular/core';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/observable/of';
 
-import { debugElement, elementsText, fakeUUIDs } from '../../testing';
+import { debugElement, elementsText, fakeUUIDs, selectElement } from '../../testing';
 
 import { SharedModule } from './shared.module';
 import { ListBaseComponent, ListColumn } from './list-base.component';
@@ -28,6 +28,7 @@ const fakeItems = (offset: number, limit: number) =>
   Array.from({length: limit}, (d, i) => fakeItem(offset + i));
 
 @Component({
+  selector: 'app-item-list',
   templateUrl: './list-base.component.html',
 })
 class ItemListComponent extends ListBaseComponent<Item> implements OnInit {
@@ -47,7 +48,7 @@ class ItemListComponent extends ListBaseComponent<Item> implements OnInit {
   ngOnInit() {
     this.columns.push(
       new ListColumn('created_at', 'Date Created', this.dateTemplate),
-      new ListColumn('description'),
+      new ListColumn('description', 'Description', null, 'item-description'),
     );
     super.ngOnInit();
   }
@@ -56,6 +57,19 @@ class ItemListComponent extends ListBaseComponent<Item> implements OnInit {
     return ItemListComponent.fakeItems(offset, limit);
   }
 }
+
+@Component({
+  template: `
+    <app-item-list
+      [rowDetailTemplate]="itemDetail"
+    ></app-item-list>
+
+    <ng-template let-row="row" #itemDetail>
+      <div id="i{{row.id}}"></div>
+    </ng-template>
+  `
+})
+class ItemsComponent {}
 
 export function pageSize(fixture: ComponentFixture<ListBaseComponent<any>>) {
   const page = debugElement(fixture, '.list').nativeElement;
@@ -82,7 +96,10 @@ describe('ListBaseComponent', () => {
       imports: [
         SharedModule,
       ],
-      declarations: [ ItemListComponent ],
+      declarations: [
+        ItemListComponent,
+        ItemsComponent,
+      ],
     });
 
     fixture = TestBed.createComponent(ItemListComponent);
@@ -195,5 +212,36 @@ describe('ListBaseComponent', () => {
     fixture.detectChanges();
     expect(component.progressBottom).toBe(true);
     expect(page.classList).toContain('progress-bottom');
+  });
+
+  describe('', () => {
+    let parent: ComponentFixture<ItemsComponent>;
+    let description: any;
+
+    const detail = () => debugElement(parent, '#i' + fakeItem(0).id);
+
+    beforeEach(fakeAsync(() => {
+      parent = TestBed.createComponent(ItemsComponent);
+      parent.detectChanges();
+
+      description = selectElement(parent, '.item-description');
+      expect(description.textContent.trim()).toBe(fakeItem(0).description);
+      expect(detail()).toBeNull();
+
+      description.click();
+      tick();
+      parent.detectChanges();
+    }));
+
+    it('shows correct item details when the user clicks on a row', () => {
+      expect(detail()).not.toBeNull();
+    });
+
+    it('hides correct item details when the user clicks again on a row', fakeAsync(() => {
+      description.click();
+      tick();
+      parent.detectChanges();
+      expect(detail()).toBeNull();
+    }));
   });
 });

@@ -1,4 +1,4 @@
-import { ElementRef, TemplateRef, OnInit, ViewChild } from '@angular/core';
+import { ElementRef, Input, OnInit, TemplateRef, ViewChild } from '@angular/core';
 
 import { Observable } from 'rxjs/Observable';
 
@@ -8,10 +8,15 @@ export class ListColumn {
   constructor(
     readonly prop: string,
     readonly name?: string,
-    readonly cellTemplate?: TemplateRef<any>) {}
+    readonly cellTemplate?: TemplateRef<any>,
+    readonly cellClass?: string,
+  ) {}
 }
 
 export abstract class ListBaseComponent<Item> implements OnInit {
+
+  @Input() readonly rowDetailTemplate: TemplateRef<any>;
+  @Input() readonly rowDetailHeight: number;
 
   @ViewChild('dateTemplate') protected readonly dateTemplate: TemplateRef<any>;
 

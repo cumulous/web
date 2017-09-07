@@ -1,4 +1,4 @@
-<ngx-datatable
+<ngx-datatable #table
   class='material list'
   [columns]="columns"
   [columnMode]="'force'"
@@ -9,8 +9,14 @@
   [scrollbarV]="true"
   [loadingIndicator]="isLoading"
   [class.progress-bottom]="progressBottom"
+  (activate)="table.rowDetail.toggleExpandRow($event.row)"
   (scroll)="onScroll($event.offsetY)"
-></ngx-datatable>
+>
+  <ngx-datatable-row-detail
+    [template]="rowDetailTemplate"
+    [rowHeight]="rowDetailHeight"
+  ></ngx-datatable-row-detail>
+</ngx-datatable>
 
 <ng-template #dateTemplate let-value="value">
   {{value | date:'short'}}
