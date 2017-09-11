@@ -1,4 +1,5 @@
 import { Component, ElementRef, OnInit } from '@angular/core';
+import { MdDialog } from '@angular/material';
 
 import { ProjectsService } from '../api/api/projects.service';
 import { Project } from '../api/model/project';
@@ -11,8 +12,12 @@ import { ListBaseComponent, ListColumn } from '../shared/list-base.component';
 })
 export class ProjectListComponent extends ListBaseComponent<Project> implements OnInit {
 
-  constructor(private projectsService: ProjectsService, element: ElementRef) {
-    super(element);
+  constructor(
+        private projectsService: ProjectsService,
+        element: ElementRef,
+        dialog: MdDialog,
+      ) {
+    super(element, dialog);
   }
 
   ngOnInit() {
