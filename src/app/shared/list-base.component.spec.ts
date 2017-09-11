@@ -1,5 +1,6 @@
-import { Component, ElementRef, OnInit } from '@angular/core';
+import { Component, ElementRef, Inject, NgModule, OnInit } from '@angular/core';
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { MdDialog, MD_DIALOG_DATA } from '@angular/material';
 
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/observable/of';
@@ -41,8 +42,8 @@ class ItemListComponent extends ListBaseComponent<Item> implements OnInit {
     });
   }
 
-  constructor(element: ElementRef) {
-    super(element);
+  constructor(element: ElementRef, dialog: MdDialog) {
+    super(element, dialog, ItemDialogComponent);
   }
 
   ngOnInit() {
@@ -59,17 +60,25 @@ class ItemListComponent extends ListBaseComponent<Item> implements OnInit {
 }
 
 @Component({
-  template: `
-    <app-item-list
-      [rowDetailTemplate]="itemDetail"
-    ></app-item-list>
-
-    <ng-template let-row="row" #itemDetail>
-      <div id="i{{row.id}}"></div>
-    </ng-template>
-  `
+  template: '',
 })
-class ItemsComponent {}
+class ItemDialogComponent {
+  constructor(@Inject(MD_DIALOG_DATA) item: Item) {}
+}
+
+@NgModule({
+  imports: [
+    SharedModule,
+  ],
+  declarations: [
+    ItemListComponent,
+    ItemDialogComponent,
+  ],
+  entryComponents: [
+    ItemDialogComponent,
+  ],
+})
+export class ItemsModule { }
 
 export function pageSize(fixture: ComponentFixture<ListBaseComponent<any>>) {
   const page = debugElement(fixture, '.list').nativeElement;
@@ -94,11 +103,7 @@ describe('ListBaseComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [
-        SharedModule,
-      ],
-      declarations: [
-        ItemListComponent,
-        ItemsComponent,
+        ItemsModule,
       ],
     });
 
@@ -214,34 +219,20 @@ describe('ListBaseComponent', () => {
     expect(page.classList).toContain('progress-bottom');
   });
 
-  describe('', () => {
-    let parent: ComponentFixture<ItemsComponent>;
-    let description: any;
+  it('opens a dialog for the item been clicked', fakeAsync(() => {
+    fixture.detectChanges();
 
-    const detail = () => debugElement(parent, '#i' + fakeItem(0).id);
+    const dialog = TestBed.get(MdDialog);
+    const spyOnDialogOpen = spyOn(dialog, 'open');
+    const description = selectElement(fixture, '.item-description');
 
-    beforeEach(fakeAsync(() => {
-      parent = TestBed.createComponent(ItemsComponent);
-      parent.detectChanges();
+    expect(description.textContent.trim()).toBe(fakeItem(0).description);
+    description.click();
+    tick();
+    fixture.detectChanges();
 
-      description = selectElement(parent, '.item-description');
-      expect(description.textContent.trim()).toBe(fakeItem(0).description);
-      expect(detail()).toBeNull();
-
-      description.click();
-      tick();
-      parent.detectChanges();
-    }));
-
-    it('shows correct item details when the user clicks on a row', () => {
-      expect(detail()).not.toBeNull();
+    expect(spyOnDialogOpen).toHaveBeenCalledWith(ItemDialogComponent, {
+      data: fakeItem(0),
     });
-
-    it('hides correct item details when the user clicks again on a row', fakeAsync(() => {
-      description.click();
-      tick();
-      parent.detectChanges();
-      expect(detail()).toBeNull();
-    }));
-  });
+  }));
 });

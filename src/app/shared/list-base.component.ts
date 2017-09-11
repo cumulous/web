@@ -1,4 +1,5 @@
-import { ElementRef, Input, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { ElementRef, Input, OnInit, TemplateRef, Type, ViewChild } from '@angular/core';
+import { MdDialog } from '@angular/material';
 
 import { Observable } from 'rxjs/Observable';
 
@@ -15,9 +16,6 @@ export class ListColumn {
 
 export abstract class ListBaseComponent<Item> implements OnInit {
 
-  @Input() readonly rowDetailTemplate: TemplateRef<any>;
-  @Input() readonly rowDetailHeight: number;
-
   @ViewChild('dateTemplate') protected readonly dateTemplate: TemplateRef<any>;
 
   readonly headerHeight: number = 42;
@@ -29,7 +27,11 @@ export abstract class ListBaseComponent<Item> implements OnInit {
   isLoading: boolean;
   progressBottom = false;
 
-  constructor(private el: ElementRef) {}
+  constructor(
+    private readonly el: ElementRef,
+    private readonly dialog?: MdDialog,
+    private readonly dialogComponent?: Type<any>,
+  ) {}
 
   ngOnInit() {
     this.onScroll(0);
@@ -45,6 +47,12 @@ export abstract class ListBaseComponent<Item> implements OnInit {
       }
       this.loadPage(limit);
     }
+  }
+
+  onRowClick(item: Item) {
+    this.dialog.open(this.dialogComponent, {
+      data: item,
+    });
   }
 
   protected abstract list(offset: number, limit: number): Observable<{ items: Item[] }>;

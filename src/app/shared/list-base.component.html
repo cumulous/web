@@ -9,14 +9,9 @@
   [scrollbarV]="true"
   [loadingIndicator]="isLoading"
   [class.progress-bottom]="progressBottom"
-  (activate)="$event.type === 'click' && table.rowDetail.toggleExpandRow($event.row)"
+  (activate)="$event.type === 'click' && onRowClick($event.row)"
   (scroll)="onScroll($event.offsetY)"
->
-  <ngx-datatable-row-detail
-    [template]="rowDetailTemplate"
-    [rowHeight]="rowDetailHeight"
-  ></ngx-datatable-row-detail>
-</ngx-datatable>
+></ngx-datatable>
 
 <ng-template #dateTemplate let-value="value">
   {{value | date:'short'}}
