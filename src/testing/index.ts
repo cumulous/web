@@ -27,6 +27,12 @@ export function elementsText<T> (fixture: ComponentFixture<T>, locator: string) 
     .map(element => element.textContent.trim());
 }
 
+export function dispatchEvent<T> (fixture: ComponentFixture<T>, locator: string, eventName: string) {
+  const element = selectElement(fixture, locator);
+  element.dispatchEvent(new Event(eventName));
+  fixture.detectChanges();
+}
+
 export function fakeUUIDs(count: number) {
   return Array.from({length: count}, (d, i) => uuid());
 }

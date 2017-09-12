@@ -1,0 +1,70 @@
+<form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+  <table class="full-width">
+    <tr>
+      <td>
+        <h1 md-dialog-title>
+          Project
+        </h1>
+      </td>
+      <td align="right">
+        <md-form-field class="item-id">
+          <input mdInput
+            placeholder="ID"
+            formControlName="id"
+          >
+        </md-form-field>
+      </td>
+    </tr>
+  </table>
+  <md-dialog-content>
+    <table>
+      <tr>
+        <td>
+          <md-form-field class="full-width">
+            <input mdInput required
+              placeholder="Name"
+              formControlName="name"
+            >
+          </md-form-field>
+        </td>
+        <td>
+          <md-form-field class="full-width">
+            <input mdInput
+              placeholder="Date Created"
+              value="{{form.get('created_at').value | date:'short'}}"
+              [disabled]="form.get('created_at').disabled"
+            >
+          </md-form-field>
+        </td>
+        <td>
+          <md-form-field class="full-width">
+            <input mdInput
+              placeholder="Status"
+              formControlName="status"
+            >
+          </md-form-field>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="3">
+          <md-form-field class="full-width" floatPlaceholder="always">
+            <textarea mdInput mdTextareaAutosize
+              placeholder="Description"
+              formControlName="description"
+            ></textarea>
+          </md-form-field>
+        </td>
+      </tr>
+    </table>
+  </md-dialog-content>
+  <md-dialog-actions>
+    <button md-button md-dialog-close
+      type="button"
+    >Cancel</button>
+    <button md-button
+      type="submit"
+      color="primary"
+      [disabled]="form.pristine || form.invalid"
+    >Confirm</button>
+  </md-dialog-actions>
+</form>
