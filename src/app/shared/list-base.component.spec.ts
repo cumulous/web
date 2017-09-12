@@ -219,20 +219,37 @@ describe('ListBaseComponent', () => {
     expect(page.classList).toContain('progress-bottom');
   });
 
-  it('opens a dialog for the item been clicked', fakeAsync(() => {
-    fixture.detectChanges();
+  describe('', () => {
+    const updatedDescription = 'Item 0 (updated)';
 
-    const dialog = TestBed.get(MdDialog);
-    const spyOnDialogOpen = spyOn(dialog, 'open');
-    const description = selectElement(fixture, '.item-description');
+    let spyOnDialogOpen: jasmine.Spy;
 
-    expect(description.textContent.trim()).toBe(fakeItem(0).description);
-    description.click();
-    tick();
-    fixture.detectChanges();
+    beforeEach(fakeAsync(() => {
+      fixture.detectChanges();
 
-    expect(spyOnDialogOpen).toHaveBeenCalledWith(ItemDialogComponent, {
-      data: fakeItem(0),
+      const dialog = TestBed.get(MdDialog);
+      const dialogRef = jasmine.createSpyObj('DialogRef', ['close', 'afterClosed']);
+      spyOnDialogOpen = spyOn(dialog, 'open')
+        .and.returnValue(dialogRef);
+      dialogRef.afterClosed.and.returnValue(Observable.of({
+        description: updatedDescription,
+      }));
+
+      const description = selectElement(fixture, '.item-description');
+      expect(description.textContent.trim()).toBe(fakeItem(0).description);
+      description.click();
+      tick();
+      fixture.detectChanges();
+    }));
+    it('opens a dialog for the item been clicked', () => {
+      expect(spyOnDialogOpen).toHaveBeenCalledWith(ItemDialogComponent, {
+        data: fakeItem(0),
+      });
     });
-  }));
+    it('updates the item through afterClosed() observable', () => {
+      expect(component.rows[0].id).toEqual(fakeItem(0).id);
+      expect(component.rows[0].created_at).toEqual(fakeItem(0).created_at);
+      expect(component.rows[0].description).toEqual(updatedDescription);
+    });
+  });
 });
