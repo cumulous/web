@@ -11,7 +11,7 @@ body {
 }
 
 ngx-datatable {
-  height: calc(100vh - 90px);
+  height: calc(100vh - 155px);
 }
 
 ngx-datatable .progress-linear {
@@ -42,4 +42,8 @@ ngx-datatable .progress-linear {
 
 .item-description {
   width: 100% !important;
+}
+
+md-toolbar {
+  background-color: transparent !important;
 }

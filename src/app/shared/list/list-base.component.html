@@ -1,3 +1,12 @@
+<md-toolbar>
+  <button md-raised-button class='list-item-create'
+    color="primary"
+    (click)="onCreate()"
+  >
+    Create
+  </button>
+</md-toolbar>
+
 <ngx-datatable #table
   class='material list'
   [columns]="columns"

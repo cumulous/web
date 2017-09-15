@@ -21,10 +21,9 @@ import { DialogActionsComponent } from './dialog-actions.component';
   ],
   exports: [
     DialogActionsComponent,
-    MdButtonModule,
     MdDialogModule,
     MdInputModule,
     ReactiveFormsModule,
   ],
 })
-export class DialogModule { }
+export class DialogModule {}

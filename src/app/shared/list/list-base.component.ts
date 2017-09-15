@@ -57,6 +57,16 @@ export abstract class ListBaseComponent<Item> implements OnInit {
     });
   }
 
+  onCreate() {
+    this.dialog.open(this.dialogComponent, {
+      data: {},
+    }).afterClosed().subscribe((result: Item) => {
+      if (result != null) {
+        this.rows.unshift(result);
+      }
+    });
+  }
+
   protected abstract list(offset: number, limit: number): Observable<{ items: Item[] }>;
 
   private loadPage(limit: number) {
