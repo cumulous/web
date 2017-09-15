@@ -5,6 +5,7 @@ import { ProjectsService } from '../api/api/projects.service';
 import { Project } from '../api/model/project';
 
 import { ListBaseComponent, ListColumn } from '../shared/list-base.component';
+import { ProjectDialogComponent } from './project-dialog.component';
 
 @Component({
   selector: 'app-project-list',
@@ -17,14 +18,14 @@ export class ProjectListComponent extends ListBaseComponent<Project> implements 
         element: ElementRef,
         dialog: MdDialog,
       ) {
-    super(element, dialog);
+    super(element, dialog, ProjectDialogComponent);
   }
 
   ngOnInit() {
     this.columns.push(
       new ListColumn('name'),
       new ListColumn('description'),
-      new ListColumn('created_at', 'Date Created', this.dateTemplate, 'item-date'),
+      new ListColumn('created_at', 'Date Created', this.dateTemplate),
       new ListColumn('status'),
     );
     super.ngOnInit();
