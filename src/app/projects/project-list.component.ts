@@ -4,12 +4,13 @@ import { MdDialog } from '@angular/material';
 import { ProjectsService } from '../api/api/projects.service';
 import { Project } from '../api/model/project';
 
-import { ListBaseComponent, ListColumn } from '../shared/list-base.component';
+import { ListBaseComponent, ListColumn } from '../shared/list/list-base.component';
+
 import { ProjectDialogComponent } from './project-dialog.component';
 
 @Component({
   selector: 'app-project-list',
-  templateUrl: '../shared/list-base.component.html',
+  templateUrl: '../shared/list/list-base.component.html',
 })
 export class ProjectListComponent extends ListBaseComponent<Project> implements OnInit {
 

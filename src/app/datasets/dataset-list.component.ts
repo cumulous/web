@@ -4,10 +4,10 @@ import { DatasetsService } from '../api/api/datasets.service';
 import { Dataset } from '../api/model/dataset';
 import { ListOfDatasets } from '../api/model/listOfDatasets';
 
-import { ListBaseComponent, ListColumn } from '../shared/list-base.component';
+import { ListBaseComponent, ListColumn } from '../shared/list/list-base.component';
 
 @Component({
-  templateUrl: '../shared/list-base.component.html',
+  templateUrl: '../shared/list/list-base.component.html',
 })
 export class DatasetListComponent extends ListBaseComponent<Dataset> implements OnInit {
 

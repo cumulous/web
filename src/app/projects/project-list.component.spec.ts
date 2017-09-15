@@ -6,7 +6,7 @@ import 'rxjs/add/observable/of';
 
 import { elementsText, fakeUUIDs } from '../../testing';
 
-import { pageSize } from '../shared/list-base.component.spec';
+import { pageSize } from '../shared/list/list-base.component.spec';
 
 import { ProjectsModule } from './projects.module';
 import { ProjectListComponent } from './project-list.component';

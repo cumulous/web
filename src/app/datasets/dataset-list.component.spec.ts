@@ -6,7 +6,7 @@ import 'rxjs/add/observable/of';
 
 import { elementsText, fakeUUIDs } from '../../testing';
 
-import { pageSize } from '../shared/list-base.component.spec';
+import { pageSize } from '../shared/list/list-base.component.spec';
 
 import { DatasetsModule } from './datasets.module';
 import { DatasetListComponent } from './dataset-list.component';

@@ -1,13 +1,14 @@
+import { CommonModule } from '@angular/common';
 import { Component, ElementRef, Inject, NgModule, OnInit } from '@angular/core';
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
-import { MdDialog, MD_DIALOG_DATA } from '@angular/material';
+import { MdDialog, MdDialogModule, MD_DIALOG_DATA } from '@angular/material';
 
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/observable/of';
 
-import { debugElement, elementsText, fakeUUIDs, selectElement } from '../../testing';
+import { debugElement, elementsText, fakeUUIDs, selectElement } from '../../../testing';
 
-import { SharedModule } from './shared.module';
+import { ListModule } from './list.module';
 import { ListBaseComponent, ListColumn } from './list-base.component';
 
 interface Item {
@@ -68,7 +69,9 @@ class ItemDialogComponent {
 
 @NgModule({
   imports: [
-    SharedModule,
+    CommonModule,
+    MdDialogModule,
+    ListModule,
   ],
   declarations: [
     ItemListComponent,
@@ -76,6 +79,9 @@ class ItemDialogComponent {
   ],
   entryComponents: [
     ItemDialogComponent,
+  ],
+  providers: [
+    MdDialog,
   ],
 })
 export class ItemsModule { }
