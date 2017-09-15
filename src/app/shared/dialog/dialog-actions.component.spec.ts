@@ -4,7 +4,7 @@ import { MdDialogRef } from '@angular/material';
 
 import * as uuid from 'uuid';
 
-import { debugElement, selectElement } from '../../testing';
+import { debugElement, selectElement } from '../../../testing';
 
 import { DialogModule } from './dialog.module';
 import { DialogActionsComponent } from './dialog-actions.component';

@@ -2,7 +2,7 @@ import { Component, Inject } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { MD_DIALOG_DATA, MdDialogRef } from '@angular/material';
 
-import { DialogBaseComponent } from '../dialog/dialog-base.component';
+import { DialogBaseComponent } from '../shared/dialog/dialog-base.component';
 
 import { Project } from '../api/model/project';
 import { ProjectsService } from '../api/api/projects.service';
