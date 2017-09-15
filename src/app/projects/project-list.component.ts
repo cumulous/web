@@ -13,13 +13,8 @@ import { ProjectDialogComponent } from './project-dialog.component';
   templateUrl: '../shared/list/list-base.component.html',
 })
 export class ProjectListComponent extends ListBaseComponent<Project> implements OnInit {
-
-  constructor(
-        private projectsService: ProjectsService,
-        element: ElementRef,
-        dialog: MdDialog,
-      ) {
-    super(element, dialog, ProjectDialogComponent);
+  constructor(dialog: MdDialog, private projectsService: ProjectsService) {
+    super(dialog, ProjectDialogComponent);
   }
 
   ngOnInit() {

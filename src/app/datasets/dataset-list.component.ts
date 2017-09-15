@@ -11,8 +11,8 @@ import { ListBaseComponent, ListColumn } from '../shared/list/list-base.componen
 })
 export class DatasetListComponent extends ListBaseComponent<Dataset> implements OnInit {
 
-  constructor(private datasetsService: DatasetsService, element: ElementRef) {
-    super(element);
+  constructor(private datasetsService: DatasetsService) {
+    super();
   }
 
   ngOnInit() {

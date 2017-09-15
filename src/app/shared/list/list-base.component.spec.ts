@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, ElementRef, Inject, NgModule, OnInit } from '@angular/core';
+import { Component, Inject, NgModule, OnInit } from '@angular/core';
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { MdDialog, MdDialogModule, MD_DIALOG_DATA } from '@angular/material';
 
@@ -43,8 +43,8 @@ class ItemListComponent extends ListBaseComponent<Item> implements OnInit {
     });
   }
 
-  constructor(element: ElementRef, dialog: MdDialog) {
-    super(element, dialog, ItemDialogComponent);
+  constructor(dialog: MdDialog) {
+    super(dialog, ItemDialogComponent);
   }
 
   ngOnInit() {

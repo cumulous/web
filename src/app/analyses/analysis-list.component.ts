@@ -11,8 +11,8 @@ import { ListBaseComponent, ListColumn } from '../shared/list/list-base.componen
 })
 export class AnalysisListComponent extends ListBaseComponent<Analysis> implements OnInit {
 
-  constructor(private analysesService: AnalysesService, element: ElementRef) {
-    super(element);
+  constructor(private analysesService: AnalysesService) {
+    super();
   }
 
   ngOnInit() {

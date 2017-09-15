@@ -17,6 +17,7 @@ export class ListColumn {
 export abstract class ListBaseComponent<Item> implements OnInit {
 
   @ViewChild('dateTemplate') protected readonly dateTemplate: TemplateRef<any>;
+  @ViewChild('table', { read: ElementRef }) private readonly table: ElementRef;
 
   readonly headerHeight: number = 42;
   readonly rowHeight: number = 45;
@@ -28,7 +29,6 @@ export abstract class ListBaseComponent<Item> implements OnInit {
   progressBottom = false;
 
   constructor(
-    private readonly el: ElementRef,
     private readonly dialog?: MdDialog,
     private readonly dialogComponent?: Type<any>,
   ) {}
@@ -38,7 +38,7 @@ export abstract class ListBaseComponent<Item> implements OnInit {
   }
 
   onScroll(offsetY: number) {
-    const viewHeight = this.el.nativeElement.getBoundingClientRect().height - this.headerHeight;
+    const viewHeight = this.table.nativeElement.getBoundingClientRect().height - this.headerHeight;
     if (!this.isLoading && offsetY + viewHeight >= this.rows.length * this.rowHeight) {
       let limit = this.pageLimit;
       if (this.rows.length === 0) {
