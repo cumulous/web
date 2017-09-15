@@ -9,7 +9,7 @@ import 'rxjs/add/observable/of';
 
 import * as uuid from 'uuid';
 
-import { dispatchEvent, selectElement } from '../../testing';
+import { dispatchEvent } from '../../testing';
 
 import { SharedModule } from '../shared/shared.module';
 
@@ -72,7 +72,6 @@ describe('ProjectDialogComponent', () => {
     fixture = TestBed.createComponent(ProjectDialogComponent);
     component = fixture.componentInstance;
     form = component.form;
-    submit = selectElement(fixture, 'button[type="submit"]');
 
     const projectsService = fixture.debugElement.injector.get(ProjectsService);
     spyOnUpdateProject = spyOn(projectsService, 'updateProject')
@@ -90,41 +89,6 @@ describe('ProjectDialogComponent', () => {
       created_at: { value: fakeProjectDate, disabled: true },
       created_by: { value: fakeCreatedBy, disabled: true },
       status: { value: fakeProjectStatus, disabled: true },
-    });
-  });
-
-  describe('disables "submit" button', () => {
-    it('initially', () => {
-      expect(form.pristine).toBe(true);
-    });
-    it('if project name is empty', () => {
-      form.patchValue({
-        name: '',
-      });
-      expect(form.valid).toBe(false);
-      dispatchEvent(fixture, 'input[formControlName="name"]', 'input');
-    });
-    afterEach(() => {
-      expect(submit.disabled).toBeTruthy();
-    });
-  });
-
-  describe('enables "submit" button if', () => {
-    it('project name has been updated in the form', () => {
-      form.patchValue({
-        name: fakeProjectName + ' (updated)',
-      });
-      dispatchEvent(fixture, 'input[formControlName="name"]', 'input');
-    });
-    it('project description has been updated in the form', () => {
-      form.patchValue({
-        description: fakeProjectDescription + ' (updated)',
-      });
-      dispatchEvent(fixture, 'textarea[formControlName="description"]', 'input');
-    });
-    afterEach(() => {
-      expect(form.valid).toBe(true);
-      expect(submit.disabled).toBeFalsy();
     });
   });
 

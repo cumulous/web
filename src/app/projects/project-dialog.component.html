@@ -46,16 +46,8 @@
       </md-form-field>
     </p>
   </md-dialog-content>
-  <!--</p>-->
-  <md-dialog-actions>
-    <button md-button
-      type="button"
-      [md-dialog-close]
-    >Cancel</button>
-    <button md-button
-      type="submit"
-      color="primary"
-      [disabled]="form.pristine || form.invalid"
-    >Confirm</button>
-  </md-dialog-actions>
+  <app-dialog-actions
+    [form]="form"
+    [action]="'Update'"
+  ></app-dialog-actions>
 </form>

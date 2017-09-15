@@ -1,0 +1,16 @@
+<md-dialog-actions>
+  <button md-button
+    type="button"
+    [md-dialog-close]
+  >
+    Cancel
+  </button>
+  <button md-button
+    type="submit"
+    color="primary"
+    [disabled]="form.pristine || form.invalid"
+  >
+    {{action}}
+  </button>
+
+</md-dialog-actions>
