@@ -8,6 +8,5 @@ import { FormGroup } from '@angular/forms';
 })
 export class DialogActionsComponent {
   @Input() form: FormGroup;
-  @Input() action: string;
   @Input() waiting: boolean;
 }

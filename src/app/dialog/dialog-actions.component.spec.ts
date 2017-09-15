@@ -1,6 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { FormControl, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup } from '@angular/forms';
 import { MdDialogRef } from '@angular/material';
+
+import * as uuid from 'uuid';
 
 import { debugElement, selectElement } from '../../testing';
 
@@ -8,7 +10,10 @@ import { DialogModule } from './dialog.module';
 import { DialogActionsComponent } from './dialog-actions.component';
 
 describe('DialogActionsComponent', () => {
-  const fakeAction = 'Fake action';
+  const fakeForm = (id?: string) => new FormBuilder().group({
+    name: 'Fake name',
+    id,
+  });
 
   let fixture: ComponentFixture<DialogActionsComponent>;
   let component: DialogActionsComponent;
@@ -32,16 +37,27 @@ describe('DialogActionsComponent', () => {
     component = fixture.componentInstance;
     submit = selectElement(fixture, 'button[type="submit"]');
 
-    form = new FormGroup({
-      name: new FormControl(),
-    });
+    form = fakeForm();
     component.form = form;
-    component.action = fakeAction;
   });
 
-  it('sets "submit" button text to the value of "action" input', () => {
-    fixture.detectChanges();
-    expect(submit.textContent.trim()).toBe(fakeAction);
+  describe('sets "submit" button text to', () => {
+    let text: string;
+    it('"Create" if form.id is undefined', () => {
+      text = 'Create';
+    });
+    it('"Create" if form.id is empty', () => {
+      component.form = fakeForm('');
+      text = 'Create';
+    });
+    it('"Update" if form.id is non-empty', () => {
+      component.form = fakeForm(uuid());
+      text = 'Update';
+    });
+    afterEach(() => {
+      fixture.detectChanges();
+      expect(submit.textContent.trim()).toBe(text);
+    });
   });
 
   describe('disables "submit" button', () => {

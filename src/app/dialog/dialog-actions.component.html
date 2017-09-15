@@ -10,9 +10,8 @@
     color="primary"
     [disabled]="form.pristine || form.invalid || waiting"
   >
-    {{action}}
+    {{form.get('id').value ? 'Update' : 'Create'}}
   </button>
   <md-spinner *ngIf="waiting" class='dialog-spinner'>
   </md-spinner>
-
 </md-dialog-actions>
