@@ -22,7 +22,8 @@ export abstract class DialogBaseComponent<Item> {
   }
 
   protected abstract createForm(formBuilder: FormBuilder, item: Item): FormGroup;
-  protected abstract update(): Observable<any>;
+  protected abstract create(): Observable<Item>;
+  protected abstract update(): Observable<Item>;
 
   get waiting() {
     return this.isWaiting;
@@ -30,14 +31,15 @@ export abstract class DialogBaseComponent<Item> {
 
   onSubmit() {
     this.isWaiting = true;
-    this.update().subscribe(
-      () => this.onSuccess(),
-      err => this.onError(err),
-    );
+    (this.form.get('id').value ? this.update() : this.create())
+      .subscribe(
+        item => this.onSuccess(item),
+        err => this.onError(err),
+      );
   }
 
-  private onSuccess() {
-    this.dialog.close(this.form.value);
+  private onSuccess(item: Item) {
+    this.dialog.close(item);
   }
 
   private onError(err: Response) {

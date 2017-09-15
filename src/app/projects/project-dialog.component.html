@@ -15,20 +15,20 @@
         </md-error>
       </md-form-field>
       <br/>
-      <md-form-field class="item-id">
+      <md-form-field *ngIf="form.get('id').value" class="item-id">
         <input mdInput
           placeholder="ID"
           formControlName="id"
         >
       </md-form-field>
-      <md-form-field class="item-date">
+      <md-form-field *ngIf="form.get('id').value" class="item-date">
         <input mdInput
           placeholder="Date Created"
           value="{{form.get('created_at').value | date:'short'}}"
           [disabled]="form.get('created_at').disabled"
         >
       </md-form-field>
-      <md-form-field class="item-status">
+      <md-form-field *ngIf="form.get('id').value" class="item-status">
         <input mdInput
           placeholder="Status"
           formControlName="status"

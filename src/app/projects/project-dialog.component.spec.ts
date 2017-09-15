@@ -44,6 +44,7 @@ describe('ProjectDialogComponent', () => {
   let form: FormGroup;
 
   let spyOnFormGroup: jasmine.Spy;
+  let spyOnCreateProject: jasmine.Spy;
   let spyOnUpdateProject: jasmine.Spy;
 
   beforeEach(() => {
@@ -73,6 +74,8 @@ describe('ProjectDialogComponent', () => {
     form = component.form;
 
     const projectsService = fixture.debugElement.injector.get(ProjectsService);
+    spyOnCreateProject = spyOn(projectsService, 'createProject')
+      .and.returnValue(Observable.of({}));
     spyOnUpdateProject = spyOn(projectsService, 'updateProject')
       .and.returnValue(Observable.of({}));
 
@@ -91,7 +94,20 @@ describe('ProjectDialogComponent', () => {
     });
   });
 
-  it('calls projectsService.updateProject() once with correct parameters on "submit" event', () => {
+  it('calls projectsService.createProject() once with correct parameters ' +
+     'on "submit" event for "create" action', () => {
+    form.patchValue({
+      id: undefined,
+    });
+    dispatchEvent(fixture, 'form', 'submit');
+    expect(spyOnCreateProject).toHaveBeenCalledWith({
+      name: fakeProjectName,
+      description: fakeProjectDescription,
+    });
+  });
+
+  it('calls projectsService.updateProject() once with correct parameters ' +
+     'on "submit" event for "update" action', () => {
     const updatedValues = () => ({
       name: fakeProjectName + ' (updated)',
       description: fakeProjectDescription + ' (updated)',

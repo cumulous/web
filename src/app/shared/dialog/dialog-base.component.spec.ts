@@ -42,8 +42,12 @@ class ItemDialogComponent extends DialogBaseComponent<Item> {
     });
   }
 
+  create() {
+    return Observable.of(fakeItem());
+  }
+
   update() {
-    return Observable.of();
+    return Observable.of(fakeItem());
   }
 }
 
@@ -94,36 +98,58 @@ describe('DialogBaseComponent', () => {
   });
 
   describe('onSubmit()', () => {
+    let spyOnCreate: jasmine.Spy;
     let spyOnUpdate: jasmine.Spy;
 
     beforeEach(() => {
       testPrep();
+      spyOnCreate = jasmine.createSpyObj('create', ['subscribe']);
+      spyOn(component, 'create').and.returnValue(spyOnCreate);
       spyOnUpdate = jasmine.createSpyObj('update', ['subscribe']);
       spyOn(component, 'update').and.returnValue(spyOnUpdate);
     });
 
-    it('sets "loading" to "true" before the update', () => {
+    it('sets "loading" to "true"', () => {
       component.onSubmit();
       expect(component.waiting).toBe(true);
     });
 
-    it('calls update() once', () => {
+    it('calls update() once if "id" value is defined', () => {
       component.onSubmit();
       expect(component.update).toHaveBeenCalledTimes(1);
+      expect(component.create).not.toHaveBeenCalled();
+    });
+
+    it('calls create() once if "id" value is defined', () => {
+      form.patchValue({
+        id: undefined,
+      });
+      component.onSubmit();
+      expect(component.create).toHaveBeenCalledTimes(1);
+      expect(component.update).not.toHaveBeenCalled();
     });
 
     it('closes dialog with correct parameters on successful update()', () => {
-      const updatedValues = () => ({
+      const updatedItem = () => ({
+        id: fakeItemId,
         name: fakeItemName + ' (updated)',
         description: fakeItemDescription + ' (updated)',
       });
-      (spyOnUpdate as any).subscribe.and.callFake(onSuccess => onSuccess());
-      form.patchValue(updatedValues());
+      (spyOnUpdate as any).subscribe.and.callFake(onSuccess => onSuccess(updatedItem()));
       component.onSubmit();
-      expect(dialog.close).toHaveBeenCalledWith(updatedValues());
+      expect(dialog.close).toHaveBeenCalledWith(updatedItem());
     });
 
-    describe('causes errors from unsuccessful update()', () => {
+    it('closes dialog with correct parameters on successful create()', () => {
+      form.patchValue({
+        id: undefined,
+      });
+      (spyOnCreate as any).subscribe.and.callFake(onSuccess => onSuccess(fakeItem()));
+      component.onSubmit();
+      expect(dialog.close).toHaveBeenCalledWith(fakeItem());
+    });
+
+    describe('causes errors from unsuccessful', () => {
       const fakeNameError = 'Fake name error';
       const fakeDescriptionError = 'Fake description error';
       const fakeErrors = () => [
@@ -133,69 +159,85 @@ describe('DialogBaseComponent', () => {
         'some other error',
       ];
 
-      let err: any;
+      const testErrors = (spyOnAction: () => any) => {
+        let err: any;
 
-      beforeEach(() => {
-        err = {
-          json: () => ({
-            errors: fakeErrors(),
-          }),
-        };
-        (spyOnUpdate as any).subscribe.and.callFake((onSuccess, onError) => onError(err));
-        component.onSubmit();
-      });
-
-      it('to be stored correctly and immutably', () => {
-        component.errors['name'] = 'wrong error';
-        expect(component.errors).toEqual({
-          name: fakeNameError,
-          description: fakeDescriptionError,
-        });
-      });
-
-      it('to set error status of the corresponding controls', () => {
-        expect(form.get('name').errors).toBeTruthy();
-        expect(form.get('description').errors).toBeTruthy();
-        expect(form.get('id').errors).toBeFalsy();
-      });
-
-      it('not to close the dialog', () => {
-        expect(dialog.close).not.toHaveBeenCalled();
-      });
-
-      describe('not to be stored if', () => {
-        it('response is undefined', () => err = undefined);
-        it('response.json() is not a function', () => {
-          err = {
-            json: {},
-          };
-        });
-        it('response.json() produces undefined result', () => {
-          err = {
-            json: () => {},
-          };
-        });
-        it('their list is undefined', () => {
-          err = {
-            json: () => ({}),
-          };
-        });
-        it('their list is empty', () => {
+        beforeEach(() => {
           err = {
             json: () => ({
-              errors: [],
+              errors: fakeErrors(),
             }),
           };
-        });
-        afterEach(() => {
+          spyOnAction().subscribe
+            .and.callFake((onSuccess, onError) => onError(err));
           component.onSubmit();
-          expect(component.errors).toEqual({});
+        });
+
+        it('to be stored correctly and immutably', () => {
+          component.errors['name'] = 'wrong error';
+          expect(component.errors).toEqual({
+            name: fakeNameError,
+            description: fakeDescriptionError,
+          });
+        });
+
+        it('to set error status of the corresponding controls', () => {
+          expect(form.get('name').errors).toBeTruthy();
+          expect(form.get('description').errors).toBeTruthy();
+          expect(form.get('id').errors).toBeFalsy();
+        });
+
+        it('not to close the dialog', () => {
+          expect(dialog.close).not.toHaveBeenCalled();
+        });
+
+        describe('not to be stored if', () => {
+          it('response is undefined', () => err = undefined);
+          it('response.json() is not a function', () => {
+            err = {
+              json: {},
+            };
+          });
+          it('response.json() produces undefined result', () => {
+            err = {
+              json: () => {},
+            };
+          });
+          it('their list is undefined', () => {
+            err = {
+              json: () => ({}),
+            };
+          });
+          it('their list is empty', () => {
+            err = {
+              json: () => ({
+                errors: [],
+              }),
+            };
+          });
+          afterEach(() => {
+            component.onSubmit();
+            expect(component.errors).toEqual({});
+          });
+        });
+
+        it('to set "loading" to "false"', () => {
+          component.onSubmit();
+          expect(component.waiting).toBe(false);
+        });
+      };
+
+      describe('create()', () => {
+        testErrors(() => {
+          form.patchValue({
+            id: undefined,
+          });
+          return spyOnCreate;
         });
       });
 
-      it('to set "loading" to "false"', () => {
-        component.onSubmit();
-        expect(component.waiting).toBe(false);
+      describe('update()', () => {
+        testErrors(() => spyOnUpdate);
       });
     });
   });

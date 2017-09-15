@@ -253,6 +253,8 @@ describe('ListBaseComponent', () => {
     }));
     it('applies a defined update from afterClosed() observable', fakeAsync(() => {
       testSubmit({
+        id: fakeItem(0).id,
+        created_at: fakeItem(0).created_at,
         description: updatedDescription,
       });
       expect(component.rows[0].id).toEqual(fakeItem(0).id);

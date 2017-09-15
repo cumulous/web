@@ -31,6 +31,12 @@ export class ProjectDialogComponent extends DialogBaseComponent<Project> {
     });
   }
 
+  protected create() {
+    return this.projectsService.createProject(
+      this.form.value,
+    );
+  }
+
   protected update() {
     return this.projectsService.updateProject(
       this.form.get('id').value, this.form.value,
