@@ -42,7 +42,6 @@ describe('ProjectDialogComponent', () => {
   let component: ProjectDialogComponent;
   let dialog: MdDialogRef<ProjectDialogComponent>;
   let form: FormGroup;
-  let submit: HTMLButtonElement;
 
   let spyOnFormGroup: jasmine.Spy;
   let spyOnUpdateProject: jasmine.Spy;

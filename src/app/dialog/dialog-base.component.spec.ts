@@ -102,6 +102,11 @@ describe('DialogBaseComponent', () => {
       spyOn(component, 'update').and.returnValue(spyOnUpdate);
     });
 
+    it('sets "loading" to "true" before the update', () => {
+      component.onSubmit();
+      expect(component.waiting).toBe(true);
+    });
+
     it('calls update() once', () => {
       component.onSubmit();
       expect(component.update).toHaveBeenCalledTimes(1);
@@ -186,6 +191,11 @@ describe('DialogBaseComponent', () => {
           component.onSubmit();
           expect(component.errors).toEqual({});
         });
+      });
+
+      it('to set "loading" to "false"', () => {
+        component.onSubmit();
+        expect(component.waiting).toBe(false);
       });
     });
   });

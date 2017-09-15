@@ -7,6 +7,7 @@ import { Observable } from 'rxjs/Observable';
 export abstract class DialogBaseComponent<Item> {
   private readonly formGroup: FormGroup;
   private errorsDict: { [key: string]: string };
+  private isWaiting: boolean;
 
   constructor(
         private readonly dialog: MdDialogRef<DialogBaseComponent<Item>>,
@@ -23,7 +24,12 @@ export abstract class DialogBaseComponent<Item> {
   protected abstract createForm(formBuilder: FormBuilder, item: Item): FormGroup;
   protected abstract update(): Observable<any>;
 
+  get waiting() {
+    return this.isWaiting;
+  }
+
   onSubmit() {
+    this.isWaiting = true;
     this.update().subscribe(
       () => this.onSuccess(),
       err => this.onError(err),
@@ -35,6 +41,7 @@ export abstract class DialogBaseComponent<Item> {
   }
 
   private onError(err: Response) {
+    this.isWaiting = false;
     this.errorsDict = {};
     if (err == null || typeof err.json !== 'function') {
       return;
