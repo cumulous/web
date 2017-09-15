@@ -1,35 +1,39 @@
 import { Component, Inject } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder } from '@angular/forms';
 import { MD_DIALOG_DATA, MdDialogRef } from '@angular/material';
 
+import { DialogBaseComponent } from '../shared/dialog-base.component';
+
 import { Project } from '../api/model/project';
+import { ProjectsService } from '../api/api/projects.service';
 
 @Component({
   templateUrl: './project-dialog.component.html',
 })
-export class ProjectDialogComponent {
-  form: FormGroup;
-
+export class ProjectDialogComponent extends DialogBaseComponent<Project> {
   constructor(
-        private readonly formBuilder: FormBuilder,
-        private readonly dialog: MdDialogRef<ProjectDialogComponent>,
-        @Inject(MD_DIALOG_DATA) private project: Project,
+        dialog: MdDialogRef<ProjectDialogComponent>,
+        formBuilder: FormBuilder,
+        @Inject(MD_DIALOG_DATA) project: Project,
+        private readonly projectsService: ProjectsService,
       ) {
-    this.createForm();
+    super(dialog, formBuilder, project);
   }
 
-  createForm() {
-    this.form = this.formBuilder.group({
-      id: { value: this.project.id, disabled: true },
-      name: [ this.project.name, Validators.required ],
-      description: this.project.description,
-      created_at: { value: this.project.created_at, disabled: true },
-      created_by: { value: this.project.created_by, disabled: true },
-      status: { value: this.project.status, disabled: true },
+  protected createForm(formBuilder: FormBuilder, project: Project) {
+    return formBuilder.group({
+      id: { value: project.id, disabled: true },
+      name: project.name,
+      description: project.description,
+      created_at: { value: project.created_at, disabled: true },
+      created_by: { value: project.created_by, disabled: true },
+      status: { value: project.status, disabled: true },
     });
   }
 
-  onSubmit() {
-    this.dialog.close(this.form.value);
+  protected update() {
+    return this.projectsService.updateProject(
+      this.form.get('id').value, this.form.value,
+    );
   }
 }

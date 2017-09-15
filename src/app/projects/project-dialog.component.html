@@ -1,65 +1,56 @@
 <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
-  <table class="full-width">
-    <tr>
-      <td>
-        <h1 md-dialog-title>
-          Project
-        </h1>
-      </td>
-      <td align="right">
-        <md-form-field class="item-id">
-          <input mdInput
-            placeholder="ID"
-            formControlName="id"
-          >
-        </md-form-field>
-      </td>
-    </tr>
-  </table>
+  <h1 md-dialog-title>
+    Project
+  </h1>
   <md-dialog-content>
-    <table>
-      <tr>
-        <td>
-          <md-form-field class="full-width">
-            <input mdInput required
-              placeholder="Name"
-              formControlName="name"
-            >
-          </md-form-field>
-        </td>
-        <td>
-          <md-form-field class="full-width">
-            <input mdInput
-              placeholder="Date Created"
-              value="{{form.get('created_at').value | date:'short'}}"
-              [disabled]="form.get('created_at').disabled"
-            >
-          </md-form-field>
-        </td>
-        <td>
-          <md-form-field class="full-width">
-            <input mdInput
-              placeholder="Status"
-              formControlName="status"
-            >
-          </md-form-field>
-        </td>
-      </tr>
-      <tr>
-        <td colspan="3">
-          <md-form-field class="full-width" floatPlaceholder="always">
-            <textarea mdInput mdTextareaAutosize
-              placeholder="Description"
-              formControlName="description"
-            ></textarea>
-          </md-form-field>
-        </td>
-      </tr>
-    </table>
+    <p>
+      <md-form-field class="item-name">
+        <input mdInput
+          placeholder="Name"
+          formControlName="name"
+          required
+        >
+        <md-error>
+          {{errors.name}}
+        </md-error>
+      </md-form-field>
+      <br/>
+      <md-form-field class="item-id">
+        <input mdInput
+          placeholder="ID"
+          formControlName="id"
+        >
+      </md-form-field>
+      <md-form-field class="item-date">
+        <input mdInput
+          placeholder="Date Created"
+          value="{{form.get('created_at').value | date:'short'}}"
+          [disabled]="form.get('created_at').disabled"
+        >
+      </md-form-field>
+      <md-form-field class="item-status">
+        <input mdInput
+          placeholder="Status"
+          formControlName="status"
+        >
+      </md-form-field>
+      <br/>
+      <md-form-field class="item-description"floatPlaceholder="always">
+        <textarea mdInput mdTextareaAutosize
+          placeholder="Description"
+          formControlName="description"
+        ></textarea>
+        <md-error>
+          {{errors.description}}
+        </md-error>
+      </md-form-field>
+    </p>
   </md-dialog-content>
+  <!--</p>-->
   <md-dialog-actions>
-    <button md-button md-dialog-close
+    <button md-button
       type="button"
+      [md-dialog-close]
     >Cancel</button>
     <button md-button
       type="submit"

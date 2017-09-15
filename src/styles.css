@@ -22,10 +22,24 @@ ngx-datatable .progress-linear {
   bottom: 0px;
 }
 
-.full-width {
+.item-name {
   width: 100% !important;
+  max-width: 190pt;
 }
 
 .item-id {
-  width: 190pt !important;
+  width: 100% !important;
+  max-width: 190pt;
+}
+
+.item-date {
+  max-width: 95pt !important;
+}
+
+.item-status {
+  max-width: 40pt;
+}
+
+.item-description {
+  width: 100% !important;
 }
