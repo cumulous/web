@@ -224,32 +224,38 @@ describe('ListBaseComponent', () => {
 
     let spyOnDialogOpen: jasmine.Spy;
 
-    beforeEach(fakeAsync(() => {
+    const testSubmit = (data?: any) => {
       fixture.detectChanges();
 
       const dialog = TestBed.get(MdDialog);
       const dialogRef = jasmine.createSpyObj('DialogRef', ['close', 'afterClosed']);
       spyOnDialogOpen = spyOn(dialog, 'open')
         .and.returnValue(dialogRef);
-      dialogRef.afterClosed.and.returnValue(Observable.of({
-        description: updatedDescription,
-      }));
+      dialogRef.afterClosed.and.returnValue(Observable.of(data));
 
       const description = selectElement(fixture, '.item-description');
       expect(description.textContent.trim()).toBe(fakeItem(0).description);
       description.click();
       tick();
       fixture.detectChanges();
-    }));
-    it('opens a dialog for the item been clicked', () => {
+    };
+    it('opens a dialog for the item been clicked', fakeAsync(() => {
+      testSubmit();
       expect(spyOnDialogOpen).toHaveBeenCalledWith(ItemDialogComponent, {
         data: fakeItem(0),
       });
-    });
-    it('updates the item through afterClosed() observable', () => {
+    }));
+    it('applies a defined update from afterClosed() observable', fakeAsync(() => {
+      testSubmit({
+        description: updatedDescription,
+      });
       expect(component.rows[0].id).toEqual(fakeItem(0).id);
       expect(component.rows[0].created_at).toEqual(fakeItem(0).created_at);
       expect(component.rows[0].description).toEqual(updatedDescription);
-    });
+    }));
+    it('ignores "undefined" update from afterClosed() observable', fakeAsync(() => {
+      testSubmit();
+      expect(component.rows[0]).toEqual(fakeItem(0));
+    }));
   });
 });
