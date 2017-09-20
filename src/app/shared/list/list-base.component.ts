@@ -17,6 +17,7 @@ export class ListColumn {
 export abstract class ListBaseComponent<Item> implements OnInit {
 
   @ViewChild('dateTemplate') protected readonly dateTemplate: TemplateRef<any>;
+  @ViewChild('projectTemplate') protected readonly projectTemplate: TemplateRef<any>;
   @ViewChild('table', { read: ElementRef }) private readonly table: ElementRef;
 
   readonly headerHeight: number = 42;

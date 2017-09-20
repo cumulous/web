@@ -25,3 +25,7 @@
 <ng-template #dateTemplate let-value="value">
   {{value | date:'short'}}
 </ng-template>
+
+<ng-template #projectTemplate let-value="value">
+  {{value | projectName | async}}
+</ng-template>

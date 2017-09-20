@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Inject, NgModule, OnInit } from '@angular/core';
+import { Component, Inject, Injectable, NgModule, OnInit } from '@angular/core';
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { MdDialog, MdDialogModule, MD_DIALOG_DATA } from '@angular/material';
 
@@ -11,23 +11,42 @@ import { debugElement, elementsText, fakeUUIDs, selectElement } from '../../../t
 import { ListModule } from './list.module';
 import { ListBaseComponent, ListColumn } from './list-base.component';
 
+import { ProjectsCachingService } from '../../caching/projects-caching.service';
+import { ProjectNamePipe } from '../pipes/project-name.pipe';
+
 interface Item {
   id: string;
   created_at: string;
+  project_id: string;
   description: string;
 }
 
 const item_ids = fakeUUIDs(100);
+const project_ids = fakeUUIDs(100);
+
 const now = new Date().getTime();
 
 const fakeItem = (i: number): Item => ({
   id: item_ids[i],
   created_at: new Date(now - i * 1E9).toISOString(),
+  project_id: project_ids[i],
   description: 'Item ' + i,
 });
 
 const fakeItems = (offset: number, limit: number) =>
   Array.from({length: limit}, (d, i) => fakeItem(offset + i));
+
+const fakeProjectName = (i: number) => 'Project ' + i;
+const fakeProject = (i: number) => ({
+  name: fakeProjectName(i),
+});
+
+@Injectable()
+class FakeProjectsCachingService {
+  get(id: string) {
+    return Observable.of(fakeProject(project_ids.indexOf(id)));
+  }
+}
 
 @Component({
   selector: 'app-item-list',
@@ -50,6 +69,7 @@ class ItemListComponent extends ListBaseComponent<Item> implements OnInit {
   ngOnInit() {
     this.columns.push(
       new ListColumn('created_at', 'Date Created', this.dateTemplate),
+      new ListColumn('project_id', 'Project', this.projectTemplate),
       new ListColumn('description', 'Description', null, 'item-description'),
     );
     super.ngOnInit();
@@ -76,15 +96,14 @@ class ItemDialogComponent {
   declarations: [
     ItemListComponent,
     ItemDialogComponent,
-  ],
-  entryComponents: [
-    ItemDialogComponent,
+    ProjectNamePipe,
   ],
   providers: [
     MdDialog,
+    { provide: ProjectsCachingService, useClass: FakeProjectsCachingService },
   ],
 })
-export class ItemsModule { }
+export class ItemsModule {}
 
 export function pageSize(fixture: ComponentFixture<ListBaseComponent<any>>) {
   const page = debugElement(fixture, '.list').nativeElement;
@@ -102,8 +121,8 @@ describe('ListBaseComponent', () => {
     .triggerEventHandler('scroll', { offsetY });
 
   const componentRows = () => component.rows.map(row => {
-    const { id, created_at, description } = row;
-    return { id, created_at, description } as Item;
+    const { id, created_at, project_id, description } = row;
+    return { id, created_at, project_id, description } as Item;
   });
 
   beforeEach(() => {
@@ -122,7 +141,7 @@ describe('ListBaseComponent', () => {
   it('correctly displays column names', () => {
     fixture.detectChanges();
     const columnNames = elementsText(fixture, '.list-column');
-    expect(columnNames).toEqual(['Date Created', 'Description']);
+    expect(columnNames).toEqual(['Date Created', 'Project', 'Description']);
   });
 
   describe('loads correct items if', () => {
@@ -169,6 +188,11 @@ describe('ListBaseComponent', () => {
         const createdDate = createdAt.toLocaleDateString();
         const createdTime = createdAt.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
         expect(rowText).toContain(createdDate + ', ' + createdTime);
+      });
+    });
+    it('project names', () => {
+      rowsText.map((rowText, i) => {
+        expect(rowText).toContain(fakeProjectName(i));
       });
     });
   });
@@ -259,11 +283,13 @@ describe('ListBaseComponent', () => {
         prepDialog({
           id: fakeItem(0).id,
           created_at: fakeItem(0).created_at,
+          project_id: fakeItem(0).project_id,
           description: updatedDescription,
         });
         prepClick();
         expect(component.rows[0].id).toEqual(fakeItem(0).id);
         expect(component.rows[0].created_at).toEqual(fakeItem(0).created_at);
+        expect(component.rows[0].project_id).toEqual(fakeItem(0).project_id);
         expect(component.rows[0].description).toEqual(updatedDescription);
       }));
       it('ignores "undefined" update from afterClosed() observable', fakeAsync(() => {
@@ -294,6 +320,7 @@ describe('ListBaseComponent', () => {
         prepClick();
         expect(component.rows[0].id).toEqual(fakeItem(newItemIndex).id);
         expect(component.rows[0].created_at).toEqual(fakeItem(newItemIndex).created_at);
+        expect(component.rows[0].project_id).toEqual(fakeItem(newItemIndex).project_id);
         expect(component.rows[0].description).toEqual(fakeItem(newItemIndex).description);
       }));
       it('ignores "undefined" item from afterClosed() observable', fakeAsync(() => {
