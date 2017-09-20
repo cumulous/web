@@ -52,7 +52,7 @@ export abstract class ListBaseComponent<Item> implements OnInit {
 
   onRowClick(item: Item) {
     this.dialog.open(this.dialogComponent, {
-      data: Object.assign({}, item),
+      data: JSON.parse(JSON.stringify(item)),
     }).afterClosed().subscribe((result: Item) => {
       Object.assign(item, result);
     });
