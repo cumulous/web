@@ -1,3 +1,4 @@
+import { Injectable } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { HttpModule } from '@angular/http';
 
@@ -14,6 +15,8 @@ import { DatasetListComponent } from './dataset-list.component';
 import { DatasetsService } from '../api/api/datasets.service';
 import { Dataset } from '../api/model/dataset';
 import { DatasetStatus } from '../api/model/datasetStatus';
+
+import { ProjectsCachingService } from '../caching/projects-caching.service';
 
 describe('DatasetListComponent', () => {
   let fixture: ComponentFixture<DatasetListComponent>;
@@ -45,10 +48,27 @@ describe('DatasetListComponent', () => {
     return { id, project_id, created_by, created_at, description, status } as Dataset;
   });
 
+  const fakeProject = (i: number) => ({
+    name: 'Project ' + i,
+  });
+
+  @Injectable()
+  class FakeProjectsCachingService {
+    get(id: string) {
+      return Observable.of(fakeProject(project_ids.indexOf(id)));
+    }
+  }
+
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [ DatasetsModule, HttpModule ],
-      providers: [ DatasetsService ],
+      imports: [
+        DatasetsModule,
+        HttpModule,
+      ],
+      providers: [
+        DatasetsService,
+        { provide: ProjectsCachingService, useClass: FakeProjectsCachingService },
+      ],
     });
 
     fixture = TestBed.createComponent(DatasetListComponent);
@@ -67,7 +87,7 @@ describe('DatasetListComponent', () => {
 
   it('correctly displays column names', () => {
     const columnNames = elementsText(fixture, '.list-column');
-    expect(columnNames).toEqual(['Date Created', 'Description', 'Status']);
+    expect(columnNames).toEqual(['Date Created', 'Description', 'Project', 'Status']);
   });
 
   it('loads correct datasets', () => {

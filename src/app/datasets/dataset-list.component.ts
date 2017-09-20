@@ -19,6 +19,7 @@ export class DatasetListComponent extends ListBaseComponent<Dataset> implements 
     this.columns.push(
       new ListColumn('created_at', 'Date Created', this.dateTemplate),
       new ListColumn('description'),
+      new ListColumn('project_id', 'Project', this.projectTemplate),
       new ListColumn('status'),
     );
     super.ngOnInit();

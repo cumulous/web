@@ -6,5 +6,5 @@ Feature: Showing a list of datasets
 Scenario: Showing the list of most recent datasets
   Given I am on the "Datasets" page
   Then I should see a tabulated list of datasets with columns
-    | Date Created | Description | Status |
+    | Date Created | Description | Project | Status |
   And the datasets should be sorted by date in descending order
