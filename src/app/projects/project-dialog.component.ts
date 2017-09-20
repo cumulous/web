@@ -2,10 +2,13 @@ import { Component, Inject } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { MD_DIALOG_DATA, MdDialogRef } from '@angular/material';
 
+import 'rxjs/add/operator/do';
+
 import { DialogBaseComponent } from '../shared/dialog/dialog-base.component';
 
-import { Project } from '../api/model/project';
 import { ProjectsService } from '../api/api/projects.service';
+import { Project } from '../api/model/project';
+import { ProjectsCachingService } from '../caching/projects-caching.service';
 
 @Component({
   templateUrl: './project-dialog.component.html',
@@ -16,6 +19,7 @@ export class ProjectDialogComponent extends DialogBaseComponent<Project> {
         formBuilder: FormBuilder,
         @Inject(MD_DIALOG_DATA) project: Project,
         private readonly projectsService: ProjectsService,
+        private readonly projectsCachingService: ProjectsCachingService,
       ) {
     super(dialog, formBuilder, project);
   }
@@ -34,12 +38,16 @@ export class ProjectDialogComponent extends DialogBaseComponent<Project> {
   protected create() {
     return this.projectsService.createProject(
       this.form.value,
-    );
+    ).do(project => this.cache(project));
   }
 
   protected update() {
     return this.projectsService.updateProject(
       this.form.get('id').value, this.form.value,
-    );
+    ).do(project => this.cache(project));
+  }
+
+  private cache(project: Project) {
+    this.projectsCachingService.update(project);
   }
 }

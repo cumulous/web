@@ -1,3 +1,4 @@
+import { Injectable } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { HttpModule } from '@angular/http';
@@ -18,6 +19,7 @@ import { ProjectDialogComponent } from './project-dialog.component';
 import { Project } from '../api/model/project';
 import { ProjectStatus } from '../api/model/projectStatus';
 import { ProjectsService } from '../api/api/projects.service';
+import { ProjectsCachingService } from '../caching/projects-caching.service';
 
 describe('ProjectDialogComponent', () => {
   const now = new Date().getTime();
@@ -38,6 +40,15 @@ describe('ProjectDialogComponent', () => {
     status: ProjectStatus.Active,
   });
 
+  const updatedValues = () => ({
+    name: fakeProjectName + ' (updated)',
+    description: fakeProjectDescription + ' (updated)',
+  });
+
+  const updatedProject = () => Object.assign(
+    fakeProject(), updatedValues()
+  );
+
   let fixture: ComponentFixture<ProjectDialogComponent>;
   let component: ProjectDialogComponent;
   let dialog: MdDialogRef<ProjectDialogComponent>;
@@ -46,6 +57,12 @@ describe('ProjectDialogComponent', () => {
   let spyOnFormGroup: jasmine.Spy;
   let spyOnCreateProject: jasmine.Spy;
   let spyOnUpdateProject: jasmine.Spy;
+  let spyOnUpdateProjectCache: jasmine.Spy;
+
+  @Injectable()
+  class FakeProjectsCachingService {
+    update(project: Project) {};
+  }
 
   beforeEach(() => {
     dialog = jasmine.createSpyObj('MdDialogRef', ['close']);
@@ -64,6 +81,7 @@ describe('ProjectDialogComponent', () => {
         { provide: MdDialogRef, useValue: dialog },
         { provide: MD_DIALOG_DATA, useValue: fakeProject() },
         ProjectsService,
+        { provide: ProjectsCachingService, useClass: FakeProjectsCachingService },
       ],
     });
 
@@ -73,11 +91,14 @@ describe('ProjectDialogComponent', () => {
     component = fixture.componentInstance;
     form = component.form;
 
-    const projectsService = fixture.debugElement.injector.get(ProjectsService);
+    const projectsService = TestBed.get(ProjectsService);
     spyOnCreateProject = spyOn(projectsService, 'createProject')
-      .and.returnValue(Observable.of({}));
+      .and.returnValue(Observable.of(fakeProject()));
     spyOnUpdateProject = spyOn(projectsService, 'updateProject')
-      .and.returnValue(Observable.of({}));
+      .and.returnValue(Observable.of(updatedProject()));
+
+    const projectsCachingService = TestBed.get(ProjectsCachingService);
+    spyOnUpdateProjectCache = spyOn(projectsCachingService, 'update');
 
     fixture.detectChanges();
   });
@@ -100,20 +121,36 @@ describe('ProjectDialogComponent', () => {
       id: undefined,
     });
     dispatchEvent(fixture, 'form', 'submit');
+    expect(spyOnCreateProject).toHaveBeenCalledTimes(1);
     expect(spyOnCreateProject).toHaveBeenCalledWith({
       name: fakeProjectName,
       description: fakeProjectDescription,
     });
   });
 
+  it('calls projectsCachingService.update() once with correct parameters ' +
+     'on "submit" event for "create" action', () => {
+    form.patchValue({
+      id: undefined,
+    });
+    dispatchEvent(fixture, 'form', 'submit');
+    expect(spyOnUpdateProjectCache).toHaveBeenCalledTimes(1);
+    expect(spyOnUpdateProjectCache).toHaveBeenCalledWith(fakeProject());
+  });
+
   it('calls projectsService.updateProject() once with correct parameters ' +
      'on "submit" event for "update" action', () => {
-    const updatedValues = () => ({
-      name: fakeProjectName + ' (updated)',
-      description: fakeProjectDescription + ' (updated)',
-    });
     form.patchValue(updatedValues());
     dispatchEvent(fixture, 'form', 'submit');
+    expect(spyOnUpdateProject).toHaveBeenCalledTimes(1);
     expect(spyOnUpdateProject).toHaveBeenCalledWith(fakeProjectId, updatedValues());
+  });
+
+  it('calls projectsCachingService.update() once with correct parameters ' +
+     'on "submit" event for "update" action', () => {
+    form.patchValue(updatedValues());
+    dispatchEvent(fixture, 'form', 'submit');
+    expect(spyOnUpdateProjectCache).toHaveBeenCalledTimes(1);
+    expect(spyOnUpdateProjectCache).toHaveBeenCalledWith(updatedProject());
   });
 });

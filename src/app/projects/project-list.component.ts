@@ -1,6 +1,8 @@
 import { Component, ElementRef, OnInit } from '@angular/core';
 import { MdDialog } from '@angular/material';
 
+import 'rxjs/add/operator/do';
+
 import { ProjectsService } from '../api/api/projects.service';
 import { Project } from '../api/model/project';
 import { ProjectsCachingService } from '../caching/projects-caching.service';
@@ -35,11 +37,10 @@ export class ProjectListComponent extends ListBaseComponent<Project> implements 
   protected list(offset: number, limit: number) {
     return this.projectsService.listProjects(
       undefined, undefined, undefined, undefined, undefined, undefined, offset, limit
-    ).map(listOfProjects => {
+    ).do(listOfProjects => {
       listOfProjects.items.forEach(project =>
         this.projectsCachingService.update(project)
       );
-      return listOfProjects;
     });
   }
 }
