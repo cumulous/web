@@ -23,7 +23,9 @@
 ></ngx-datatable>
 
 <ng-template #dateTemplate let-value="value">
-  {{value | date:'short'}}
+  <div class="column-date">
+    {{value | date:'short'}}
+  </div>
 </ng-template>
 
 <ng-template #projectTemplate let-value="value">

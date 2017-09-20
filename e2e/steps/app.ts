@@ -19,7 +19,7 @@ steps(({Given, When, Then}) => {
         .then(() => location().should.become(locationOf(tab))))));
 
   Then(/^the .* should be sorted by date in descending order$/, () => {
-    return $$('.item-date').getText().then(dates => {
+    return $$('.column-date').getText().then(dates => {
       dates.length.should.be.above(0);
       const timestamp = date => new Date(date).getTime();
       (dates as any).reduce((last, next) => {
