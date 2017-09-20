@@ -3,6 +3,7 @@ import { MdDialog } from '@angular/material';
 
 import { ProjectsService } from '../api/api/projects.service';
 import { Project } from '../api/model/project';
+import { ProjectsCachingService } from '../caching/projects-caching.service';
 
 import { ListBaseComponent, ListColumn } from '../shared/list/list-base.component';
 
@@ -13,7 +14,11 @@ import { ProjectDialogComponent } from './project-dialog.component';
   templateUrl: '../shared/list/list-base.component.html',
 })
 export class ProjectListComponent extends ListBaseComponent<Project> implements OnInit {
-  constructor(dialog: MdDialog, private projectsService: ProjectsService) {
+  constructor(
+        private projectsService: ProjectsService,
+        private projectsCachingService: ProjectsCachingService,
+        dialog: MdDialog
+      ) {
     super(dialog, ProjectDialogComponent);
   }
 
@@ -29,6 +34,12 @@ export class ProjectListComponent extends ListBaseComponent<Project> implements 
 
   protected list(offset: number, limit: number) {
     return this.projectsService.listProjects(
-      undefined, undefined, undefined, undefined, undefined, undefined, offset, limit);
+      undefined, undefined, undefined, undefined, undefined, undefined, offset, limit
+    ).map(listOfProjects => {
+      listOfProjects.items.forEach(project =>
+        this.projectsCachingService.update(project)
+      );
+      return listOfProjects;
+    });
   }
 }

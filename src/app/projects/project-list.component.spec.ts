@@ -1,3 +1,4 @@
+import { Injectable } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { HttpModule } from '@angular/http';
 
@@ -14,13 +15,9 @@ import { ProjectListComponent } from './project-list.component';
 import { ProjectsService } from '../api/api/projects.service';
 import { Project } from '../api/model/project';
 import { ProjectStatus } from '../api/model/projectStatus';
+import { ProjectsCachingService } from '../caching/projects-caching.service';
 
 describe('ProjectListComponent', () => {
-  let fixture: ComponentFixture<ProjectListComponent>;
-  let component: ProjectListComponent;
-
-  let spyOnListProjects: jasmine.Spy;
-
   const fakeProjectCount = 20;
 
   const project_ids = fakeUUIDs(fakeProjectCount);
@@ -40,6 +37,21 @@ describe('ProjectListComponent', () => {
   const fakeProjects = (offset: number, limit: number) =>
     Array.from({length: limit}, (d, i) => fakeProject(offset + i));
 
+  @Injectable()
+  class FakeProjectsCachingService {
+    get(id: string) {
+      return Observable.of(fakeProject(project_ids.indexOf(id)));
+    }
+    update(project: Project) {}
+  }
+
+  let fixture: ComponentFixture<ProjectListComponent>;
+  let component: ProjectListComponent;
+  let pageLimit: number;
+
+  let spyOnListProjects: jasmine.Spy;
+  let spyOnUpdateProjectsCache: jasmine.Spy;
+
   const componentRows = () => component.rows.map(row => {
     const { id, name, created_by, created_at, description, status } = row;
     return { id, name, created_by, created_at, description, status } as Project;
@@ -47,14 +59,20 @@ describe('ProjectListComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [ ProjectsModule, HttpModule ],
-      providers: [ ProjectsService ],
+      imports: [
+        ProjectsModule,
+        HttpModule,
+      ],
+      providers: [
+        ProjectsService,
+        { provide: ProjectsCachingService, useClass: FakeProjectsCachingService },
+      ],
     });
 
     fixture = TestBed.createComponent(ProjectListComponent);
     component = fixture.componentInstance;
 
-    const projectsService = fixture.debugElement.injector.get(ProjectsService);
+    const projectsService = TestBed.get(ProjectsService);
     spyOnListProjects = spyOn(projectsService, 'listProjects').and.callFake(
         (nameContains, isMember, isHidden, status, descriptionContains, sort, offset, limit) => {
       return Observable.of({
@@ -62,7 +80,12 @@ describe('ProjectListComponent', () => {
       });
     });
 
+    const projectsCachingService = TestBed.get(ProjectsCachingService);
+    spyOnUpdateProjectsCache = spyOn(projectsCachingService, 'update');
+
     fixture.detectChanges();
+
+    pageLimit = Math.max(pageSize(fixture), component.pageLimit);
   });
 
   it('correctly displays column names', () => {
@@ -71,9 +94,16 @@ describe('ProjectListComponent', () => {
   });
 
   it('loads correct projects', () => {
-    const limit = Math.max(pageSize(fixture), component.pageLimit);
+    expect(spyOnListProjects).toHaveBeenCalledTimes(1);
     expect(spyOnListProjects).toHaveBeenCalledWith(
-      undefined, undefined, undefined, undefined, undefined, undefined, 0, limit);
-    expect(componentRows()).toEqual(fakeProjects(0, limit));
+      undefined, undefined, undefined, undefined, undefined, undefined, 0, pageLimit);
+    expect(componentRows()).toEqual(fakeProjects(0, pageLimit));
+  });
+
+  it('updates projects cache', () => {
+    expect(spyOnUpdateProjectsCache).toHaveBeenCalledTimes(pageLimit);
+    fakeProjects(0, pageLimit).forEach(project => {
+      expect(spyOnUpdateProjectsCache).toHaveBeenCalledWith(project);
+    });
   });
 });
