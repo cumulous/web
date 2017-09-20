@@ -5,7 +5,7 @@ import { ApiModule } from '../api/api.module';
 import { Configuration as ApiConfig } from '../api/configuration';
 
 import { AuthModule } from '../auth/auth.module';
-
+import { CachingModule } from '../caching/caching.module';
 import { LoginModule } from '../login/login.module';
 import { SessionModule } from '../session/session.module';
 
@@ -15,9 +15,8 @@ import { environment } from '../../environments/environment';
   imports: [
     ApiModule.forConfig(apiConfig),
     AuthModule.forRoot(environment.auth, apiConfig),
-    MdTabsModule,
+    CachingModule,
     LoginModule,
-    SessionModule,
   ],
   exports: [
     MdTabsModule,
