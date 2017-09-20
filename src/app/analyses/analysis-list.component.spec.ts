@@ -1,3 +1,4 @@
+import { Injectable } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { HttpModule } from '@angular/http';
 
@@ -14,6 +15,8 @@ import { AnalysisListComponent } from './analysis-list.component';
 import { AnalysesService } from '../api/api/analyses.service';
 import { Analysis } from '../api/model/analysis';
 import { AnalysisStatus } from '../api/model/analysisStatus';
+
+import { ProjectsCachingService } from '../caching/projects-caching.service';
 
 describe('AnalysisListComponent', () => {
   let fixture: ComponentFixture<AnalysisListComponent>;
@@ -37,7 +40,7 @@ describe('AnalysisListComponent', () => {
     status: i % 2 ? AnalysisStatus.Submitted : AnalysisStatus.Running,
   });
 
-  const fakeAnalysiss = (offset: number, limit: number) =>
+  const fakeAnalyses = (offset: number, limit: number) =>
     Array.from({length: limit}, (d, i) => fakeAnalysis(offset + i));
 
   const componentRows = () => component.rows.map(row => {
@@ -45,10 +48,27 @@ describe('AnalysisListComponent', () => {
     return { id, project_id, created_by, created_at, description, status } as Analysis;
   });
 
+  const fakeProject = (i: number) => ({
+    name: 'Project ' + i,
+  });
+
+  @Injectable()
+  class FakeProjectsCachingService {
+    get(id: string) {
+      return Observable.of(fakeProject(project_ids.indexOf(id)));
+    }
+  }
+
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [ AnalysesModule, HttpModule ],
-      providers: [ AnalysesService ],
+      imports: [
+        AnalysesModule,
+        HttpModule,
+      ],
+      providers: [
+        AnalysesService,
+        { provide: ProjectsCachingService, useClass: FakeProjectsCachingService },
+      ],
     });
 
     fixture = TestBed.createComponent(AnalysisListComponent);
@@ -58,7 +78,7 @@ describe('AnalysisListComponent', () => {
     spyOnListAnalyses = spyOn(analysesService, 'listAnalyses')
       .and.callFake((projectId, descriptionContains, status, sort, offset, limit) => {
         return Observable.of({
-          items: fakeAnalysiss(offset, limit),
+          items: fakeAnalyses(offset, limit),
         });
       });
 
@@ -67,13 +87,13 @@ describe('AnalysisListComponent', () => {
 
   it('correctly displays column names', () => {
     const columnNames = elementsText(fixture, '.list-column');
-    expect(columnNames).toEqual(['Date Created', 'Description', 'Status']);
+    expect(columnNames).toEqual(['Date Created', 'Description', 'Project', 'Status']);
   });
 
   it('loads correct analyses', () => {
     const limit = Math.max(pageSize(fixture), component.pageLimit);
     expect(spyOnListAnalyses).toHaveBeenCalledWith(
       undefined, undefined, undefined, undefined, 0, limit);
-    expect(componentRows()).toEqual(fakeAnalysiss(0, limit));
+    expect(componentRows()).toEqual(fakeAnalyses(0, limit));
   });
 });

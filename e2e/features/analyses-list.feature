@@ -6,5 +6,5 @@ Feature: Showing a list of analyses
 Scenario: Showing the list of most recent analyses
   Given I am on the "Analyses" page
   Then I should see a tabulated list of analyses with columns
-    | Date Created | Description | Status |
+    | Date Created | Description | Project | Status |
   And the analyses should be sorted by date in descending order
