@@ -1,53 +1,63 @@
 <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+
   <h1 md-dialog-title>
     Project
   </h1>
+
   <md-dialog-content>
-    <p>
-      <md-form-field class="item-name">
-        <input mdInput
-          placeholder="Name"
-          formControlName="name"
-          required
-        >
-        <md-error>
-          {{errors.name}}
-        </md-error>
-      </md-form-field>
-      <br/>
-      <md-form-field *ngIf="form.get('id').value" class="item-id">
-        <input mdInput
-          placeholder="ID"
-          formControlName="id"
-        >
-      </md-form-field>
-      <md-form-field *ngIf="form.get('id').value" class="item-date">
-        <input mdInput
-          placeholder="Date Created"
-          value="{{form.get('created_at').value | date:'short'}}"
-          [disabled]="form.get('created_at').disabled"
-        >
-      </md-form-field>
-      <md-form-field *ngIf="form.get('id').value" class="item-status">
-        <input mdInput
-          placeholder="Status"
-          formControlName="status"
-        >
-      </md-form-field>
-      <br/>
-      <md-form-field class="item-description" floatPlaceholder="always">
-        <textarea mdInput mdTextareaAutosize
-          placeholder="Description"
-          formControlName="description"
-        ></textarea>
-        <md-error>
-          {{errors.description}}
-        </md-error>
-      </md-form-field>
-    </p>
+
+    <md-form-field class="item-name">
+      <input mdInput
+        placeholder="Name"
+        formControlName="name"
+        required
+      >
+      <md-error>
+        {{errors.name}}
+      </md-error>
+    </md-form-field>
+
+    <br>
+
+    <md-form-field *ngIf="form.get('id').value" class="item-id">
+      <input mdInput
+        placeholder="ID"
+        formControlName="id"
+      >
+    </md-form-field>
+
+    <md-form-field *ngIf="form.get('id').value" class="item-date">
+      <input mdInput
+        placeholder="Date Created"
+        value="{{form.get('created_at').value | date:'short'}}"
+        disabled
+      >
+    </md-form-field>
+
+    <md-form-field *ngIf="form.get('id').value" class="item-status">
+      <input mdInput
+        placeholder="Status"
+        formControlName="status"
+      >
+    </md-form-field>
+
+    <br *ngIf="form.get('id').value">
+
+    <md-form-field class="item-description">
+      <textarea mdInput mdTextareaAutosize
+        placeholder="Description"
+        formControlName="description"
+      ></textarea>
+      <md-error>
+        {{errors.description}}
+      </md-error>
+    </md-form-field>
+
   </md-dialog-content>
+
   <app-dialog-actions
     [form]="form"
     [waiting]="waiting"
   ></app-dialog-actions>
+
 </form>
