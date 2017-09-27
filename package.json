@@ -30,6 +30,7 @@
     "@angular/platform-browser-dynamic": "^4.4.3",
     "@angular/router": "^4.4.3",
     "@ngrx/store": "^4.0.3",
+    "@ngrx/store-devtools": "^4.0.0",
     "@swimlane/ngx-datatable": "10.0.x",
     "amazon-cognito-auth-js": "^1.0.0",
     "core-js": "^2.4.1",
