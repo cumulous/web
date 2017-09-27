@@ -6,3 +6,7 @@ export class Property {
     readonly type: 'string' | 'date' | 'project' = 'string',
   ) {}
 }
+
+export interface StoreItem {
+  id: any;
+}
