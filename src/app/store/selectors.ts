@@ -2,7 +2,9 @@ import { createFeatureSelector, createSelector, Store } from '@ngrx/store';
 
 import { entityAdapter, propertyAdapter } from './adapters';
 import { StoreItem } from './models';
-import { ItemsState } from './state';
+import { ItemsState, State } from './state';
+
+export type Selector<T> = (state: State) => T;
 
 export function createSelectors<Item extends StoreItem>(type: string) {
   const rootSelector = createFeatureSelector<ItemsState<Item>>(type);
