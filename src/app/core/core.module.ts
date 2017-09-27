@@ -8,6 +8,7 @@ import { AuthModule } from '../auth/auth.module';
 import { CachingModule } from '../caching/caching.module';
 import { LoginModule } from '../login/login.module';
 import { SessionModule } from '../session/session.module';
+import { StoreModule } from '../store/store.module';
 
 import { environment } from '../../environments/environment';
 
@@ -17,6 +18,7 @@ import { environment } from '../../environments/environment';
     AuthModule.forRoot(environment.auth, apiConfig),
     CachingModule,
     LoginModule,
+    StoreModule,
   ],
   exports: [
     MdTabsModule,
