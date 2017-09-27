@@ -29,6 +29,7 @@
     "@angular/platform-browser": "^4.4.3",
     "@angular/platform-browser-dynamic": "^4.4.3",
     "@angular/router": "^4.4.3",
+    "@ngrx/effects": "^4.0.5",
     "@ngrx/entity": "github:ngrx/entity-builds",
     "@ngrx/store": "^4.0.3",
     "@ngrx/store-devtools": "^4.0.0",
