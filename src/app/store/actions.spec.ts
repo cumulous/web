@@ -1,0 +1,91 @@
+import { create, createSuccess, update, updateSuccess, list, listSuccess } from './actions';
+
+interface Item {
+  id: string;
+  name: string;
+}
+
+describe('store creates action of correct type and shape using', () => {
+  const fakeFamily = 'fake-family';
+  const fakeId = '1234-abcd';
+  const fakeName = 'fake-name';
+  const fakeLimit = 42;
+
+  let action: any;
+  let type: string;
+  let payload: () => any;
+  let factory: (payload: any) => {
+    type: string;
+    payload: any;
+  };
+
+  beforeEach(() => {
+    type = undefined;
+    payload = () => undefined;
+    factory = undefined;
+  });
+
+  it('create() factory', () => {
+    type = 'CREATE';
+    payload = () => ({
+      name: fakeName,
+    });
+    factory = create<Item>(fakeFamily);
+  });
+
+  it('createSuccess() factory', () => {
+    type = 'CREATE_SUCCESS';
+    payload = () => ({
+      id: fakeId,
+      name: fakeName,
+    });
+    factory = createSuccess<Item>(fakeFamily);
+  });
+
+  it('update() factory', () => {
+    type = 'UPDATE';
+    payload = () => ({
+      id: fakeId,
+      changes: {
+        name: fakeName,
+      },
+    });
+    factory = update<Item>(fakeFamily);
+  });
+
+  it('updateSuccess() factory', () => {
+    type = 'UPDATE_SUCCESS';
+    payload = () => ({
+      id: fakeId,
+      changes: {
+        name: fakeName,
+      },
+    });
+    factory = updateSuccess<Item>(fakeFamily);
+  });
+
+  it('list() factory', () => {
+    type = 'LIST';
+    payload = () => ({
+      limit: fakeLimit,
+    });
+    factory = list(fakeFamily);
+  });
+
+  it('listSuccess() factory', () => {
+    type = 'LIST_SUCCESS';
+    payload = () => [{
+      id: fakeId,
+      name: fakeName,
+    }];
+    factory = listSuccess<Item>(fakeFamily);
+  });
+
+  afterEach(() => {
+    action = factory(payload());
+    expect(action).toEqual({
+      type: fakeFamily + '/' + type,
+      payload: payload(),
+    });
+  });
+});
