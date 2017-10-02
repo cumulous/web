@@ -4,12 +4,23 @@ import { By } from '@angular/platform-browser';
 
 import * as uuid from 'uuid';
 
+function root<T> (fixture: ComponentFixture<T>) {
+  return fixture.debugElement;
+}
+
 export function debugElement<T> (fixture: ComponentFixture<T>, locator: string | Type<any>) {
-  const root = fixture.debugElement;
   if (typeof locator === 'string') {
-    return root.query(By.css(locator));
+    return root(fixture).query(By.css(locator));
   } else {
-    return root.query(By.directive(locator));
+    return root(fixture).query(By.directive(locator));
+  }
+}
+
+export function debugElements<T> (fixture: ComponentFixture<T>, locator: string | Type<any>) {
+  if (typeof locator === 'string') {
+    return root(fixture).queryAll(By.css(locator));
+  } else {
+    return root(fixture).queryAll(By.directive(locator));
   }
 }
 
@@ -17,17 +28,17 @@ export function selectElement<T> (fixture: ComponentFixture<T>, locator: string 
   return debugElement(fixture, locator).nativeElement;
 }
 
-export function selectElements<T> (fixture: ComponentFixture<T>, locator: string) {
-  return fixture.debugElement.queryAll(By.css(locator))
+export function selectElements<T> (fixture: ComponentFixture<T>, locator: string | Type<any>) {
+  return debugElements(fixture, locator)
     .map(element => element.nativeElement);
 }
 
-export function elementsText<T> (fixture: ComponentFixture<T>, locator: string) {
+export function elementsText<T> (fixture: ComponentFixture<T>, locator: string | Type<any>) {
   return selectElements(fixture, locator)
     .map(element => element.textContent.trim());
 }
 
-export function dispatchEvent<T> (fixture: ComponentFixture<T>, locator: string, eventName: string) {
+export function dispatchEvent<T> (fixture: ComponentFixture<T>, locator: string | Type<any>, eventName: string) {
   const element = selectElement(fixture, locator);
   element.dispatchEvent(new Event(eventName));
   fixture.detectChanges();
