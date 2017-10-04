@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 
-import { debugElement } from '../../../testing';
+import { debugComponent } from '../../../testing';
 
 import { ListComponent } from './list.component';
 import { ListModule } from './list.module';
@@ -70,7 +70,7 @@ describe('ListComponent', () => {
     createSelectors = spyOn(store, 'createSelectors').and.returnValue(subjects);
     storeService.select.and.callFake(subject => subject);
 
-    view = debugElement(fixture, ListViewComponent).componentInstance;
+    view = debugComponent(fixture, ListViewComponent);
 
     fixture.detectChanges();
   });
