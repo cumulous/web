@@ -1,10 +1,10 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
-import { AnalysisListComponent } from './analysis-list.component';
+import { ItemsPageComponent } from '../shared/items/items-page.component';
 
 const routes: Routes = [
-  { path: '', component: AnalysisListComponent },
+  { path: '', component: ItemsPageComponent, data: { type: 'analyses' } },
 ];
 
 @NgModule({

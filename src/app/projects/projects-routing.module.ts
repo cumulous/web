@@ -1,10 +1,10 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
-import { ProjectListComponent } from './project-list.component';
+import { ItemsPageComponent } from '../shared/items/items-page.component';
 
 const routes: Routes = [
-  { path: '', component: ProjectListComponent },
+  { path: '', component: ItemsPageComponent, data: { type: 'projects' } },
 ];
 
 @NgModule({

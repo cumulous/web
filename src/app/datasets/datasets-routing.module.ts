@@ -1,10 +1,10 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
-import { DatasetListComponent } from './dataset-list.component';
+import { ItemsPageComponent } from '../shared/items/items-page.component';
 
 const routes: Routes = [
-  { path: '', component: DatasetListComponent },
+  { path: '', component: ItemsPageComponent, data: { type: 'datasets' } },
 ];
 
 @NgModule({

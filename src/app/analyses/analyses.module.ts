@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 
 import { SharedModule } from '../shared/shared.module';
-import { AnalysisListComponent } from './analysis-list.component';
+
 import { AnalysesRoutingModule } from './analyses-routing.module';
 
 @NgModule({
@@ -9,8 +9,5 @@ import { AnalysesRoutingModule } from './analyses-routing.module';
     SharedModule,
     AnalysesRoutingModule,
   ],
-  declarations: [
-    AnalysisListComponent,
-  ],
 })
-export class AnalysesModule { }
+export class AnalysesModule {}
