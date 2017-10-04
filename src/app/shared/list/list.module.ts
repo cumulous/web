@@ -1,19 +1,18 @@
+import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
-import { MdButtonModule, MdToolbarModule } from '@angular/material';
 import { NgxDatatableModule } from '@swimlane/ngx-datatable';
 
 import { ListComponent } from './list.component';
 import { ListViewComponent } from './list-view.component';
 
 @NgModule({
-  exports: [
-    MdButtonModule,
-    MdToolbarModule,
+  imports: [
+    CommonModule,
     NgxDatatableModule,
   ],
   declarations: [
-    ListViewComponent,
     ListComponent,
+    ListViewComponent,
   ],
   exports: [
     ListComponent,

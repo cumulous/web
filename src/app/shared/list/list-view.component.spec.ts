@@ -165,7 +165,7 @@ describe('ListViewComponent', () => {
 
   it('enables loading indicator during page load', () => {
     fixture.detectChanges();
-    let progressBar = () => debugElement(fixture, '.progress-linear');
+    const progressBar = () => debugElement(fixture, '.progress-linear');
     expect(progressBar()).toBeFalsy();
 
     component.isLoading = true;
