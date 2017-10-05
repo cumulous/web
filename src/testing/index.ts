@@ -42,9 +42,10 @@ export function elementsText<T> (fixture: ComponentFixture<T>, locator: string |
     .map(element => element.textContent.trim());
 }
 
-export function dispatchEvent<T> (fixture: ComponentFixture<T>, locator: string | Type<any>, eventName: string) {
+export function dispatchEvent<T> (fixture: ComponentFixture<T>, locator: string | Type<any>,
+                                  eventName: string, eventData?: any) {
   const element = selectElement(fixture, locator);
-  element.dispatchEvent(new Event(eventName));
+  element.dispatchEvent(new CustomEvent(eventName, { detail: eventData }));
   fixture.detectChanges();
 }
 
