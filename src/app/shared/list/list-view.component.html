@@ -8,7 +8,6 @@
   [rowClass]="rowClass"
   [scrollbarV]="true"
   [loadingIndicator]="isLoading"
-  [class.progress-bottom]="rows.length > 0"
   (activate)="$event.type === 'click' && open.emit($event.row)"
   (scroll)="onScroll($event.offsetY)"
 >

@@ -177,17 +177,6 @@ describe('ListViewComponent', () => {
     expect(progressBar()).toBeFalsy();
   });
 
-  it('applies "progress-bottom" style to the list after the initial loading', () => {
-    const list = selectElement(fixture, '.list');
-    component.isLoading = true;
-    fixture.detectChanges();
-    expect(list.classList).not.toContain('progress-bottom');
-
-    component.rows = fakeItems(0, pageSize(fixture));
-    fixture.detectChanges();
-    expect(list.classList).toContain('progress-bottom');
-  });
-
   it('click on an item element emits (open) event with correct parameters', done => {
     component.rows = [fakeItem(0)];
     fixture.detectChanges();
