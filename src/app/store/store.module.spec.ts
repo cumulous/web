@@ -6,7 +6,7 @@ import { RouterStateSerializer } from '@ngrx/router-store';
 import { StoreModule } from './store.module';
 
 describe('StoreModule', () => {
-  const fakeUrl = '/fake/url';
+  const fakeUrl = '/fake/url;fake=param';
 
   const fakeQueryParams = () => ({
     fake: 'param',
@@ -26,7 +26,9 @@ describe('StoreModule', () => {
     const routerState = {
       url: fakeUrl,
       root: {
-        queryParams: fakeQueryParams(),
+        firstChild: {
+          params: fakeQueryParams(),
+        },
       },
     };
     const state = serializer.serialize(routerState);

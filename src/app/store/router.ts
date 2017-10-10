@@ -8,7 +8,7 @@ export class RouterSerializer implements RouterStateSerializer<RouterState> {
   serialize(routerState: RouterStateSnapshot): RouterState {
     return {
       url: routerState.url,
-      params: routerState.root.queryParams,
+      params: routerState.root.firstChild.params,
     };
   }
 }
