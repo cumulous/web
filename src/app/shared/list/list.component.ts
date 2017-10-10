@@ -1,9 +1,10 @@
 import { ChangeDetectionStrategy, Component, EventEmitter,
          Input, OnInit, Output, ViewChild } from '@angular/core';
+import { Router } from '@angular/router';
 
 import { Observable } from 'rxjs/Observable';
 
-import { createSelectors, Property, StoreItem, StoreService } from '../../store';
+import { createSelectors, Property, StoreItem, Store } from '../../store';
 
 import { ListColumn, ListViewRequest } from './models';
 import { ListViewComponent } from './list-view.component';
@@ -24,7 +25,10 @@ export class ListComponent<Item extends StoreItem> implements OnInit {
   rows$: Observable<Item[]>;
   columns$: Observable<ListColumn[]>;
 
-  constructor(private readonly store: StoreService) {}
+  constructor(
+    private readonly router: Router,
+    private readonly store: Store,
+  ) {}
 
   ngOnInit() {
     this.setupSelectors();
@@ -43,9 +47,7 @@ export class ListComponent<Item extends StoreItem> implements OnInit {
   }
 
   onList(request: ListViewRequest) {
-    this.store.list(this.type, {
-      limit: request.limit,
-    });
+    this.router.navigate([request]);
   }
 
   private getColumn(property: Property) {

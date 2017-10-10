@@ -1,3 +1,9 @@
+import { Store as NgRxStore } from '@ngrx/store';
+
+import { State } from './state';
+
+export class Store extends NgRxStore<State> {};
+
 export class Property {
   constructor(
     readonly name: string,

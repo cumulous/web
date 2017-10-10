@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { Router } from '@angular/router';
 
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 
@@ -9,8 +10,8 @@ import { ListModule } from './list.module';
 import { ListViewComponent } from './list-view.component';
 import { ListColumn } from './models';
 
-import * as store from '../../store';
-import { Property, StoreService } from '../../store';
+import * as storeModule from '../../store';
+import { Property, Store } from '../../store';
 
 interface Item {
   id: string;
@@ -41,20 +42,23 @@ describe('ListComponent', () => {
   let fixture: ComponentFixture<ListComponent<Item>>;
   let component: ListComponent<Item>;
   let view: ListViewComponent<Item>;
-  let storeService: jasmine.SpyObj<StoreService>;
+  let store: jasmine.SpyObj<Store>;
+  let router: jasmine.SpyObj<Router>;
 
   let subjects: { [key: string]: BehaviorSubject<any> };
   let createSelectors: jasmine.Spy;
 
   beforeEach(() => {
-    storeService = jasmine.createSpyObj('StoreService', ['list', 'select']);
+    store = jasmine.createSpyObj('Store', ['list', 'select']);
+    router = jasmine.createSpyObj('Router', ['navigate']);
 
     TestBed.configureTestingModule({
       imports: [
         ListModule,
       ],
       providers: [
-        { provide: StoreService, useValue: storeService },
+        { provide: Router, useValue: router },
+        { provide: Store, useValue: store },
       ],
     });
 
@@ -67,8 +71,8 @@ describe('ListComponent', () => {
       propertyList: new BehaviorSubject(fakeProperties()),
       itemList: new BehaviorSubject(fakeItems()),
     };
-    createSelectors = spyOn(store, 'createSelectors').and.returnValue(subjects);
-    storeService.select.and.callFake(subject => subject);
+    createSelectors = spyOn(storeModule, 'createSelectors').and.returnValue(subjects);
+    store.select.and.callFake(subject => subject);
 
     view = debugComponent(fixture, ListViewComponent);
 
@@ -80,11 +84,11 @@ describe('ListComponent', () => {
     expect(createSelectors).toHaveBeenCalledWith('items');
   });
 
-  it('selects isLoading state from storeService and assigns it to listViewComponent.isLoading', () => {
+  it('selects isLoading state from store and assigns it to listViewComponent.isLoading', () => {
     expect(view.isLoading).toEqual(true);
   });
 
-  it('selects propertyList state from storeService and transforms it into listViewComponent.columns', () => {
+  it('selects propertyList state from store and transforms it into listViewComponent.columns', () => {
     expect(view.columns.length).toBe(3);
     expect(view.columns[0]).toEqual(jasmine.objectContaining({
       prop: 'name', name: 'Name',
@@ -97,7 +101,7 @@ describe('ListComponent', () => {
     }));
   });
 
-  it('selects itemList state from storeService and assigns it to listViewComponent.rows', () => {
+  it('selects itemList state from store and assigns it to listViewComponent.rows', () => {
     const items = fakeItems();
     expect(view.rows.length).toBe(items.length);
     view.rows.forEach((row, i) => {
@@ -105,13 +109,13 @@ describe('ListComponent', () => {
     });
   });
 
-  it('applies updates to listViewComponent.isLoading from storeService', () => {
+  it('applies updates to listViewComponent.isLoading from store', () => {
     subjects.isLoading.next(false);
     fixture.detectChanges();
     expect(view.isLoading).toEqual(false);
   });
 
-  it('applies updates to listViewComponent.columns from storeService', () => {
+  it('applies updates to listViewComponent.columns from store', () => {
     subjects.propertyList.next(fakeProperties().slice(0, 2));
     fixture.detectChanges();
     expect(view.columns.length).toBe(1);
@@ -120,7 +124,7 @@ describe('ListComponent', () => {
     }));
   });
 
-  it('applies updates to listViewComponent.rows from storeService', () => {
+  it('applies updates to listViewComponent.rows from store', () => {
     subjects.itemList.next([fakeItem(2), fakeItem(3), fakeItem(4)]);
     fixture.detectChanges();
     expect(view.rows.length).toBe(3);
@@ -129,15 +133,15 @@ describe('ListComponent', () => {
     });
   });
 
-  it('calls storeService.list() once with correct parameters on (list) event from ListViewComponent', () => {
+  it('calls router.navigate once with correct parameters on (list) event from ListViewComponent', () => {
     const limit = 7;
     view.list.emit({
       limit,
     });
-    expect(storeService.list).toHaveBeenCalledTimes(1);
-    expect(storeService.list).toHaveBeenCalledWith('items', {
+    expect(router.navigate).toHaveBeenCalledTimes(1);
+    expect(router.navigate).toHaveBeenCalledWith([{
       limit,
-    });
+    }]);
   });
 
   it('re-emits (open) event from ListViewComponent', done => {

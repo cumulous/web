@@ -28,7 +28,7 @@ describe('StoreModule', () => {
       root: {
         queryParams: fakeQueryParams(),
       },
-    }
+    };
     const state = serializer.serialize(routerState);
     expect(state).toEqual({
       url: fakeUrl,
