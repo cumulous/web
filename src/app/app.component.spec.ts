@@ -97,12 +97,13 @@ describe('AppComponent', () => {
     expect(router.url).toEqual('/datasets');
   });
 
-  describe('should display <nav> element if the route is', () => {
+  describe('should display <nav> element if the route starts with', () => {
     let url: string;
-    it('/projects', () => url = '/projects');
-    it('/datasets', () => url = '/datasets');
-    it('/analyses', () => url = '/analyses');
-    it('/api', () => url = '/api');
+    const params = ';test=param';
+    it('/projects', () => url = '/projects' + params);
+    it('/datasets', () => url = '/datasets' + params);
+    it('/analyses', () => url = '/analyses' + params);
+    it('/api', () => url = '/api' + params);
     afterEach(fakeAsync(() => {
       router.navigateByUrl(url);
       tick();

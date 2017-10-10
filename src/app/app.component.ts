@@ -27,8 +27,9 @@ export class AppComponent {
   readonly linkActive$ = this.router.events
     .filter(event => event instanceof NavigationEnd)
     .map((event: NavigationEnd) => {
+      const url = event.urlAfterRedirects.substr(1);
       return this.links.map(link => link.path)
-        .includes(event.urlAfterRedirects.substr(1));
+        .some(path => url.startsWith(path));
     });
 
   constructor(private readonly router: Router) {}
