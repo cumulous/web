@@ -42,22 +42,23 @@ describe('ListComponent', () => {
   let fixture: ComponentFixture<ListComponent<Item>>;
   let component: ListComponent<Item>;
   let view: ListViewComponent<Item>;
+  let router: Router;
+  let routerSpy: jasmine.SpyObj<Router>;
   let store: jasmine.SpyObj<Store>;
-  let router: jasmine.SpyObj<Router>;
 
   let subjects: { [key: string]: BehaviorSubject<any> };
   let createSelectors: jasmine.Spy;
 
   beforeEach(() => {
+    routerSpy = jasmine.createSpyObj('Router', ['navigate']);
     store = jasmine.createSpyObj('Store', ['list', 'select']);
-    router = jasmine.createSpyObj('Router', ['navigate']);
 
     TestBed.configureTestingModule({
       imports: [
         ListModule,
       ],
       providers: [
-        { provide: Router, useValue: router },
+        { provide: Router, useValue: routerSpy },
         { provide: Store, useValue: store },
       ],
     });
@@ -65,6 +66,8 @@ describe('ListComponent', () => {
     fixture = TestBed.createComponent(ListComponent);
     component = fixture.componentInstance;
     component.type = 'items';
+
+    router = TestBed.get(Router);
 
     subjects = {
       isLoading: new BehaviorSubject(true),
@@ -142,6 +145,12 @@ describe('ListComponent', () => {
     expect(router.navigate).toHaveBeenCalledWith([{
       limit,
     }]);
+  });
+
+  it('sets router.navigated to "false" on (list) event from ListViewComponent', () => {
+    router.navigated = true;
+    view.list.emit({ limit: 1 });
+    expect(router.navigated).toBe(false);
   });
 
   it('re-emits (open) event from ListViewComponent', done => {

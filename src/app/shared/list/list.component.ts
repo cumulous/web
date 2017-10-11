@@ -47,6 +47,7 @@ export class ListComponent<Item extends StoreItem> implements OnInit {
   }
 
   onList(request: ListViewRequest) {
+    this.router.navigated = false;
     this.router.navigate([request]);
   }
 
