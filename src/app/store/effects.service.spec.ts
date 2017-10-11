@@ -9,9 +9,12 @@ import { Observable } from 'rxjs/Observable';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import 'rxjs/add/observable/of';
 
-import { CreatePayload, create, createSuccess,
-         UpdatePayload, update, updateSuccess,
-         ListPayload, list, listSuccess } from './actions';
+import {
+  CreatePayload, create, createSuccess,
+  UpdatePayload, update, updateSuccess,
+  ListPayload, list, listSuccess,
+  routerNavigation,
+} from './actions';
 
 import { EffectsService } from './effects.service';
 
@@ -68,7 +71,7 @@ class TestEffectsService extends EffectsService<Item> {
 
 describe('EffectsService', () => {
   let service: TestEffectsService;
-  let actions: Observable<any>;
+  let actions: BehaviorSubject<any>;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -96,16 +99,16 @@ describe('EffectsService', () => {
       );
     });
 
-    it('calls list() method once with correct parameters', () => {
+    it('calls create() method once with correct parameters', () => {
       service.create$.subscribe(() => {
         expect(spyOnCreate).toHaveBeenCalledTimes(1);
         expect(spyOnCreate).toHaveBeenCalledWith(fakePayload());
       });
     });
 
-    it('proxies result from list() method to listSuccess() action', () => {
-      service.create$.subscribe(result => {
-        expect(result).toEqual(createSuccess(fakeType)(fakeItem(1)));
+    it('proxies result from create() method to createSuccess() action', () => {
+      service.create$.subscribe(action => {
+        expect(action).toEqual(createSuccess(fakeType)(fakeItem(1)));
       });
     });
   });
@@ -135,9 +138,9 @@ describe('EffectsService', () => {
       });
     });
 
-    it('proxies result from list() method to listSuccess() action', () => {
-      service.update$.subscribe(result => {
-        expect(result).toEqual(updateSuccess(fakeType)(fakePayload()));
+    it('proxies result from update() method to updateSuccess() action', () => {
+      service.update$.subscribe(action => {
+        expect(action).toEqual(updateSuccess(fakeType)(fakePayload()));
       });
     });
   });
@@ -165,8 +168,48 @@ describe('EffectsService', () => {
     });
 
     it('proxies result from list() method to listSuccess() action', () => {
-      service.list$.subscribe(result => {
-        expect(result).toEqual(listSuccess(fakeType)(fakeItems()));
+      service.list$.subscribe(action => {
+        expect(action).toEqual(listSuccess(fakeType)(fakeItems()));
+      });
+    });
+  });
+
+  describe('routeList$', () => {
+    const fakeLimit = 15;
+    const fakePayload = (type: string, limit?: number) => ({
+      routerState: {
+        url: '/' + type + (limit ? `;limit=${limit}` : ''),
+        params: limit ? { limit } : {},
+      },
+    } as any);
+
+    beforeEach(() => {
+      actions = new BehaviorSubject(
+        routerNavigation(fakePayload(fakeType, fakeLimit))
+      );
+    });
+
+    it('produces "list" event with correct payload', () => {});
+
+    it('filters events specific to item type', () => {
+      actions.next(
+        routerNavigation(fakePayload('other_items', fakeLimit))
+      );
+    });
+
+    it('filters events by defined "limit"', () => {
+      actions.next(
+        routerNavigation(fakePayload(fakeType))
+      );
+    });
+
+    afterEach(() => {
+      service.routeList$.subscribe(action => {
+        expect(action).toEqual(
+          list(fakeType)({
+            limit: fakeLimit,
+          })
+        );
       });
     });
   });

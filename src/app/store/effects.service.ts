@@ -1,12 +1,15 @@
 import { Actions } from '@ngrx/effects';
 
 import { Observable } from 'rxjs/Observable';
+import 'rxjs/add/observable/of';
 import 'rxjs/add/operator/mergeMap';
+import 'rxjs/add/operator/switchMap';
 
 import {
   CreatePayload, create, createSuccess,
   UpdatePayload, update, updateSuccess,
   ListPayload, list, listSuccess,
+  routerNavigation,
 } from './actions';
 
 export abstract class EffectsService<Item> {
@@ -28,6 +31,15 @@ export abstract class EffectsService<Item> {
     .mergeMap(action => this.list(action.payload)
       .map(list => listSuccess(this.type)(list.items))
     );
+
+  private route$ = this.actions$
+    .filter(routerNavigation.match)
+    .map(action => action.payload.routerState)
+    .filter(route => route.url.startsWith('/' + this.type));
+
+  readonly routeList$ = this.route$
+    .filter(route => route.params.limit)
+    .switchMap(route => Observable.of(list(this.type)(route.params)));
 
   constructor(
     private readonly type: string,

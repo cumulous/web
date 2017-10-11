@@ -1,4 +1,8 @@
+import { RouterNavigationPayload, ROUTER_NAVIGATION } from '@ngrx/router-store';
+
 import { actionCreatorFactory } from 'typescript-fsa';
+
+import { RouterState } from './state';
 
 function action<Payload>(family: string, type: string) {
   const actionCreator = actionCreatorFactory(family);
@@ -29,7 +33,7 @@ export function updateSuccess<Item>(type: string) {
 }
 
 export interface ListPayload {
-  limit: number;
+  limit?: number;
 }
 
 export function list(type: string) {
@@ -39,3 +43,6 @@ export function list(type: string) {
 export function listSuccess<Item>(type: string) {
   return action<Item[]>(type, 'LIST_SUCCESS');
 }
+
+export const routerNavigation =
+  action<RouterNavigationPayload<RouterState>>(undefined, ROUTER_NAVIGATION);
