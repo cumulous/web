@@ -1,11 +1,11 @@
 import { NgModule } from '@angular/core';
-import { MdButtonModule } from '@angular/material';
+import { MatButtonModule } from '@angular/material';
 
 import { SessionComponent } from './session.component';
 
 @NgModule({
   imports: [
-    MdButtonModule,
+    MatButtonModule,
   ],
   declarations: [
     SessionComponent,

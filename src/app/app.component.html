@@ -1,5 +1,5 @@
-<nav *ngIf="linkActive$ | async" md-tab-nav-bar>
-  <a md-tab-link *ngFor="let link of links"
+<nav *ngIf="linkActive$ | async" mat-tab-nav-bar>
+  <a mat-tab-link *ngFor="let link of links"
     [routerLink]="'/' + link.path"
     routerLinkActive #rla="routerLinkActive"
     [active]="rla.isActive">
