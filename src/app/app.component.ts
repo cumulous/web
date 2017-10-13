@@ -1,14 +1,17 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, Renderer2 } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 
 import 'rxjs/add/operator/filter';
+
+import { Store } from './store';
+import { storage } from './store/actions';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
 
   private readonly links = [{
     path: 'projects',
@@ -32,5 +35,15 @@ export class AppComponent {
         .some(path => url.startsWith(path));
     });
 
-  constructor(private readonly router: Router) {}
+  constructor(
+    private readonly renderer: Renderer2,
+    private readonly router: Router,
+    private readonly store: Store,
+  ) {}
+
+  ngOnInit() {
+    this.renderer.listen('window', 'storage', event => {
+      this.store.dispatch(storage(event.key));
+    });
+  }
 }

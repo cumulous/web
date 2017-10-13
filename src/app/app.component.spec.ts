@@ -11,6 +11,9 @@ import { AppComponent } from './app.component';
 
 import { AuthGuardService } from './auth/auth-guard.service';
 
+import { Store } from './store';
+import { storage } from './store/actions';
+
 @Component({
   template: '',
 })
@@ -39,8 +42,11 @@ describe('AppComponent', () => {
   let fixture: ComponentFixture<AppComponent>;
   let app: AppComponent;
   let router: Router;
+  let store: jasmine.SpyObj<Store>;
 
   beforeEach(fakeAsync(() => {
+    store = jasmine.createSpyObj('Store', ['dispatch']);
+
     TestBed.configureTestingModule({
       imports: [
         AppModule,
@@ -51,6 +57,7 @@ describe('AppComponent', () => {
       ],
       providers: [
         { provide: AuthGuardService, useClass: MockAuthGuard },
+        { provide: Store, useValue: store },
       ],
     });
 
@@ -134,5 +141,17 @@ describe('AppComponent', () => {
   it('should display SessionComponent as part of the navigation bar', () => {
     const component = debugElement(fixture, 'nav app-session-control');
     expect(component).toBeTruthy();
+  });
+
+  it('should dispatch STORAGE action once with correct key on window.storage events', () => {
+    const key = 'test';
+
+    window.dispatchEvent(new StorageEvent('storage', {
+      key,
+      url: router.url,
+    }));
+
+    expect(store.dispatch).toHaveBeenCalledTimes(1);
+    expect(store.dispatch).toHaveBeenCalledWith(storage(key));
   });
 });

@@ -1,7 +1,9 @@
+import { Injectable } from '@angular/core';
 import { Store as NgRxStore } from '@ngrx/store';
 
 import { State } from './state';
 
+@Injectable()
 export class Store extends NgRxStore<State> {};
 
 export class Property {

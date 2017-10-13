@@ -9,6 +9,8 @@ function action<Payload>(family: string, type: string) {
   return actionCreator<Payload>(type);
 }
 
+export const storage = action<string>('@ngrx/store', 'storage');
+
 export type CreatePayload<Item> = Partial<Item>;
 
 export function create<Item>(type: string) {
