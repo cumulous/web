@@ -34,8 +34,6 @@ class MockModule {}
 @Injectable()
 class MockAuthGuard {
   canActivate() { return true; }
-  canActivateChild() { return true; }
-  canLoad() { return true; }
 };
 
 describe('AppComponent', () => {

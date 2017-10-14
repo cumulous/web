@@ -9,29 +9,21 @@ const routes: Routes = [
   {
     path: 'projects',
     canActivate: [AuthGuard],
-    canActivateChild: [AuthGuard],
-    canLoad: [AuthGuard],
     loadChildren: 'app/projects/projects.module#ProjectsModule',
   },
   {
     path: 'datasets',
     canActivate: [AuthGuard],
-    canActivateChild: [AuthGuard],
-    canLoad: [AuthGuard],
     loadChildren: 'app/datasets/datasets.module#DatasetsModule',
   },
   {
     path: 'analyses',
     canActivate: [AuthGuard],
-    canActivateChild: [AuthGuard],
-    canLoad: [AuthGuard],
     loadChildren: 'app/analyses/analyses.module#AnalysesModule',
   },
   {
     path: 'api',
     canActivate: [AuthGuard],
-    canActivateChild: [AuthGuard],
-    canLoad: [AuthGuard],
     loadChildren: 'app/swagger/swagger.module#SwaggerModule',
   },
   {

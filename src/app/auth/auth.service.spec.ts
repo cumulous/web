@@ -1,136 +1,142 @@
+import { Injectable } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { RouterTestingModule } from '@angular/router/testing';
-import { Router } from '@angular/router';
 
+import * as jwt from 'jsrsasign';
+
+import { Observable } from 'rxjs/Observable';
+import 'rxjs/add/observable/of';
+
+import { authSelectors, Store } from '../store';
 import { AuthService } from './auth.service';
-import { AuthProviderService } from './auth-provider.service';
 
-import { Configuration as ApiConfig } from '../api/configuration';
+@Injectable()
+class AuthTestService extends AuthService {
+  constructor(store: Store) {
+    super(store);
+  }
+
+  get config() {
+    return super.config;
+  }
+
+  login() {
+    return new Observable<void>();
+  }
+
+  logout() {
+    return new Observable<void>();
+  }
+}
 
 describe('AuthService', () => {
-  const fakeAccessToken = 'fake-access-token';
-  const fakeGuardedUrl = '/fake/guarded/url';
+  const fakeToken = 'fake-token';
+  const fakeExpiresIn = 7200;
+  const fakeUrl = 'fake-url';
 
-  const fakeApiConfig = () => new ApiConfig({
-    basePath: 'fake-api',
-    withCredentials: true,
-    apiKeys: {
-      Authorization: undefined,
-    },
+  const fakeConfig = () => ({
+    expiresIn: fakeExpiresIn,
+    clientId: 'fake-client-id',
   });
 
-  let apiConfig: ApiConfig;
-  let auth: AuthProviderService;
-  let service: AuthService;
-  let router: Router;
+  let service: AuthTestService;
+  let store: jasmine.SpyObj<Store>;
 
   beforeEach(() => {
-    auth = jasmine.createSpyObj('AuthProviderService',
-      ['signIn', 'signOut', 'getAccessToken', 'isValid']);
-    apiConfig = fakeApiConfig();
+    store = jasmine.createSpyObj('Store', ['select']);
 
     TestBed.configureTestingModule({
-      imports: [
-        RouterTestingModule,
-      ],
       providers: [
-        AuthService,
-        { provide: AuthProviderService, useValue: auth },
-        { provide: ApiConfig, useValue: apiConfig },
+        { provide: AuthService, useClass: AuthTestService },
+        { provide: Store, useValue: store },
       ],
     });
 
     service = TestBed.get(AuthService);
-    router = TestBed.get(Router);
   });
 
-  describe('login()', () => {
-    it('calls auth.signIn() once with correct parameters', () => {
-      service.login();
-      expect(auth.signIn).toHaveBeenCalledWith(
-        router.url,
-        jasmine.any(Function),
-        jasmine.any(Function),
-      );
-      expect(auth.signIn).toHaveBeenCalledTimes(1);
-    });
-    describe('supplies an onSuccess() callback that', () => {
-      let spyOnNavigate: jasmine.Spy;
-      beforeEach(() => {
-        (auth.signIn as jasmine.Spy).and.callFake((url, onSuccess) => onSuccess());
-        spyOnNavigate = spyOn(router, 'navigateByUrl');
-      });
-      it('sets Authorization key to the value of access token', () => {
-        (auth.getAccessToken as jasmine.Spy).and.returnValue(fakeAccessToken);
-        apiConfig.apiKeys.Authorization = undefined;
-        service.login();
-        expect(apiConfig.apiKeys.Authorization).toBe(fakeAccessToken);
-      });
-      it('calls router.navigateByUrl() once with guardedUrl', () => {
-        service.guardedUrl = fakeGuardedUrl;
-        service.login();
-        expect(spyOnNavigate).toHaveBeenCalledWith(fakeGuardedUrl);
-        expect(spyOnNavigate).toHaveBeenCalledTimes(1);
-      });
-    });
-    it('supplies an onFailure() callback that calls logout()', () => {
-      const spyOnLogout = spyOn(service, 'logout');
-      (auth.signIn as jasmine.Spy).and.callFake((url, onSuccess, onFailure) => onFailure());
-      service.login();
-      expect(spyOnLogout).toHaveBeenCalledTimes(1);
-    });
-  });
+  describe('provides', () => {
+    let expected: any;
+    let tested: string;
 
-  describe('logout()', () => {
-    it('unsets Authorization key', () => {
-      apiConfig.apiKeys.Authorization = fakeAccessToken;
-      service.logout();
-      expect(apiConfig.apiKeys.Authorization).toBeUndefined();
+    it('config from the store', () => {
+      tested = 'config';
+      expected = fakeConfig();
     });
-    it('calls auth.signOut() once', () => {
-      service.logout();
-      expect(auth.signOut).toHaveBeenCalledTimes(1);
-    });
-  });
 
-  describe('isAuthenticated()', () => {
-    it('calls auth.isValid() once', () => {
-      service.isAuthenticated();
-      expect(auth.isValid).toHaveBeenCalledTimes(1);
+    it('token from the store', () => {
+      tested = 'token';
+      expected = fakeToken;
     });
-    describe('returns', () => {
-      let expected: boolean;
-      it('"true" if auth.isValid() returns "true"', () => expected = true);
-      it('"false" if auth.isValid() returns "false"', () => expected = false);
-      afterEach(() => {
-        (auth.isValid as jasmine.Spy).and.returnValue(expected);
-        expect(service.isAuthenticated()).toBe(expected);
+
+    it('fromUrl from the store', () => {
+      tested = 'fromUrl';
+      expected = fakeUrl;
+    });
+
+    afterEach(done => {
+      store.select.and.returnValue(Observable.of(expected));
+
+      service[tested].subscribe(result => {
+        expect(store.select).toHaveBeenCalledWith(authSelectors[tested]);
+        expect(result).toEqual(expected);
+        done();
       });
     });
   });
 
-  it('set guardedUrl sets sessionStorage.guardedUrl to correct path', () => {
-    sessionStorage.removeItem('guardedUrl');
-    service.guardedUrl = fakeGuardedUrl;
-    expect(sessionStorage.getItem('guardedUrl')).toBe(fakeGuardedUrl);
-  });
+  describe('isAuthenticated() returns correct result if', () => {
+    const now = new Date().getTime() / 1000;
 
-  describe('gets correct guardedUrl if sessionStorage.guardedUrl', () => {
-    let expected: string;
-    it('does not exist', () => {
-      sessionStorage.removeItem('guardedUrl');
-      expected = '/';
+    const fakeJwt = (iat: number = now) =>
+      jwt.jws.JWS.sign('HS256', {alg: 'HS256', typ: 'JWT'}, {iat}, {rstr: 'secret'});
+
+    let config: any;
+    let token: string;
+    let expected: boolean;
+
+    beforeEach(() => {
+      config = fakeConfig();
+      token = fakeJwt();
     });
-    it('is empty', () => {
-      sessionStorage.setItem('guardedUrl', '');
-      expected = '/';
+
+    it('token issue time + expiresIn is > now', () => {
+      expected = true;
     });
-    it('is non-empty', () => {
-      sessionStorage.setItem('guardedUrl', fakeGuardedUrl);
-      expected = fakeGuardedUrl;
+    it('token issue time + expiresIn is < now', () => {
+      token = fakeJwt(now - fakeExpiresIn - 1000);
+      expected = false;
     });
-    afterEach(() => {
-      expect(service.guardedUrl).toBe(expected);
+    it('token is undefined', () => {
+      token = undefined;
+      expected = false;
+    });
+    it('token is invalid', () => {
+      token = 'ey.ab.cd';
+      expected = false;
+    });
+    it('config is undefined', () => {
+      config = undefined;
+      expected = false;
+    });
+    it('config.expiresIn is undefined', () => {
+      config.expiresIn = undefined;
+      expected = false;
+    });
+
+    afterEach(done => {
+      store.select.and.callFake(selector => {
+        switch (selector) {
+          case authSelectors.token:
+            return Observable.of(token);
+          case authSelectors.config:
+            return Observable.of(config);
+        };
+      });
+
+      service.isAuthenticated.subscribe(authed => {
+        expect(authed).toBe(expected);
+        done();
+      });
     });
   });
 });

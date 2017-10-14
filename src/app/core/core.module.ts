@@ -14,7 +14,7 @@ import { environment } from '../../environments/environment';
 @NgModule({
   imports: [
     ApiModule.forConfig(apiConfig),
-    AuthModule.forRoot(environment.auth, apiConfig),
+    AuthModule,
     LoginModule,
     StoreModule,
   ],
@@ -32,13 +32,11 @@ export class CoreModule {
   }
 }
 
-export const apiKeys = {
-  Authorization: undefined,
-};
-
 export function apiConfig() {
   return new ApiConfig({
     basePath: environment.apiRoot,
-    apiKeys,
+    apiKeys: {
+      Authorization: undefined,
+    },
   });
 }

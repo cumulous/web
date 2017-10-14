@@ -1,33 +1,22 @@
 import { Injectable } from '@angular/core';
-import { ActivatedRouteSnapshot, CanActivate, CanActivateChild, CanLoad,
-         Route, Router, RouterStateSnapshot } from '@angular/router';
+import { ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot } from '@angular/router';
+
+import 'rxjs/add/operator/do';
 
 import { AuthService } from './auth.service';
 
 @Injectable()
-export class AuthGuardService implements CanActivate, CanActivateChild, CanLoad {
+export class AuthGuardService implements CanActivate {
 
-  constructor(private readonly auth: AuthService, private readonly router: Router) {}
-
-  private checkLogin(url: string) {
-    if (this.auth.isAuthenticated()) {
-      return true;
-    } else {
-      this.auth.guardedUrl = url;
-      this.router.navigate(['login']);
-      return false;
-    }
-  }
+  constructor(
+    private readonly auth: AuthService,
+    private readonly router: Router,
+  ) {}
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
-    return this.checkLogin(state.url);
-  }
-
-  canActivateChild(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
-    return this.canActivate(route, state);
-  }
-
-  canLoad(route: Route) {
-    return this.checkLogin(`/${route.path}`);
+    return this.auth.isAuthenticated
+      .do(authed => authed || this.router.navigate(['/login', {
+        from: state.url,
+      }]));
   }
 }

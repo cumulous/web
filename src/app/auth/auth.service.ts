@@ -1,53 +1,44 @@
-import { Injectable } from '@angular/core';
-import { Router } from '@angular/router';
+import * as jwtDecode from 'jwt-decode';
 
-import { AuthProviderService } from './auth-provider.service';
+import { Observable } from 'rxjs/Observable';
+import 'rxjs/add/operator/withLatestFrom';
 
-import { Configuration as ApiConfig } from '../api/configuration';
+import { authSelectors, Store } from '../store';
 
-@Injectable()
-export class AuthService {
+export abstract class AuthService {
   constructor(
-    private readonly auth: AuthProviderService,
-    private readonly apiConfig: ApiConfig,
-    private readonly router: Router,
+    private readonly store: Store,
   ) {}
 
-  login() {
-    this.auth.signIn(
-      this.router.url,
-      this.onSignInSuccess,
-      this.onSignInFailure,
-    );
+  protected get callbackUrl() {
+    return 'https://' + window.location.hostname + '/login';
   }
 
-  logout() {
-    this.apiKey = undefined;
-    this.auth.signOut();
+  protected get config() {
+    return this.store.select(authSelectors.config);
   }
 
-  isAuthenticated() {
-    return this.auth.isValid();
+  get token() {
+    return this.store.select(authSelectors.token);
   }
 
-  set guardedUrl(url: string) {
-    sessionStorage.setItem('guardedUrl', url);
+  get fromUrl() {
+    return this.store.select(authSelectors.fromUrl);
   }
 
-  get guardedUrl() {
-    return sessionStorage.getItem('guardedUrl') || '/';
+  get isAuthenticated() {
+    return this.config
+      .withLatestFrom(this.token)
+      .map(([config, token]) => this.isValid(token, config.expiresIn))
+      .catch(err => Observable.of(false));
   }
 
-  private readonly onSignInSuccess = () => {
-    this.apiKey = this.auth.getAccessToken();
-    this.router.navigateByUrl(this.guardedUrl);
+  private isValid(token: string, expiresIn: number) {
+    const now = Math.floor(new Date().getTime() / 1000);
+    return now < jwtDecode(token).iat + expiresIn;
   }
 
-  private readonly onSignInFailure = (err: Error) => {
-    this.logout();
-  }
+  abstract login(): Observable<void>;
 
-  private set apiKey(token: string) {
-    this.apiConfig.apiKeys.Authorization = token;
-  }
+  abstract logout(): Observable<void>;
 }
