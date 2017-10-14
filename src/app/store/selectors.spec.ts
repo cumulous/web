@@ -3,8 +3,8 @@ import { Action, Store, StoreModule } from '@ngrx/store';
 
 import { Property } from './models';
 import { createReducer } from './reducer';
-import { createSelectors } from './selectors';
-import { ItemsState } from './state';
+import { authSelectors, createSelectors } from './selectors';
+import { AuthState, ItemsState } from './state';
 
 interface Item {
   id: any;
@@ -12,7 +12,8 @@ interface Item {
 }
 
 interface State {
-  items: ItemsState<Item>;
+  auth?: AuthState;
+  items?: ItemsState<Item>;
 }
 
 describe('createSelectors() returns correct', () => {
@@ -115,6 +116,69 @@ describe('createSelectors() returns correct', () => {
 
   afterEach(() => {
     store.select(selector).subscribe(value => {
+      expect(value).toEqual(expected);
+    });
+  });
+});
+
+describe('authSelectors provides correct', () => {
+  const fakeToken = 'ey.ab.cd';
+  const fakeExpiresIn = 4200;
+  const fakeClientId = 'fake-client';
+  const fakeUrl = 'https://example.org';
+
+  const fakeConfig = () => ({
+    expiresIn: fakeExpiresIn,
+    clientId: fakeClientId,
+  });
+
+  const fakeInitState = () => ({
+    token: fakeToken,
+    config: fakeConfig(),
+    fromUrl: fakeUrl,
+  });
+
+  let store: Store<State>;
+  let selector: string;
+  let expected: any;
+
+  const reducer = (state: AuthState, action: Action) => state;
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      imports: [
+        StoreModule.forRoot({
+          auth: reducer,
+        }, {
+          initialState: {
+            auth: fakeInitState(),
+          },
+        }),
+      ],
+    });
+
+    localStorage.removeItem('auth');
+
+    store = TestBed.get(Store);
+  });
+
+  it('token selector', () => {
+    selector = 'token';
+    expected = fakeToken;
+  });
+
+  it('config selector', () => {
+    selector = 'config';
+    expected = fakeConfig();
+  });
+
+  it('fromUrl selector', () => {
+    selector = 'fromUrl';
+    expected = fakeUrl;
+  });
+
+  afterEach(() => {
+    store.select(authSelectors[selector]).subscribe(value => {
       expect(value).toEqual(expected);
     });
   });

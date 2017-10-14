@@ -9,6 +9,11 @@ function action<Payload>(family: string, type: string) {
   return actionCreator<Payload>(type);
 }
 
+export const login = action<string>('auth', 'LOGIN');
+export const loginSuccess = action<string>('auth', 'LOGIN_SUCCESS');
+export const loginRedirect = action<string>('auth', 'LOGIN_REDIRECT');
+export const logout = actionCreatorFactory('auth')('LOGOUT');
+
 export const storage = action<string>('@ngrx/store', 'storage');
 
 export type CreatePayload<Item> = Partial<Item>;

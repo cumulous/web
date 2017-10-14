@@ -23,3 +23,11 @@ export function createSelectors<Item extends StoreItem>(type: string) {
     propertyMap: properties.selectEntities,
   };
 }
+
+const authState = (state: State) => state.auth;
+
+export const authSelectors = {
+  token: createSelector(authState, state => state.token),
+  fromUrl: createSelector(authState, state => state.fromUrl),
+  config: createSelector(authState, state => state.config),
+};

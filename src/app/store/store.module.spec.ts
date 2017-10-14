@@ -3,8 +3,14 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { RouterStateSerializer } from '@ngrx/router-store';
 import { Action, Store } from '@ngrx/store';
 
+import { environment } from '../../environments/environment';
 import { Project, Dataset, Analysis } from '../api';
-import { createSuccess, storage } from './actions';
+
+import {
+  login, loginSuccess, loginRedirect, logout,
+  createSuccess, storage,
+} from './actions';
+
 import { reducers } from './reducers';
 import { State } from './state';
 import { StoreModule } from './store.module';
@@ -16,6 +22,32 @@ describe('StoreModule', () => {
     fake: 'param',
   });
 
+  const fakeProject = () => ({
+    id: 'Fake id',
+    name: 'Fake project',
+    created_at: 1234,
+    created_by: 'Fake author',
+    status: 'active' as any,
+  });
+
+  const fakeDataset = () => ({
+    id: 'Fake id',
+    project_id: 'Fake project id',
+    created_at: 1234,
+    created_by: 'Fake author',
+    status: 'active' as any,
+  });
+
+  const fakeAnalysis = () => ({
+    id: 'Fake id',
+    project_id: 'Fake project id',
+    created_at: 1234,
+    created_by: 'Fake author',
+    status: 'active' as any,
+  });
+
+  let store: Store<State>;
+
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [
@@ -23,6 +55,10 @@ describe('StoreModule', () => {
         StoreModule,
       ],
     });
+
+    Object.keys(reducers).forEach(key => localStorage.removeItem(key));
+
+    store = TestBed.get(Store);
   });
 
   it('configures custom RouterStateSerializer', () => {
@@ -42,45 +78,102 @@ describe('StoreModule', () => {
     });
   });
 
+  describe('configures a reducer for auth state that', () => {
+    const fakeToken = 'fake-Token';
+
+    let initState: State;
+
+    beforeEach(done => {
+      store.take(1).subscribe(state => {
+        initState = state;
+        done();
+      });
+    });
+
+    it('sets "fromUrl" on LOGIN action', done => {
+      store.dispatch(login(fakeUrl));
+
+      store.take(1).subscribe(state => {
+        expect(state.auth).toEqual({
+          fromUrl: fakeUrl,
+          config: environment.auth,
+        });
+        done();
+      });
+    });
+
+    it('sets "token" on LOGIN_SUCCESS action', done => {
+      store.dispatch(loginSuccess(fakeToken));
+
+      store.take(1).subscribe(state => {
+        expect(state.auth).toEqual({
+          token: fakeToken,
+          config: environment.auth,
+        });
+        done();
+      });
+    });
+
+    it('unsets "fromUrl" on LOGIN_REDIRECT action', done => {
+      store.dispatch(loginRedirect(fakeUrl));
+
+      store.take(1).subscribe(state => {
+        expect(state.auth).toEqual({
+          fromUrl: undefined,
+          config: environment.auth,
+        });
+        done();
+      });
+    });
+
+    it('leaves the state intact on a non-matching action', done => {
+      store.dispatch({ type: 'test' });
+
+      store.take(1).subscribe(state => {
+        expect(state.auth).toEqual({
+          config: environment.auth,
+        });
+        done();
+      });
+    });
+
+    afterEach(done => {
+      store.take(1).subscribe(state => {
+        expect(state.auth.config).toBe(initState.auth.config);
+        done();
+      });
+    });
+  });
+
+  it('configures a meta reducer for LOGOUT action that resets store to init state', done => {
+    store.take(1).subscribe(initState => {
+
+      store.dispatch(login(fakeUrl));
+      store.dispatch(createSuccess<Project>('projects')(fakeProject()));
+      store.dispatch(createSuccess<Dataset>('datasets')(fakeDataset()));
+      store.dispatch(createSuccess<Analysis>('analyses')(fakeAnalysis()));
+      store.dispatch(logout());
+
+      store.take(1).subscribe(state => {
+        expect(state).toEqual(initState);
+        done();
+      });
+    });
+  });
+
   describe('configures a meta reducer that', () => {
-    const fakeProject = () => ({
-      id: 'Fake id',
-      name: 'Fake project',
-      created_at: 1234,
-      created_by: 'Fake author',
-      status: 'active' as any,
-    });
-
-    const fakeDataset = () => ({
-      id: 'Fake id',
-      project_id: 'Fake project id',
-      created_at: 1234,
-      created_by: 'Fake author',
-      status: 'active' as any,
-    });
-
-    const fakeAnalysis = () => ({
-      id: 'Fake id',
-      project_id: 'Fake project id',
-      created_at: 1234,
-      created_by: 'Fake author',
-      status: 'active' as any,
-    });
-
-    let store: Store<State>;
     let action: Action;
     let type: string;
-
-    beforeEach(() => {
-      Object.keys(reducers).forEach(key => localStorage.removeItem(key));
-
-      store = TestBed.get(Store);
-    });
 
     describe('stores part of state to localStorage for', () => {
 
       const jsonCopy = (obj: any) =>
         JSON.parse(JSON.stringify(obj));
+
+      it('auth', () => {
+        type = 'auth';
+        action = login(fakeUrl);
+      });
 
       it('projects', () => {
         type = 'projects';
@@ -115,6 +208,11 @@ describe('StoreModule', () => {
     });
 
     describe('rehydrates part of state to memory on STORAGE action for', () => {
+
+      it('auth', () => {
+        type = 'auth';
+        action = login(fakeUrl);
+      });
 
       it('projects', () => {
         type = 'projects';
