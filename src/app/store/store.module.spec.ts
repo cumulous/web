@@ -3,6 +3,8 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { RouterStateSerializer } from '@ngrx/router-store';
 import { Action, Store } from '@ngrx/store';
 
+import 'rxjs/add/operator/first';
+
 import { environment } from '../../environments/environment';
 import { Project, Dataset, Analysis } from '../api';
 
@@ -17,6 +19,7 @@ import { StoreModule } from './store.module';
 
 describe('StoreModule', () => {
   const fakeUrl = '/fake/url;fake=param';
+  const fakeToken = 'fake-token-1234';
 
   const fakeQueryParams = () => ({
     fake: 'param',
@@ -79,12 +82,10 @@ describe('StoreModule', () => {
   });
 
   describe('configures a reducer for auth state that', () => {
-    const fakeToken = 'fake-Token';
-
     let initState: State;
 
     beforeEach(done => {
-      store.take(1).subscribe(state => {
+      store.first().subscribe(state => {
         initState = state;
         done();
       });
@@ -93,7 +94,7 @@ describe('StoreModule', () => {
     it('sets "fromUrl" on LOGIN action', done => {
       store.dispatch(login(fakeUrl));
 
-      store.take(1).subscribe(state => {
+      store.first().subscribe(state => {
         expect(state.auth).toEqual({
           fromUrl: fakeUrl,
           config: environment.auth,
@@ -105,7 +106,7 @@ describe('StoreModule', () => {
     it('sets "token" on LOGIN_SUCCESS action', done => {
       store.dispatch(loginSuccess(fakeToken));
 
-      store.take(1).subscribe(state => {
+      store.first().subscribe(state => {
         expect(state.auth).toEqual({
           token: fakeToken,
           config: environment.auth,
@@ -117,7 +118,7 @@ describe('StoreModule', () => {
     it('unsets "fromUrl" on LOGIN_REDIRECT action', done => {
       store.dispatch(loginRedirect(fakeUrl));
 
-      store.take(1).subscribe(state => {
+      store.first().subscribe(state => {
         expect(state.auth).toEqual({
           fromUrl: undefined,
           config: environment.auth,
@@ -129,7 +130,7 @@ describe('StoreModule', () => {
     it('leaves the state intact on a non-matching action', done => {
       store.dispatch({ type: 'test' });
 
-      store.take(1).subscribe(state => {
+      store.first().subscribe(state => {
         expect(state.auth).toEqual({
           config: environment.auth,
         });
@@ -138,7 +139,7 @@ describe('StoreModule', () => {
     });
 
     afterEach(done => {
-      store.take(1).subscribe(state => {
+      store.first().subscribe(state => {
         expect(state.auth.config).toBe(initState.auth.config);
         done();
       });
@@ -146,7 +147,7 @@ describe('StoreModule', () => {
   });
 
   it('configures a meta reducer for LOGOUT action that resets store to init state', done => {
-    store.take(1).subscribe(initState => {
+    store.first().subscribe(initState => {
 
       store.dispatch(login(fakeUrl));
       store.dispatch(createSuccess<Project>('projects')(fakeProject()));
@@ -154,7 +155,7 @@ describe('StoreModule', () => {
       store.dispatch(createSuccess<Analysis>('analyses')(fakeAnalysis()));
       store.dispatch(logout());
 
-      store.take(1).subscribe(state => {
+      store.first().subscribe(state => {
         expect(state).toEqual(initState);
         done();
       });
