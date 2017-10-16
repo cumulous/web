@@ -27,8 +27,8 @@ export interface ItemsState<Item> extends EntityState<Item> {
 
 export interface State {
   auth: AuthState;
-  router: RouterReducerState<RouterState>;
   projects: ItemsState<Project>;
   datasets: ItemsState<Dataset>;
   analyses: ItemsState<Analysis>;
+  routerReducer: RouterReducerState<RouterState>;
 }

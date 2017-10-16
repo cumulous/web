@@ -204,7 +204,7 @@ describe('StoreModule', () => {
     });
 
     it('does not store router state to localStorage', () => {
-      const stored = localStorage.getItem('router');
+      const stored = localStorage.getItem('routerReducer');
       expect(stored).toBeNull();
     });
 
@@ -249,7 +249,7 @@ describe('StoreModule', () => {
     describe('does not rehydrate', () => {
 
       it('keys that are not in the state', () => type = 'test');
-      it('router state', () => type = 'router');
+      it('router state', () => type = 'routerReducer');
 
       afterEach(done => {
         localStorage.setItem(type, '{ state not to be parsed');

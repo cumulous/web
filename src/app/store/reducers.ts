@@ -11,10 +11,10 @@ import { storageReducer } from './storage';
 
 export const reducers: ActionReducerMap<State> = {
   auth: loginReducer,
-  router: routerReducer,
   projects: projectsReducer,
   datasets: datasetsReducer,
   analyses: analysesReducer,
+  routerReducer,
 };
 
 export const metaReducers: MetaReducer<any>[] = [
