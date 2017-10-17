@@ -7,6 +7,8 @@ import 'rxjs/add/operator/first';
 
 import { environment } from '../../environments/environment';
 import { Project, Dataset, Analysis } from '../api';
+import { AuthService } from '../auth/auth.service';
+import { AuthEffects } from './auth/effects';
 
 import {
   login, loginSuccess, loginRedirect, logout,
@@ -56,6 +58,9 @@ describe('StoreModule', () => {
       imports: [
         RouterTestingModule,
         StoreModule,
+      ],
+      providers: [
+        { provide: AuthEffects, useValue: {} },
       ],
     });
 
@@ -261,5 +266,27 @@ describe('StoreModule', () => {
         });
       });
     });
+  });
+});
+
+describe('StoreModule', () => {
+  let effects: AuthEffects;
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      imports: [
+        RouterTestingModule,
+        StoreModule,
+      ],
+      providers: [
+        { provide: AuthService, useValue: {} },
+      ],
+    });
+
+    effects = TestBed.get(AuthEffects);
+  });
+
+  it('provides AuthEffects', () => {
+    expect(effects).toBeDefined();
   });
 });
