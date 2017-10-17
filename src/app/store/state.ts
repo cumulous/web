@@ -15,6 +15,10 @@ export interface AuthState {
   };
 }
 
+export interface ApiState {
+  baseUrl: string;
+}
+
 export interface RouterState {
   url: string;
   params: Params;
@@ -27,6 +31,7 @@ export interface ItemsState<Item> extends EntityState<Item> {
 
 export interface State {
   auth: AuthState;
+  api: ApiState;
   projects: ItemsState<Project>;
   datasets: ItemsState<Dataset>;
   analyses: ItemsState<Analysis>;

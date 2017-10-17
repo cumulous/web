@@ -31,3 +31,8 @@ export const authSelectors = {
   fromUrl: createSelector(authState, state => state.fromUrl),
   config: createSelector(authState, state => state.config),
 };
+
+const apiState = (state: State) => state.api;
+
+export const apiBaseSelector =
+  createSelector(apiState, state => state.baseUrl);

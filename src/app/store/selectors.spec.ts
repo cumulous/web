@@ -3,8 +3,8 @@ import { Action, Store, StoreModule } from '@ngrx/store';
 
 import { Property } from './models';
 import { createReducer } from './reducer';
-import { authSelectors, createSelectors } from './selectors';
-import { AuthState, ItemsState } from './state';
+import { apiBaseSelector, authSelectors, createSelectors } from './selectors';
+import { ApiState, AuthState, ItemsState } from './state';
 
 interface Item {
   id: any;
@@ -12,6 +12,7 @@ interface Item {
 }
 
 interface State {
+  api?: ApiState;
   auth?: AuthState;
   items?: ItemsState<Item>;
 }
@@ -181,5 +182,33 @@ describe('authSelectors provides correct', () => {
     store.select(authSelectors[selector]).subscribe(value => {
       expect(value).toEqual(expected);
     });
+  });
+});
+
+it('apiBaseSelector provides correct baseUrl selector', () => {
+  const fakeBaseUrl = 'https://api.example.org/v1';
+
+  const fakeInitState = () => ({
+    baseUrl: fakeBaseUrl,
+  });
+
+  const fakeReducer = (state: ApiState, action: Action) => state;
+
+  TestBed.configureTestingModule({
+    imports: [
+      StoreModule.forRoot({
+        api: fakeReducer,
+      }, {
+        initialState: {
+          api: fakeInitState(),
+        },
+      }),
+    ],
+  });
+
+  const store = TestBed.get(Store);
+
+  store.select(apiBaseSelector).subscribe(value => {
+    expect(value).toEqual(fakeBaseUrl);
   });
 });

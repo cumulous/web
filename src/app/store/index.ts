@@ -1,2 +1,2 @@
 export { Property, Store, StoreItem } from './models';
-export { authSelectors, createSelectors } from './selectors';
+export { apiBaseSelector, authSelectors, createSelectors } from './selectors';

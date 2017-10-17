@@ -151,6 +151,15 @@ describe('StoreModule', () => {
     });
   });
 
+  it('configures baseUrl for api state', done => {
+    store.first().subscribe(initState => {
+      expect(initState.api).toEqual({
+        baseUrl: environment.apiRoot,
+      });
+      done();
+    });
+  });
+
   it('configures a meta reducer for LOGOUT action that resets store to init state', done => {
     store.first().subscribe(initState => {
 
