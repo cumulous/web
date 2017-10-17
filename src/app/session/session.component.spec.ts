@@ -1,30 +1,30 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { Router } from '@angular/router';
+import { RouterTestingModule } from '@angular/router/testing';
 
 import { selectElement } from '../../testing';
 
+import { SessionModule } from './session.module';
 import { SessionComponent } from './session.component';
-
-import { AuthService } from '../auth/auth.service';
 
 describe('SessionComponent', () => {
   let fixture: ComponentFixture<SessionComponent>;
 
-  let auth: AuthService;
+  let router: Router;
   let button: any;
 
   beforeEach(() => {
-    auth = jasmine.createSpyObj('AuthService', ['logout']);
+    spyOn(Router.prototype, 'navigate');
 
     TestBed.configureTestingModule({
-      declarations: [
-        SessionComponent,
-      ],
-      providers: [
-        { provide: AuthService, useValue: auth },
+      imports: [
+        RouterTestingModule,
+        SessionModule,
       ],
     });
 
     fixture = TestBed.createComponent(SessionComponent);
+    router = TestBed.get(Router);
 
     fixture.detectChanges();
 
@@ -35,12 +35,15 @@ describe('SessionComponent', () => {
     expect(button.textContent.trim()).toBe('Log Out');
   });
 
-  it('should call authService.logout() if the "Log Out" button is clicked', () => {
+  it('should correctly navigate the router if the "Log Out" button is clicked', () => {
     button.click();
-    expect(auth.logout).toHaveBeenCalled();
+    expect(router.navigate).toHaveBeenCalledTimes(1);
+    expect(router.navigate).toHaveBeenCalledWith(['/login', {
+      logout: true,
+    }]);
   });
 
-  it('should not call authService.logout() by itself', () => {
-    expect(auth.logout).not.toHaveBeenCalled();
+  it('should not navigate the router by itself', () => {
+    expect(router.navigate).not.toHaveBeenCalled();
   });
 });

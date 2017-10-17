@@ -1,15 +1,18 @@
 import { Component } from '@angular/core';
-
-import { AuthService } from '../auth/auth.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-session-control',
   templateUrl: './session.component.html'
 })
 export class SessionComponent {
-  constructor(private readonly auth: AuthService) {}
+  constructor(
+    private readonly router: Router,
+  ) {}
 
   onClickLogout() {
-    this.auth.logout();
+    this.router.navigate(['/login', {
+      logout: true,
+    }]);
   }
 }

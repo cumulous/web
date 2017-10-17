@@ -1,15 +1,6 @@
-import { Component, OnInit } from '@angular/core';
-
-import { AuthService } from '../auth/auth.service';
+import { Component } from '@angular/core';
 
 @Component({
   template: '',
 })
-export class LoginComponent implements OnInit {
-
-  constructor(private auth: AuthService) {}
-
-  ngOnInit() {
-    this.auth.login();
-  }
-}
+export class LoginComponent {}
