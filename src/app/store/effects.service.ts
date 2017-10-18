@@ -1,9 +1,6 @@
 import { Actions } from '@ngrx/effects';
 
 import { Observable } from 'rxjs/Observable';
-import 'rxjs/add/observable/of';
-import 'rxjs/add/operator/mergeMap';
-import 'rxjs/add/operator/switchMap';
 
 import {
   CreatePayload, create, createSuccess,

@@ -4,7 +4,6 @@ import { TestBed } from '@angular/core/testing';
 import * as jwt from 'jsrsasign';
 
 import { Observable } from 'rxjs/Observable';
-import 'rxjs/add/observable/of';
 
 import { authSelectors, Store } from '../store';
 import { AuthService } from './auth.service';

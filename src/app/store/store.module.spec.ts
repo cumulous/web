@@ -3,8 +3,6 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { RouterStateSerializer } from '@ngrx/router-store';
 import { Action, Store } from '@ngrx/store';
 
-import 'rxjs/add/operator/first';
-
 import { environment } from '../../environments/environment';
 import { Project, Dataset, Analysis } from '../api';
 import { AuthService } from '../auth/auth.service';

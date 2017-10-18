@@ -1,8 +1,6 @@
 import { Component, OnInit, Renderer2 } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 
-import 'rxjs/add/operator/filter';
-
 import { Store } from './store';
 import { storage } from './store/actions';
 

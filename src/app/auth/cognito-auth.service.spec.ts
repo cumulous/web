@@ -2,7 +2,6 @@ import { TestBed } from '@angular/core/testing';
 import { CognitoAuth } from 'amazon-cognito-auth-js/dist/amazon-cognito-auth';
 
 import { Observable } from 'rxjs/Observable';
-import 'rxjs/add/observable/of';
 
 import { authSelectors, Store } from '../store';
 import { CognitoAuthService } from './cognito-auth.service';

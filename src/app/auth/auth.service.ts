@@ -1,8 +1,6 @@
 import * as jwtDecode from 'jwt-decode';
 
 import { Observable } from 'rxjs/Observable';
-import 'rxjs/add/observable/of';
-import 'rxjs/add/operator/withLatestFrom';
 
 import { authSelectors, Store } from '../store';
 

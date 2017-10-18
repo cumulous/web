@@ -7,7 +7,6 @@ import { Action } from '@ngrx/store';
 
 import { Observable } from 'rxjs/Observable';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
-import 'rxjs/add/observable/of';
 
 import {
   CreatePayload, create, createSuccess,
