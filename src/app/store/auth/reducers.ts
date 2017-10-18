@@ -7,7 +7,7 @@ import { login, loginSuccess, loginRedirect, logout } from '../actions';
 import { AuthState, State } from '../state';
 
 const initialState = {
-  config: environment.auth,
+  config: { ...environment.auth },
 };
 
 export function loginReducer(state: AuthState = initialState, action: Action) {
