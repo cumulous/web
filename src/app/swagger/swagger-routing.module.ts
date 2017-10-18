@@ -1,10 +1,10 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
-import { SwaggerComponent } from './swagger.component';
+// import { SwaggerComponent } from './swagger.component';
 
 const routes: Routes = [
-  { path: '', component: SwaggerComponent },
+  // { path: '', component: SwaggerComponent },
 ];
 
 @NgModule({

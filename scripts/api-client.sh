@@ -5,11 +5,6 @@ set -e
 WORKDIR="tmp"
 API_CONFIG="${WORKDIR}/.api.conf"
 AUTH_CONFIG="${WORKDIR}/.auth.conf"
-SWAGGER_FILE="${WORKDIR}/swagger.json"
-
-CODEGEN_VERSION="2.3"
-CODEGEN_JAR="bin/codegen-${CODEGEN_VERSION}.jar"
-CODEGEN_DEST="src/app/api"
 
 TOKEN_LIFETIME_DEFAULT=36000
 
@@ -70,21 +65,3 @@ if [ ! -f "${AUTH_CONFIG}" ] || [ ! -f "${API_CONFIG}" ]; then
     }
   " | cut -c 5- > "tmp/proxy.conf.json"
 fi
-
-echo
-echo Authenticating...
-
-TOKEN=$(curl -K "${AUTH_CONFIG}" | jq -r '.access_token')
-curl -K "${API_CONFIG}" -H "Authorization: ${TOKEN}" > "${SWAGGER_FILE}"
-
-echo Generating API client...
-
-rm -rf "${CODEGEN_DEST}"
-java -jar "${CODEGEN_JAR}" generate \
-  -i "${SWAGGER_FILE}" \
-  -l typescript-angular2 \
-  -o "${CODEGEN_DEST}" \
-  --additional-properties modelPropertyNaming=original
-
-sed -i "s|InjectionToken<string> } from|InjectionToken } from|" \
-  src/app/api/variables.ts

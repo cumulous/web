@@ -20,6 +20,7 @@ import { StoreModule } from './store.module';
 describe('StoreModule', () => {
   const fakeUrl = '/fake/url;fake=param';
   const fakeToken = 'fake-token-1234';
+  const fakeCreatedAt = new Date().toISOString();
 
   const fakeQueryParams = () => ({
     fake: 'param',
@@ -28,7 +29,7 @@ describe('StoreModule', () => {
   const fakeProject = () => ({
     id: 'Fake id',
     name: 'Fake project',
-    created_at: 1234,
+    created_at: fakeCreatedAt,
     created_by: 'Fake author',
     status: 'active' as any,
   });
@@ -36,7 +37,7 @@ describe('StoreModule', () => {
   const fakeDataset = () => ({
     id: 'Fake id',
     project_id: 'Fake project id',
-    created_at: 1234,
+    created_at: fakeCreatedAt,
     created_by: 'Fake author',
     status: 'active' as any,
   });
@@ -44,7 +45,7 @@ describe('StoreModule', () => {
   const fakeAnalysis = () => ({
     id: 'Fake id',
     project_id: 'Fake project id',
-    created_at: 1234,
+    created_at: fakeCreatedAt,
     created_by: 'Fake author',
     status: 'active' as any,
   });

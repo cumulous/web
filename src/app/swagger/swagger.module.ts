@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 
-import { SwaggerComponent } from './swagger.component';
+// import { SwaggerComponent } from './swagger.component';
 import { SwaggerRoutingModule } from './swagger-routing.module';
 
 @NgModule({
@@ -8,7 +8,7 @@ import { SwaggerRoutingModule } from './swagger-routing.module';
     SwaggerRoutingModule,
   ],
   declarations: [
-    SwaggerComponent,
+    // SwaggerComponent,
   ],
 })
 export class SwaggerModule { }
