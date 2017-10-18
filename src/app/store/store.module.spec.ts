@@ -152,9 +152,7 @@ describe('StoreModule', () => {
 
   it('configures baseUrl for api state', done => {
     store.first().subscribe(initState => {
-      expect(initState.api).toEqual({
-        baseUrl: environment.apiRoot,
-      });
+      expect(initState.api).toEqual(environment.api);
       done();
     });
   });

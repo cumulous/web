@@ -35,14 +35,16 @@ if [ ! -f "${AUTH_CONFIG}" ] || [ ! -f "${API_CONFIG}" ]; then
 
   configure_environment() {
     local production="$1"
-    local api_root="$2"
+    local api_base="$2"
     local suffix="$3"
 
     mkdir -p "src/environments"
     echo "
       export const environment = {
         production: ${production},
-        apiRoot: '${api_root}',
+        api: {
+          baseUrl: '${api_base}',
+        },
         auth: {
           clientId: '${WEB_CLIENT_ID}',
           domain: '${TOKEN_DOMAIN}',
