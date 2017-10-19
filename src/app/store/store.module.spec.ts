@@ -4,7 +4,9 @@ import { RouterStateSerializer } from '@ngrx/router-store';
 import { Action, Store } from '@ngrx/store';
 
 import { environment } from '../../environments/environment';
-import { Project, Dataset, Analysis } from '../api';
+
+import { ApiService, Project, Dataset, Analysis } from '../api';
+
 import { AuthService } from '../auth/auth.service';
 import { AuthEffects } from './auth/effects';
 
@@ -60,6 +62,7 @@ describe('StoreModule', () => {
       ],
       providers: [
         { provide: AuthEffects, useValue: {} },
+        { provide: ApiService, useValue: {} },
       ],
     });
 
@@ -286,6 +289,7 @@ describe('StoreModule', () => {
       ],
       providers: [
         { provide: AuthService, useValue: {} },
+        { provide: ApiService, useValue: {} },
       ],
     });
 
