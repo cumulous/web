@@ -6,16 +6,3 @@ export interface Dataset {
   created_by: string;
   status: string;
 }
-
-export interface CreateRequest {
-  project_id: string;
-  description?: string;
-}
-
-export interface UpdateRequest {
-  description?: string;
-}
-
-export interface ListRequest {
-  limit?: number;
-}
