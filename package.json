@@ -1,7 +1,7 @@
 {
-  "name": "sassy-ui",
-  "version": "0.0.0",
-  "license": "UNLICENSED",
+  "name": "cumulous-web",
+  "version": "0.1.0",
+  "license": "BSD-3-Clause",
   "private": true,
   "scripts": {
     "api": "./scripts/api-client.sh",
