@@ -9,6 +9,11 @@ This project implements a web interface for the [Cumulous](https://github.com/cu
 
 It uses [Angular](https://angular.io/) framework for single-page applications.
 
+**Note:** the instructions below are for *development* only.
+You don't need to do anything special for deployment, as
+Amazon will pull this repo and build everything automatically
+after you import the initial template.
+
 ## Setting up
 
 ### Environment
