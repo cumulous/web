@@ -1,8 +1,8 @@
 # Cumulous Web UI
 
 **WARNING: This project is currently a work-in-progress,
-meaning that the set of core features and
-documentation are incomplete, and should not be used
+meaning that the core features and
+documentation are incomplete, and it should not be used
 in production. We're working hard to make it happen.**
 
 This project implements a web interface for
