@@ -19,13 +19,11 @@ after you import the initial template.
 ### Environment
 
 Please run `npm install` before doing anything else. You need to have at least
-[Node.js](https://nodejs.org) 6.9 with NPM 3.10 to achieve that.
-
-In addition, you need JRE 7 or later to generate API client (see below).
+[Node.js](https://nodejs.org) 6.9 with NPM 3.10.
 
 ### API credentials
 
-Prior to building the app or running any tests, you need to configure API credentials.
+Prior to building the app or running e2e tests, you need to configure API credentials.
 To do that in a [Bash](https://www.gnu.org/software/bash/) shell,
 please run `npm run api`. It will cache the above values in the `tmp` folder
 and reuse them, unless you delete that.
