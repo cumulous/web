@@ -1,4 +1,9 @@
-# SASSY UI
+# Cumulous Web UI
+
+**WARNING: This project is currently a work-in-progress,
+meaning that the set of core features and
+documentation are incomplete, and should not be used
+in production. We're working hard to make it happen.**
 
 This project implements a web interface for
 the Serverless Application System for Storage and analYsis (SASSY) of scientific data.
