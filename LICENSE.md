@@ -1,3 +1,5 @@
+BSD 3-Clause License
+
 Copyright 2017. Massachusetts Institute of Technology. Rights Reserved.
 
 M.I.T. hereby makes following copyrightable material available to the public under the BSD License.
