@@ -5,10 +5,9 @@ meaning that the core features and
 documentation are incomplete, and it should not be used
 in production. We're working hard to make it happen.**
 
-This project implements a web interface for
-the Serverless Application System for Storage and analYsis (SASSY) of scientific data.
+This project implements a web interface for the [Cumulous](https://github.com/cumulous) framework.
 
-It builds upon [Angular](https://angular.io/) framework for single-page applications.
+It uses [Angular](https://angular.io/) framework for single-page applications.
 
 ## Setting up
 
