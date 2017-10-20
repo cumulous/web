@@ -1,7 +1,4 @@
 {
-  "name": "cumulous-web",
-  "version": "0.1.0",
-  "license": "BSD-3-Clause",
   "private": true,
   "scripts": {
     "api": "./scripts/api-client.sh",
