@@ -15,7 +15,7 @@
     "start": "run-p serve:app serve:coverage",
     "serve:coverage": "lite-server",
     "serve:app": "ng serve -p 8080 -H 0.0.0.0 --public-host ${HOST} --proxy-config tmp/proxy.conf.json",
-    "test": "ng test --code-coverage",
+    "test": "ng test --env test --code-coverage",
     "test:once": "npm test -- --watch=false"
   },
   "dependencies": {
