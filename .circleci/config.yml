@@ -11,7 +11,7 @@ jobs:
       - restore_cache:
           keys:
           - npm-{{ checksum "package.json" }}
-          - npm
+          - npm-
 
       - run: npm install
 
