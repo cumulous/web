@@ -1,10 +1,6 @@
 BSD 3-Clause License
 
-Copyright (c) 2017, Massachusetts Institute of Technology
-Rights Reserved.
-
-M.I.T. hereby makes following copyrightable material available to the public under the BSD License.
-A copy of this license is available at https://opensource.org/licenses/BSD-3-Clause
+Copyright (c) 2017, Massachusetts Institute of Technology. All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
