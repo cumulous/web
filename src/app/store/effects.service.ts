@@ -1,32 +1,45 @@
 import { Actions } from '@ngrx/effects';
-
 import { Observable } from 'rxjs/Observable';
 
+import { ApiService, ListResponse } from '../api';
+
 import {
-  CreatePayload, create, createSuccess,
-  UpdatePayload, update, updateSuccess,
-  ListPayload, list, listSuccess,
+  create, createSuccess,
+  update, updateSuccess,
+  list, listSuccess,
   routerNavigation,
 } from './actions';
 
 export abstract class EffectsService<Item> {
 
   readonly create$ = this.actions$
-    .filter(create(this.type).match)
-    .mergeMap(action => this.create(action.payload)
-      .map(item => createSuccess(this.type)(item))
+    .filter(create<Item>(this.type).match)
+    .map(action => action.payload)
+    .mergeMap(payload =>
+      this.api.post([this.type], payload)
+        .map((response: Item) =>
+          createSuccess<Item>(this.type)(response)
+        )
     );
 
   readonly update$ = this.actions$
-    .filter(update(this.type).match)
-    .mergeMap(action => this.update(action.payload)
-      .map(() => updateSuccess(this.type)(action.payload))
+    .filter(update<Item>(this.type).match)
+    .map(action => action.payload)
+    .mergeMap(payload =>
+      this.api.patch([this.type, payload.id], payload.changes)
+        .map((response: Item) =>
+          updateSuccess<Item>(this.type)(payload)
+        )
     );
 
   readonly list$ = this.actions$
     .filter(list(this.type).match)
-    .mergeMap(action => this.list(action.payload)
-      .map(list => listSuccess(this.type)(list.items))
+    .map(action => action.payload)
+    .switchMap(payload =>
+      this.api.get([this.type], payload)
+        .map((response: ListResponse<Item>) =>
+          listSuccess<Item>(this.type)(response.items)
+        )
     );
 
   private route$ = this.actions$
@@ -41,9 +54,6 @@ export abstract class EffectsService<Item> {
   constructor(
     private readonly type: string,
     private readonly actions$: Actions,
+    private readonly api: ApiService,
   ) {}
-
-  protected abstract create(payload: CreatePayload<Item>): Observable<Item>;
-  protected abstract update(payload: UpdatePayload<Item>): Observable<Item>;
-  protected abstract list(payload: ListPayload): Observable<{ items: Item[] }>;
 }

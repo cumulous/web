@@ -1,24 +1,23 @@
 import { Injectable } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-
-import { Actions, Effect } from '@ngrx/effects';
+import { Actions } from '@ngrx/effects';
 import { provideMockActions } from '@ngrx/effects/testing';
-import { Action } from '@ngrx/store';
-
+import { hot } from 'jasmine-marbles';
 import { Observable } from 'rxjs/Observable';
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+
+import { ApiService } from '../api';
+import { routerNavigation } from './testing';
 
 import {
-  CreatePayload, create, createSuccess,
-  UpdatePayload, update, updateSuccess,
-  ListPayload, list, listSuccess,
-  routerNavigation,
+  create, createSuccess,
+  update, updateSuccess,
+  list, listSuccess,
 } from './actions';
 
 import { EffectsService } from './effects.service';
 
 interface Item {
-  id: number;
+  id: string;
   name: string;
 }
 
@@ -27,7 +26,7 @@ const fakeType = 'items';
 const fakeName = (i: number) => 'Fake item ' + i;
 
 const fakeItem = (i: number) => ({
-  id: i,
+  id: String(i),
   name: fakeName(i),
 });
 
@@ -39,176 +38,220 @@ const fakeItems = () => [
 @Injectable()
 class TestEffectsService extends EffectsService<Item> {
 
-  @Effect() readonly create$: Observable<Action>;
-  @Effect() readonly update$: Observable<Action>;
-  @Effect() readonly list$: Observable<Action>;
-
-  constructor(actions$: Actions) {
-    super(fakeType, actions$);
-  }
-
-  create(payload: CreatePayload<Item>) {
-    return Observable.of({
-      id: 1,
-      name: payload.name,
-    });
-  }
-
-  update(payload: UpdatePayload<Item>) {
-    return Observable.of({
-      id: Number(payload.id),
-      name: payload.changes.name,
-    });
-  }
-
-  list(payload: ListPayload) {
-    return Observable.of({
-      items: fakeItems(),
-    });
+  constructor(actions$: Actions, api: ApiService) {
+    super(fakeType, actions$, api);
   }
 }
 
 describe('EffectsService', () => {
-  let service: TestEffectsService;
-  let actions: BehaviorSubject<any>;
+
+  const otherAction = () => ({
+    type: 'OTHER',
+  });
+
+  let effects: TestEffectsService;
+  let actions: Observable<any>;
+  let api: jasmine.SpyObj<ApiService>;
 
   beforeEach(() => {
+    api = jasmine.createSpyObj('ApiService', ['get', 'post', 'patch']);
+
     TestBed.configureTestingModule({
       providers: [
         TestEffectsService,
-        provideMockActions(() => actions)
+        provideMockActions(() => actions),
+        { provide: ApiService, useValue: api },
       ],
     });
 
-    service = TestBed.get(TestEffectsService);
+    effects = TestBed.get(TestEffectsService);
   });
 
   describe('create$', () => {
-    const fakePayload = () => ({
+
+    const fakeRequest = () => ({
       name: fakeName(1),
     });
 
-    let spyOnCreate: jasmine.Spy;
+    const fakeResponse = () => fakeItem(1);
+
+    const values = () => ({
+      a: create<Item>(fakeType)(fakeRequest()),
+      b: fakeResponse(),
+      c: jasmine.anything(),
+      d: createSuccess<Item>(fakeType)(fakeResponse()),
+      o: otherAction(),
+    });
 
     beforeEach(() => {
-      spyOnCreate = spyOn(service, 'create').and.callThrough();
+      actions = hot('a|', values());
 
-      actions = new BehaviorSubject(
-        create(fakeType)(fakePayload())
-      );
+      api.post.and.returnValue(hot('b|', values()));
     });
 
-    it('calls create() method once with correct parameters', () => {
-      service.create$.subscribe(() => {
-        expect(spyOnCreate).toHaveBeenCalledTimes(1);
-        expect(spyOnCreate).toHaveBeenCalledWith(fakePayload());
-      });
+    it('calls api.post() once with correct parameters in response to CREATE action', () => {
+      expect(effects.create$).toBeObservable(hot('c|', values()));
+
+      expect(api.post).toHaveBeenCalledTimes(1);
+      expect(api.post).toHaveBeenCalledWith([fakeType], fakeRequest());
     });
 
-    it('proxies result from create() method to createSuccess() action', () => {
-      service.create$.subscribe(action => {
-        expect(action).toEqual(createSuccess(fakeType)(fakeItem(1)));
-      });
+    it('outputs CREATE_SUCCESS action with result of api.post() in response to CREATE action', () => {
+      expect(effects.create$).toBeObservable(hot('d|', values()));
+    });
+
+    it('restricts input action to CREATE', () => {
+      actions = hot('o|', values());
+
+      expect(effects.create$).toBeObservable(hot('-|', values()));
+      expect(api.post).not.toHaveBeenCalled();
     });
   });
 
   describe('update$', () => {
-    const fakePayload = () => ({
+
+    const fakeRequest = () => ({
       id: '1',
       changes: {
-        name: fakeName(2),
+        name: fakeName(1),
       },
     });
 
-    let spyOnUpdate: jasmine.Spy;
+    const fakeResponse = () => fakeRequest();
+
+    const values = () => ({
+      a: update<Item>(fakeType)(fakeRequest()),
+      b: fakeResponse(),
+      c: jasmine.anything(),
+      d: updateSuccess<Item>(fakeType)(fakeResponse()),
+      o: otherAction(),
+    });
 
     beforeEach(() => {
-      spyOnUpdate = spyOn(service, 'update').and.callThrough();
+      actions = hot('a|', values());
 
-      actions = new BehaviorSubject(
-        update(fakeType)(fakePayload())
+      api.patch.and.returnValue(hot('b|', values()));
+    });
+
+    it('calls api.patch() once with correct parameters in response to UPDATE action', () => {
+      expect(effects.update$).toBeObservable(hot('c|', values()));
+
+      expect(api.patch).toHaveBeenCalledTimes(1);
+      expect(api.patch).toHaveBeenCalledWith(
+        [fakeType, fakeRequest().id], fakeRequest().changes,
       );
     });
 
-    it('calls update() method once with correct parameters', () => {
-      service.update$.subscribe(() => {
-        expect(spyOnUpdate).toHaveBeenCalledTimes(1);
-        expect(spyOnUpdate).toHaveBeenCalledWith(fakePayload());
-      });
+    it('outputs UPDATE_SUCCESS action with result of api.patch() in response to UPDATE action', () => {
+      expect(effects.update$).toBeObservable(hot('d|', values()));
     });
 
-    it('proxies result from update() method to updateSuccess() action', () => {
-      service.update$.subscribe(action => {
-        expect(action).toEqual(updateSuccess(fakeType)(fakePayload()));
-      });
+    it('restricts input action to UPDATE', () => {
+      actions = hot('o|', values());
+
+      expect(effects.update$).toBeObservable(hot('-|', values()));
+      expect(api.patch).not.toHaveBeenCalled();
     });
   });
 
   describe('list$', () => {
-    const fakePayload = () => ({
-      limit: 75,
+
+    const fakeRequest = () => ({
+      limit: 42,
     });
 
-    let spyOnList: jasmine.Spy;
+    const fakeResponse = () => ({
+      items: fakeItems(),
+    });
+
+    const values = () => ({
+      a: list(fakeType)(fakeRequest()),
+      b: fakeResponse(),
+      c: jasmine.anything(),
+      d: listSuccess<Item>(fakeType)(fakeItems()),
+      o: otherAction(),
+    });
 
     beforeEach(() => {
-      spyOnList = spyOn(service, 'list').and.callThrough();
+      actions = hot('a|', values());
 
-      actions = new BehaviorSubject(
-        list(fakeType)(fakePayload())
-      );
+      api.get.and.returnValue(hot('b|', values()));
     });
 
-    it('calls list() method once with correct parameters', () => {
-      service.list$.subscribe(() => {
-        expect(spyOnList).toHaveBeenCalledTimes(1);
-        expect(spyOnList).toHaveBeenCalledWith(fakePayload());
-      });
+    it('calls api.get() once with correct parameters in response to LIST action', () => {
+      expect(effects.list$).toBeObservable(hot('c|', values()));
+
+      expect(api.get).toHaveBeenCalledTimes(1);
+      expect(api.get).toHaveBeenCalledWith([fakeType], fakeRequest());
     });
 
-    it('proxies result from list() method to listSuccess() action', () => {
-      service.list$.subscribe(action => {
-        expect(action).toEqual(listSuccess(fakeType)(fakeItems()));
-      });
+    it('outputs LIST_SUCCESS action with result of api.get() in response to LIST action', () => {
+      expect(effects.list$).toBeObservable(hot('d|', values()));
+    });
+
+    it('cancels in-flight request due to an earlier response', () => {
+      actions = hot('aa--|', values());
+      api.get.and.returnValues(hot('---b|', values()), hot('--b-|', values()));
+      expect(effects.list$).toBeObservable(hot('--c-|', values()));
+    });
+
+    it('restricts input action to LIST', () => {
+      actions = hot('o|', values());
+
+      expect(effects.list$).toBeObservable(hot('-|', values()));
+      expect(api.get).not.toHaveBeenCalled();
     });
   });
 
   describe('routeList$', () => {
-    const fakeLimit = 15;
-    const fakePayload = (type: string, limit?: number) => ({
-      routerState: {
-        url: '/' + type + (limit ? `;limit=${limit}` : ''),
-        params: limit ? { limit } : {},
-      },
-    } as any);
+    const fakeLimit = 75;
 
-    beforeEach(() => {
-      actions = new BehaviorSubject(
-        routerNavigation(fakePayload(fakeType, fakeLimit))
-      );
+    const fakeParams = () => ({
+      limit: fakeLimit,
     });
 
-    it('produces "list" event with correct payload', () => {});
+    it('outputs LIST action once for routerState url of matching item type with defined "limit"', () => {
 
-    it('filters events specific to item type', () => {
-      actions.next(
-        routerNavigation(fakePayload('other_items', fakeLimit))
-      );
+      const values = () => ({
+        a: routerNavigation({
+          url: '/items;param=...;limit=' + fakeLimit + ';param2=...',
+          params: fakeParams(),
+        }),
+        b: list(fakeType)(fakeParams()),
+      });
+
+      actions = hot('a|', values());
+
+      expect(effects.routeList$).toBeObservable(hot('b|', values()));
     });
 
-    it('filters events by defined "limit"', () => {
-      actions.next(
-        routerNavigation(fakePayload(fakeType))
-      );
-    });
+    describe('does not output LIST action if routerState url', () => {
+      let url: string;
+      let params: any;
 
-    afterEach(() => {
-      service.routeList$.subscribe(action => {
-        expect(action).toEqual(
-          list(fakeType)({
-            limit: fakeLimit,
-          })
-        );
+      it('does not start with matching item type', () => {
+        url = '/other_items';
+        params = {};
+      });
+
+      it('does not start with matching item type, but does define "limit" param', () => {
+        url = '/other_items;limit=' + fakeLimit + ';param=...';
+        params = fakeParams();
+      });
+
+      it('starts with matching item type, but param "limit" is not defined', () => {
+        url = '/items;param=...';
+        params = {};
+      });
+
+      afterEach(() => {
+        const values = () => ({
+          a: routerNavigation({ url, params }),
+        });
+
+        actions = hot('a|', values());
+
+        expect(effects.routeList$).toBeObservable(hot('-|', values()));
       });
     });
   });

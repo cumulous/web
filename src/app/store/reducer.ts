@@ -20,13 +20,13 @@ export function createReducer<Item extends StoreItem>(type: string, properties: 
   });
 
   return function (state: ItemsState<Item> = initialState, action: Action) {
-    if (isType(action, create(type))) {
+    if (isType(action, create<Item>(type))) {
       return { ...state, isLoading: true };
     }
     if (isType(action, createSuccess<Item>(type))) {
       return adapter.addOne(action.payload, { ...state, isLoading: false });
     }
-    if (isType(action, update(type))) {
+    if (isType(action, update<Item>(type))) {
       return { ...state, isLoading: true };
     }
     if (isType(action, updateSuccess<Item>(type))) {
