@@ -1,4 +1,4 @@
-[![CircleCI](https://circleci.com/gh/cumulous/web.svg?style=svg)](https://circleci.com/gh/cumulous/web)
+[![CircleCI](https://circleci.com/gh/cumulous/web.svg?style=shield)](https://circleci.com/gh/cumulous/web)
 [![codecov](https://codecov.io/gh/cumulous/web/branch/master/graph/badge.svg)](https://codecov.io/gh/cumulous/web)
 
 # Cumulous Web UI
