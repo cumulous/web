@@ -75,7 +75,7 @@ describe('reducer factory generates a reducer that', () => {
     });
   });
 
-  it('corectly reduces a CREATE action', () => {
+  it('corectly reduces CREATE action', () => {
     const action = create<Item>(fakeFamily)(fakePartialItem(2));
     const state = reducer(inputState, action);
     expect(state.requestCount).toBe(2);
@@ -84,7 +84,7 @@ describe('reducer factory generates a reducer that', () => {
     expect(state.entities).toBe(initEntities);
   });
 
-  it('corectly reduces a CREATE_SUCCESS action', () => {
+  it('corectly reduces CREATE_SUCCESS action', () => {
     const action = createSuccess<Item>(fakeFamily)(fakeItem(2));
     const state = reducer(inputState, action);
     expect(state.requestCount).toBe(0);
@@ -99,7 +99,7 @@ describe('reducer factory generates a reducer that', () => {
     });
   });
 
-  it('corectly reduces a UPDATE action', () => {
+  it('corectly reduces UPDATE action', () => {
     const action = update<Item>(fakeFamily)({
       id: fakeId(1),
       changes: fakePartialItem(2),
@@ -111,7 +111,7 @@ describe('reducer factory generates a reducer that', () => {
     expect(state.entities).toBe(initEntities);
   });
 
-  it('corectly reduces a UPDATE_SUCCESS action', () => {
+  it('corectly reduces UPDATE_SUCCESS action', () => {
     const action = updateSuccess<Item>(fakeFamily)({
       id: fakeId(1),
       changes: fakePartialItem(2),
@@ -130,7 +130,7 @@ describe('reducer factory generates a reducer that', () => {
     });
   });
 
-  it('corectly reduces a LIST action', () => {
+  it('corectly reduces LIST action', () => {
     const action = list(fakeFamily)({
       limit: fakeLimit,
     });
@@ -141,7 +141,7 @@ describe('reducer factory generates a reducer that', () => {
     expect(state.entities).toBe(initEntities);
   });
 
-  it('corectly reduces a LIST_SUCCESS action', () => {
+  it('corectly reduces LIST_SUCCESS action', () => {
     const action = listSuccess<Item>(fakeFamily)([
       fakeItem(2),
       fakeItem(3),

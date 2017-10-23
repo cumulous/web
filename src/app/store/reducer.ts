@@ -19,30 +19,28 @@ export function createReducer<Item extends StoreItem>(type: string, properties: 
     properties: propertiesInitState,
   });
 
+  const requestReducer = (state: ItemsState<Item>, change: 1 | -1) => {
+    return { ...state, requestCount: state.requestCount + change };
+  };
+
   return function (state: ItemsState<Item> = initialState, action: Action) {
     if (isType(action, create<Item>(type))) {
-      return { ...state, requestCount: state.requestCount + 1 };
+      return requestReducer(state, 1);
     }
     if (isType(action, createSuccess<Item>(type))) {
-      return adapter.addOne(action.payload,
-        { ...state, requestCount: state.requestCount - 1 }
-      );
+      return adapter.addOne(action.payload, requestReducer(state, -1));
     }
     if (isType(action, update<Item>(type))) {
-      return { ...state, requestCount: state.requestCount + 1 };
+      return requestReducer(state, 1);
     }
     if (isType(action, updateSuccess<Item>(type))) {
-      return adapter.updateOne(action.payload,
-        { ...state, requestCount: state.requestCount - 1 }
-      );
+      return adapter.updateOne(action.payload, requestReducer(state, -1));
     }
     if (isType(action, list(type))) {
-      return { ...state, requestCount: state.requestCount + 1 };
+      return requestReducer(state, 1);
     }
     if (isType(action, listSuccess<Item>(type))) {
-      return adapter.addAll(action.payload,
-        { ...state, requestCount: state.requestCount - 1 }
-      );
+      return adapter.addAll(action.payload, requestReducer(state, -1));
     }
     return state;
   };
