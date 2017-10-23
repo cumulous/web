@@ -6,6 +6,7 @@ import { ApiService, ListResponse } from '../api';
 import {
   create, createSuccess,
   update, updateSuccess,
+  get, getSuccess,
   list, listSuccess,
   routerNavigation,
 } from './actions';
@@ -29,6 +30,16 @@ export abstract class EffectsService<Item> {
       this.api.patch([this.type, payload.id], payload.changes)
         .map((response: Item) =>
           updateSuccess<Item>(this.type)(payload)
+        )
+    );
+
+  readonly get$ = this.actions$
+    .filter(get(this.type).match)
+    .map(action => action.payload)
+    .mergeMap(payload =>
+      this.api.get([this.type, payload])
+        .map((response: Item) =>
+          getSuccess<Item>(this.type)(response)
         )
     );
 

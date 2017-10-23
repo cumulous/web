@@ -11,6 +11,7 @@ import { routerNavigation } from './testing';
 import {
   create, createSuccess,
   update, updateSuccess,
+  get, getSuccess,
   list, listSuccess,
 } from './actions';
 
@@ -151,6 +152,45 @@ describe('EffectsService', () => {
 
       expect(effects.update$).toBeObservable(hot('-|', values()));
       expect(api.patch).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('get$', () => {
+
+    const fakeRequest = () => '1';
+
+    const fakeResponse = () => fakeItem(1);
+
+    const values = () => ({
+      a: get(fakeType)(fakeRequest()),
+      b: fakeResponse(),
+      c: jasmine.anything(),
+      d: getSuccess<Item>(fakeType)(fakeResponse()),
+      o: otherAction(),
+    });
+
+    beforeEach(() => {
+      actions = hot('a|', values());
+
+      api.get.and.returnValue(hot('b|', values()));
+    });
+
+    it('calls api.get() once with correct parameters in response to GET action', () => {
+      expect(effects.get$).toBeObservable(hot('c|', values()));
+
+      expect(api.get).toHaveBeenCalledTimes(1);
+      expect(api.get).toHaveBeenCalledWith([fakeType, fakeRequest()]);
+    });
+
+    it('outputs GET_SUCCESS action with result of api.get() in response to GET action', () => {
+      expect(effects.get$).toBeObservable(hot('d|', values()));
+    });
+
+    it('restricts input action to GET', () => {
+      actions = hot('o|', values());
+
+      expect(effects.get$).toBeObservable(hot('-|', values()));
+      expect(api.get).not.toHaveBeenCalled();
     });
   });
 
