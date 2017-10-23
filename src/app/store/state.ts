@@ -25,7 +25,7 @@ export interface RouterState {
 }
 
 export interface ItemsState<Item> extends EntityState<Item> {
-  isLoading: boolean;
+  requestCount: number;
   properties: EntityState<Property>;
 }
 

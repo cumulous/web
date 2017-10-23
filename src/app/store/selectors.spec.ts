@@ -2,7 +2,6 @@ import { TestBed } from '@angular/core/testing';
 import { Action, Store, StoreModule } from '@ngrx/store';
 
 import { Property } from './models';
-import { createReducer } from './reducer';
 import { apiBaseSelector, authSelectors, createSelectors } from './selectors';
 import { ApiState, AuthState, ItemsState } from './state';
 
@@ -40,7 +39,7 @@ describe('createSelectors() returns correct', () => {
   });
 
   const fakeInitState = () => ({
-    isLoading: false,
+    requestCount: 0,
     properties: fakePropState(),
     ids: [
       fakeId(1),
@@ -52,17 +51,25 @@ describe('createSelectors() returns correct', () => {
     },
   });
 
+  const reducer = (state: ItemsState<Item>, action: Action) => {
+    switch (action.type) {
+      case 'REQUEST':
+        return { ...state, requestCount: state.requestCount + 1 };
+      default:
+        return state;
+    }
+  };
+
   let store: Store<State>;
-  let reducer: (state: ItemsState<Item>, action: Action) => any;
+
   let selectors: {
     [key: string]: (state: State) => any;
   };
+
   let selector: (state: State) => any;
   let expected: any;
 
   beforeEach(() => {
-    reducer = createReducer<Item>('items', fakeProperties());
-
     TestBed.configureTestingModule({
       imports: [
         StoreModule.forRoot({
@@ -80,9 +87,19 @@ describe('createSelectors() returns correct', () => {
     selectors = createSelectors<Item>('items');
   });
 
-  it('isLoading selector', () => {
-    selector = selectors.isLoading;
-    expected = false;
+  describe('isLoading selector for', () => {
+    beforeEach(() => {
+      selector = selectors.isLoading;
+    });
+
+    it('requestCount === 0', () => {
+      expected = false;
+    });
+
+    it('requestCount > 0', () => {
+      store.dispatch({ type: 'REQUEST' });
+      expected = true;
+    });
   });
 
   it('itemList selector', () => {
@@ -192,12 +209,12 @@ it('apiBaseSelector provides correct baseUrl selector', () => {
     baseUrl: fakeBaseUrl,
   });
 
-  const fakeReducer = (state: ApiState, action: Action) => state;
+  const reducer = (state: ApiState, action: Action) => state;
 
   TestBed.configureTestingModule({
     imports: [
       StoreModule.forRoot({
-        api: fakeReducer,
+        api: reducer,
       }, {
         initialState: {
           api: fakeInitState(),

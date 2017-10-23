@@ -8,7 +8,7 @@ export type Selector<T> = (state: State) => T;
 
 export function createSelectors<Item extends StoreItem>(type: string) {
   const rootSelector = createFeatureSelector<ItemsState<Item>>(type);
-  const isLoading = createSelector(rootSelector, state => state.isLoading);
+  const isLoading = createSelector(rootSelector, state => state.requestCount > 0);
   const propertiesSelector = createSelector(rootSelector, state => state.properties);
 
   const adapter = entityAdapter<Item>();

@@ -39,8 +39,8 @@ describe('reducer factory generates a reducer that', () => {
     name: fakeName(i),
   });
 
-  const fakeInitState = () => ({
-    isLoading: false,
+  const fakeInputState = () => ({
+    requestCount: 1,
     properties: fakePropInitState(),
     ids: [
       fakeId(1),
@@ -50,7 +50,7 @@ describe('reducer factory generates a reducer that', () => {
     },
   });
 
-  const inputState = fakeInitState();
+  const inputState = fakeInputState();
   const initProperties = inputState.properties;
   const initPropertyIds = inputState.properties.ids;
   const initPropertyEntities = inputState.properties.entities;
@@ -68,7 +68,7 @@ describe('reducer factory generates a reducer that', () => {
   it('corectly constructs the initial state', () => {
     const state = reducer(undefined, { type: 'INIT' });
     expect(state).toEqual({
-      isLoading: false,
+      requestCount: 0,
       properties: fakePropInitState(),
       ids: [],
       entities: {},
@@ -78,7 +78,7 @@ describe('reducer factory generates a reducer that', () => {
   it('corectly reduces a CREATE action', () => {
     const action = create<Item>(fakeFamily)(fakePartialItem(2));
     const state = reducer(inputState, action);
-    expect(state.isLoading).toBe(true);
+    expect(state.requestCount).toBe(2);
     expect(state.properties).toBe(initProperties);
     expect(state.ids).toBe(initIds);
     expect(state.entities).toBe(initEntities);
@@ -87,7 +87,7 @@ describe('reducer factory generates a reducer that', () => {
   it('corectly reduces a CREATE_SUCCESS action', () => {
     const action = createSuccess<Item>(fakeFamily)(fakeItem(2));
     const state = reducer(inputState, action);
-    expect(state.isLoading).toBe(false);
+    expect(state.requestCount).toBe(0);
     expect(state.properties).toBe(initProperties);
     expect(state.ids).toEqual([
       fakeId(1),
@@ -105,7 +105,7 @@ describe('reducer factory generates a reducer that', () => {
       changes: fakePartialItem(2),
     });
     const state = reducer(inputState, action);
-    expect(state.isLoading).toBe(true);
+    expect(state.requestCount).toBe(2);
     expect(state.properties).toBe(initProperties);
     expect(state.ids).toBe(initIds);
     expect(state.entities).toBe(initEntities);
@@ -117,7 +117,7 @@ describe('reducer factory generates a reducer that', () => {
       changes: fakePartialItem(2),
     });
     const state = reducer(inputState, action);
-    expect(state.isLoading).toBe(false);
+    expect(state.requestCount).toBe(0);
     expect(state.properties).toBe(initProperties);
     expect(state.ids).toEqual([
       fakeId(1),
@@ -135,7 +135,7 @@ describe('reducer factory generates a reducer that', () => {
       limit: fakeLimit,
     });
     const state = reducer(inputState, action);
-    expect(state.isLoading).toBe(true);
+    expect(state.requestCount).toBe(2);
     expect(state.properties).toBe(initProperties);
     expect(state.ids).toBe(initIds);
     expect(state.entities).toBe(initEntities);
@@ -147,7 +147,7 @@ describe('reducer factory generates a reducer that', () => {
       fakeItem(3),
     ]);
     const state = reducer(inputState, action);
-    expect(state.isLoading).toBe(false);
+    expect(state.requestCount).toBe(0);
     expect(state.properties).toBe(initProperties);
     expect(state.ids).toEqual([
       fakeId(2),
@@ -160,7 +160,7 @@ describe('reducer factory generates a reducer that', () => {
   });
 
   afterEach(() => {
-    expect(inputState).toEqual(fakeInitState());
+    expect(inputState).toEqual(fakeInputState());
     expect(inputState.properties).toBe(initProperties);
     expect(inputState.properties.ids).toBe(initPropertyIds);
     expect(inputState.properties.entities).toBe(initPropertyEntities);
