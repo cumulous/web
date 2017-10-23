@@ -39,6 +39,14 @@ export function updateSuccess<Item>(type: string) {
   return action<UpdatePayload<Item>>(type, 'UPDATE_SUCCESS');
 }
 
+export function get(type: string) {
+  return action<string>(type, 'GET');
+}
+
+export function getSuccess<Item>(type: string) {
+  return action<Item>(type, 'GET_SUCCESS');
+}
+
 export interface ListPayload {
   limit?: number;
 }

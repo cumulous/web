@@ -1,4 +1,7 @@
-import { create, createSuccess, update, updateSuccess, list, listSuccess } from './actions';
+import {
+  create, createSuccess, update, updateSuccess,
+  get, getSuccess, list, listSuccess,
+} from './actions';
 
 interface Item {
   id: string;
@@ -62,6 +65,21 @@ describe('store creates action of correct type and shape using', () => {
       },
     });
     factory = updateSuccess<Item>(fakeFamily);
+  });
+
+  it('get() factory', () => {
+    type = 'GET';
+    payload = () => fakeId;
+    factory = get(fakeFamily);
+  });
+
+  it('getSuccess() factory', () => {
+    type = 'GET_SUCCESS';
+    payload = () => ({
+      id: fakeId,
+      name: fakeName,
+    });
+    factory = getSuccess<Item>(fakeFamily);
   });
 
   it('list() factory', () => {

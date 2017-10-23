@@ -1,7 +1,11 @@
 import { Action } from '@ngrx/store';
 import { isType } from 'typescript-fsa';
 
-import { create, createSuccess, update, updateSuccess, list, listSuccess } from './actions';
+import {
+  create, createSuccess, update, updateSuccess,
+  get, getSuccess, list, listSuccess,
+} from './actions';
+
 import { entityAdapter, propertyAdapter } from './adapters';
 import { Property, StoreItem } from './models';
 import { ItemsState } from './state';
@@ -35,6 +39,12 @@ export function createReducer<Item extends StoreItem>(type: string, properties: 
     }
     if (isType(action, updateSuccess<Item>(type))) {
       return adapter.updateOne(action.payload, requestReducer(state, -1));
+    }
+    if (isType(action, get(type))) {
+      return requestReducer(state, 1);
+    }
+    if (isType(action, getSuccess<Item>(type))) {
+      return adapter.addOne(action.payload, requestReducer(state, -1));
     }
     if (isType(action, list(type))) {
       return requestReducer(state, 1);

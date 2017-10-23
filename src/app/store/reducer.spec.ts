@@ -1,4 +1,8 @@
-import { create, createSuccess, update, updateSuccess, list, listSuccess } from './actions';
+import {
+  create, createSuccess, update, updateSuccess,
+  get, getSuccess, list, listSuccess,
+} from './actions';
+
 import { Property } from './models';
 import { createReducer } from './reducer';
 
@@ -127,6 +131,30 @@ describe('reducer factory generates a reducer that', () => {
         id: fakeId(1),
         name: fakeName(2),
       },
+    });
+  });
+
+  it('corectly reduces GET action', () => {
+    const action = get(fakeFamily)(fakeId(2));
+    const state = reducer(inputState, action);
+    expect(state.requestCount).toBe(2);
+    expect(state.properties).toBe(initProperties);
+    expect(state.ids).toBe(initIds);
+    expect(state.entities).toBe(initEntities);
+  });
+
+  it('corectly reduces GET_SUCCESS action', () => {
+    const action = getSuccess<Item>(fakeFamily)(fakeItem(2));
+    const state = reducer(inputState, action);
+    expect(state.requestCount).toBe(0);
+    expect(state.properties).toBe(initProperties);
+    expect(state.ids).toEqual([
+      fakeId(1),
+      fakeId(2),
+    ]);
+    expect(state.entities).toEqual({
+      [fakeId(1)]: fakeItem(1),
+      [fakeId(2)]: fakeItem(2),
     });
   });
 
