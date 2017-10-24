@@ -1,6 +1,7 @@
 import { Component, ElementRef, EventEmitter, Input,
          OnInit, Output, TemplateRef, ViewChild } from '@angular/core';
 
+import { Project } from '../../api';
 import { ListColumn, ListViewRequest } from './models';
 
 @Component({
@@ -15,6 +16,7 @@ export class ListViewComponent<Item> implements OnInit {
 
   @Input() columns: ListColumn[] = [];
   @Input() rows: Item[] = [];
+  @Input() projects: { [id: string]: Project } = {};
   @Input() isLoading = false;
 
   @Input() headerHeight = 42;

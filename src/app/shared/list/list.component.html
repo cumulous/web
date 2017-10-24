@@ -1,6 +1,7 @@
 <app-list-view
   [columns]="columns$ | async"
   [rows]="rows$ | async"
+  [projects]="projects$ | async"
   [isLoading]="isLoading$ | async"
   (list)="onList($event)"
   (open)="open.emit($event)"

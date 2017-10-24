@@ -30,6 +30,16 @@ const fakeItem = (i: number): Item => ({
 const fakeItems = (offset: number, limit: number) =>
   Array.from({length: limit}, (d, i) => fakeItem(offset + i));
 
+const fakeProjectName = (i: number) => 'Fake project ' + i;
+
+const fakeProject = (i: number) => ({
+  id: project_ids[i],
+  name: fakeProjectName(i),
+  created_at: new Date(now - i * 1E8).toISOString(),
+  created_by: 'Fake project creator ' + i,
+  status: 'active',
+});
+
 export function pageSize(fixture: ComponentFixture<ListViewComponent<Item>>) {
   const page = debugElement(fixture, '.list').nativeElement;
   const component = fixture.componentInstance;
@@ -112,9 +122,18 @@ describe('ListViewComponent', () => {
   });
 
   describe('displays correct', () => {
+    const existingProjects = 5;
+
     let rowsText: string[];
     beforeEach(() => {
       component.rows = fakeItems(0, pageSize(fixture));
+
+      project_ids.forEach((id, i) => {
+        if (i < existingProjects) {
+          component.projects[id] = fakeProject(i);
+        }
+      });
+
       fixture.detectChanges();
       rowsText = elementsText(fixture, '.list-row');
     });
@@ -131,11 +150,15 @@ describe('ListViewComponent', () => {
         expect(rowText).toContain(fakeItem(i).description);
       });
     });
-    // it('project names', () => {
-    //   rowsText.map((rowText, i) => {
-    //     expect(rowText).toContain(fakeProjectName(i));
-    //   });
-    // });
+    it('project names', () => {
+      rowsText.map((rowText, i) => {
+        if (i < existingProjects) {
+          expect(rowText).toContain(fakeProjectName(i));
+        } else {
+          expect(rowText).not.toContain(fakeProjectName(i));
+        }
+      });
+    });
     it('item creation dates', () => {
       rowsText.map((rowText, i) => {
         const createdAt = new Date(fakeItem(i).created_at);

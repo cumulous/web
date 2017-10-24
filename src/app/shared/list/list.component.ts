@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 
 import { Observable } from 'rxjs/Observable';
 
+import { Project } from '../../api';
 import { createSelectors, Property, StoreItem, Store } from '../../store';
 
 import { ListColumn, ListViewRequest } from './models';
@@ -23,6 +24,7 @@ export class ListComponent<Item extends StoreItem> implements OnInit {
 
   isLoading$: Observable<boolean>;
   rows$: Observable<Item[]>;
+  projects$: Observable<{ [id: string]: Project }>;
   columns$: Observable<ListColumn[]>;
 
   constructor(
@@ -36,8 +38,10 @@ export class ListComponent<Item extends StoreItem> implements OnInit {
 
   private setupSelectors() {
     const selectors = createSelectors<Item>(this.type);
+    const projectsSelector = createSelectors<Project>('projects');
 
     this.isLoading$ = this.store.select(selectors.isLoading);
+    this.projects$ = this.store.select(projectsSelector.itemMap);
     this.rows$ = this.store.select(selectors.itemList);
     this.columns$ = this.store.select(selectors.propertyList)
       .map(properties => properties
