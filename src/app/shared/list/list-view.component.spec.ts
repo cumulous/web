@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { debugElement, selectElement, elementsText, fakeUUIDs } from '../../../testing';
+import { debugElement, debugElements, elementsText, fakeUUIDs, selectElement } from '../../../testing';
 
 import { ListModule } from './list.module';
 import { ListViewComponent } from './list-view.component';
@@ -122,14 +122,14 @@ describe('ListViewComponent', () => {
   });
 
   describe('displays correct', () => {
-    const existingProjects = 5;
+    const knownProjectsCount = 2;
 
     let rowsText: string[];
     beforeEach(() => {
       component.rows = fakeItems(0, pageSize(fixture));
 
       project_ids.forEach((id, i) => {
-        if (i < existingProjects) {
+        if (i < knownProjectsCount) {
           component.projects[id] = fakeProject(i);
         }
       });
@@ -151,11 +151,23 @@ describe('ListViewComponent', () => {
       });
     });
     it('project names', () => {
+      expect(rowsText.length).toBeGreaterThan(knownProjectsCount);
       rowsText.map((rowText, i) => {
-        if (i < existingProjects) {
+        if (i < knownProjectsCount) {
           expect(rowText).toContain(fakeProjectName(i));
         } else {
           expect(rowText).not.toContain(fakeProjectName(i));
+        }
+      });
+    });
+    it('project loading indicators', () => {
+      const rows = debugElements(fixture, '.list-row');
+      rows.map((row, i) => {
+        const indicator = debugElement(row, 'mat-progress-spinner');
+        if (i < knownProjectsCount) {
+          expect(indicator).toBeFalsy();
+        } else {
+          expect(indicator).toBeTruthy();
         }
       });
     });

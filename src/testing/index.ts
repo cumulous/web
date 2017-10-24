@@ -1,14 +1,14 @@
-import { Type } from '@angular/core';
+import { DebugElement, Type } from '@angular/core';
 import { ComponentFixture } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 
 import * as uuid from 'uuid';
 
-function root<T> (fixture: ComponentFixture<T>) {
-  return fixture.debugElement;
+function root<T> (fixture: ComponentFixture<T> | DebugElement) {
+  return fixture instanceof DebugElement ? fixture : fixture.debugElement;
 }
 
-export function debugElement<T> (fixture: ComponentFixture<T>, locator: string | Type<any>) {
+export function debugElement<T> (fixture: ComponentFixture<T> | DebugElement, locator: string | Type<any>) {
   if (typeof locator === 'string') {
     return root(fixture).query(By.css(locator));
   } else {

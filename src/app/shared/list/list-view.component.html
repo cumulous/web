@@ -10,8 +10,7 @@
   [loadingIndicator]="isLoading"
   (activate)="$event.type === 'click' && open.emit($event.row)"
   (scroll)="onScroll($event.offsetY)"
->
-</ngx-datatable>
+></ngx-datatable>
 
 <ng-template #dateTemplate let-value="value">
   <div class="column-date">
@@ -20,5 +19,12 @@
 </ng-template>
 
 <ng-template #projectTemplate let-id="value">
+  <mat-progress-spinner
+    *ngIf="!projects[id]"
+    mode="indeterminate"
+    strokeWidth="3"
+    [diameter]="25"
+  ></mat-progress-spinner>
+
   {{ projects[id]?.name }}
 </ng-template>
