@@ -15,32 +15,42 @@ import {
   list, listSuccess,
 } from './actions';
 
+import { Store } from './models';
+import * as selectors from './selectors';
+
 import { EffectsService } from './effects.service';
 
 interface Item {
   id: string;
   name: string;
+  project_id?: string;
 }
 
 const fakeType = 'items';
 
 const fakeName = (i: number) => 'Fake item ' + i;
 
-const fakeItem = (i: number) => ({
+const fakeProjectId = (i: number) => 'fake-project-' + i;
+
+const fakeItem = (i: number, project = true) => ({
   id: String(i),
   name: fakeName(i),
+  project_id: project ? fakeProjectId(Math.ceil(i / 2)) : undefined,
 });
 
-const fakeItems = () => [
-  fakeItem(1),
-  fakeItem(2),
-];
+const fakeItems = (limit: number, project = true) =>
+  Array.from({ length: limit }, (d, i) => fakeItem(i + 1, project));
+
+const fakeProjects = () => ({
+  [fakeProjectId(1)]: {},
+  [fakeProjectId(2)]: {},
+});
 
 @Injectable()
 class TestEffectsService extends EffectsService<Item> {
 
-  constructor(actions$: Actions, api: ApiService) {
-    super(fakeType, actions$, api);
+  constructor(actions$: Actions, api: ApiService, store: Store) {
+    super(fakeType, actions$, api, store);
   }
 }
 
@@ -53,15 +63,25 @@ describe('EffectsService', () => {
   let effects: TestEffectsService;
   let actions: Observable<any>;
   let api: jasmine.SpyObj<ApiService>;
+  let store: jasmine.SpyObj<Store>;
 
   beforeEach(() => {
     api = jasmine.createSpyObj('ApiService', ['get', 'post', 'patch']);
+
+    store = jasmine.createSpyObj('Store', ['select']);
+    spyOn(selectors, 'createSelectors').and.callFake(type => {
+      if (type === 'projects') {
+        return { itemMap: Observable.of(fakeProjects()) };
+      }
+    });
+    store.select.and.callFake(selected => selected);
 
     TestBed.configureTestingModule({
       providers: [
         TestEffectsService,
         provideMockActions(() => actions),
         { provide: ApiService, useValue: api },
+        { provide: Store, useValue: store },
       ],
     });
 
@@ -201,14 +221,14 @@ describe('EffectsService', () => {
     });
 
     const fakeResponse = () => ({
-      items: fakeItems(),
+      items: fakeItems(2),
     });
 
     const values = () => ({
       a: list(fakeType)(fakeRequest()),
       b: fakeResponse(),
       c: jasmine.anything(),
-      d: listSuccess<Item>(fakeType)(fakeItems()),
+      d: listSuccess<Item>(fakeType)(fakeItems(2)),
       o: otherAction(),
     });
 
@@ -240,6 +260,40 @@ describe('EffectsService', () => {
 
       expect(effects.list$).toBeObservable(hot('-|', values()));
       expect(api.get).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('listSuccess$', () => {
+
+    const values = () => ({
+      a: listSuccess<Item>(fakeType)(fakeItems(8)),
+      b: get('projects')(fakeProjectId(3)),
+      c: get('projects')(fakeProjectId(4)),
+      d: listSuccess<Item>(fakeType)(fakeItems(8, false)),
+      g: listSuccess<Item>(fakeType)(fakeItems(4)),
+      o: otherAction(),
+    });
+
+    it('outputs GET actions for all project IDs not in the store in response to LIST_SUCCESS action', () => {
+      actions = hot('a---|', values());
+
+      expect(effects.listSuccess$).toBeObservable(hot('(bc)|', values()));
+    });
+
+    describe('does not output any actions if', () => {
+      let action: string;
+
+      it('input action is not LIST_SUCCESS', () => action = 'o');
+
+      it('input list does not contain project IDs', () => action = 'd');
+
+      it('all of project IDs are in the store', () => action = 'g');
+
+      afterEach(() => {
+        actions = hot(action + '|', values());
+
+        expect(effects.listSuccess$).toBeObservable(hot('-|', values()));
+      });
     });
   });
 

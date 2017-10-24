@@ -1,7 +1,10 @@
 import { Actions } from '@ngrx/effects';
 import { Observable } from 'rxjs/Observable';
 
-import { ApiService, ListResponse } from '../api';
+import { ApiService, ListResponse, Project } from '../api';
+
+import { Store } from './models';
+import { createSelectors } from './selectors';
 
 import {
   create, createSuccess,
@@ -53,7 +56,15 @@ export abstract class EffectsService<Item> {
         )
     );
 
-  private route$ = this.actions$
+  readonly listSuccess$ = this.actions$
+    .filter(listSuccess<Item>(this.type).match)
+    .map(action => action.payload)
+    .mergeMap(items => this.getDetails<Project>('projects',
+      items.map(item => item['project_id']),
+      this.projects$,
+    ));
+
+  private readonly route$ = this.actions$
     .filter(routerNavigation.match)
     .map(action => action.payload.routerState)
     .filter(route => route.url.startsWith('/' + this.type));
@@ -62,9 +73,29 @@ export abstract class EffectsService<Item> {
     .filter(route => route.params.limit)
     .switchMap(route => Observable.of(list(this.type)(route.params)));
 
+  private readonly projects$: Observable<{ [id: string]: Project }>;
+
   constructor(
     private readonly type: string,
     private readonly actions$: Actions,
     private readonly api: ApiService,
-  ) {}
+    store: Store,
+  ) {
+    this.projects$ = this.selectProjects(store);
+  }
+
+  private selectProjects(store: Store) {
+    const projects = createSelectors<Project>('projects');
+    return store.select(projects.itemMap);
+  }
+
+  private getDetails<T>(type: string, ids: string[], storedMap: Observable<{ [id: string]: T }>) {
+    return storedMap
+      .map(stored => ids.filter(id => id && !stored[id]))
+      .filter(newIds => newIds.length > 0)
+      .map(newIds => new Set(newIds))
+      .map(newIds => Array.from(newIds))
+      .map(newIds => newIds.map(id => get(type)(id)))
+      .mergeMap(actions => Observable.from(actions));
+  }
 }
