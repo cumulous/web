@@ -1,4 +1,5 @@
 import { TestBed } from '@angular/core/testing';
+import { RouterTestingModule } from '@angular/router/testing';
 
 import { CoreModule } from './core.module';
 
@@ -7,6 +8,7 @@ describe('CoreModule', () => {
     TestBed.configureTestingModule({
       imports: [
         CoreModule,
+        RouterTestingModule,
       ],
     });
   });
@@ -15,6 +17,7 @@ describe('CoreModule', () => {
     try {
       new CoreModule(TestBed.get(CoreModule));
     } catch (err) {
+      expect(err.message).toContain('already');
       done();
     }
   });
