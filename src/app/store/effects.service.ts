@@ -86,7 +86,7 @@ export abstract class EffectsService<Item> {
   private readonly clients$: Observable<{ [id: string]: Client }>;
 
   constructor(
-    private readonly type: string,
+    readonly type: string,
     private readonly actions$: Actions,
     private readonly api: ApiService,
     store: Store,

@@ -43,7 +43,7 @@ describe('AppComponent', () => {
   let store: jasmine.SpyObj<Store>;
 
   beforeEach(fakeAsync(() => {
-    store = jasmine.createSpyObj('Store', ['dispatch']);
+    store = jasmine.createSpyObj('Store', ['dispatch', 'select']);
 
     TestBed.configureTestingModule({
       imports: [

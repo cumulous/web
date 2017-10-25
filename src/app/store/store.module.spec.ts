@@ -1,5 +1,7 @@
+import { Type } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
+import { EffectsMetadata, getEffectsMetadata } from '@ngrx/effects';
 import { RouterStateSerializer } from '@ngrx/router-store';
 import { Action, Store } from '@ngrx/store';
 
@@ -10,12 +12,20 @@ import { Analysis, ApiService, Client, Dataset, Project, User } from '../api';
 import { AuthService } from '../auth/auth.service';
 import { AuthEffects } from './auth/effects';
 
+import { EffectsService } from './effects.service';
+import { AnalysisEffects } from './analyses/effects';
+import { ClientEffects } from './clients/effects';
+import { DatasetEffects } from './datasets/effects';
+import { ProjectEffects } from './projects/effects';
+import { UserEffects } from './users/effects';
+
 import {
   login, loginSuccess, loginRedirect, logout,
   createSuccess, storage,
 } from './actions';
 
 import { reducers } from './reducers';
+import { Store as StoreModel } from './models';
 import { State } from './state';
 import { StoreModule } from './store.module';
 
@@ -313,9 +323,10 @@ describe('StoreModule', () => {
 });
 
 describe('StoreModule', () => {
-  let effects: AuthEffects;
 
   beforeEach(() => {
+    const store = jasmine.createSpyObj('Store', ['select']);
+
     TestBed.configureTestingModule({
       imports: [
         RouterTestingModule,
@@ -324,13 +335,67 @@ describe('StoreModule', () => {
       providers: [
         { provide: AuthService, useValue: {} },
         { provide: ApiService, useValue: {} },
+        { provide: StoreModel, useValue: store },
       ],
     });
-
-    effects = TestBed.get(AuthEffects);
   });
 
   it('provides AuthEffects', () => {
+    const effects = TestBed.get(AuthEffects);
     expect(effects).toBeDefined();
+  });
+
+  function testEffects<Item, E extends EffectsService<Item>>
+      (effectsClass: Type<E>, itemsType: string, props: [keyof E]) {
+
+    let effects: E;
+
+    beforeEach(() => {
+      effects = TestBed.get(effectsClass);
+    });
+
+    it('items type', () => {
+      expect(effects.type).toEqual(itemsType);
+    });
+
+    it('metadata', () => {
+      const metadata = getEffectsMetadata(effects);
+      const expected: typeof metadata = {};
+
+      props.forEach(prop => {
+        expected[prop] = { dispatch: true };
+      });
+      expect(metadata).toEqual(expected);
+    });
+  }
+
+  describe('provides AnalysisEffects with correct', () => {
+    testEffects<Analysis, AnalysisEffects>(AnalysisEffects, 'analyses',
+      ['create$', 'update$', 'list$', 'listSuccess$', 'routeList$'],
+    );
+  });
+
+  describe('provides ClientEffects with correct', () => {
+    testEffects<Client, ClientEffects>(ClientEffects, 'clients',
+      ['create$', 'update$', 'get$'],
+    );
+  });
+
+  describe('provides DatasetEffects with correct', () => {
+    testEffects<Dataset, DatasetEffects>(DatasetEffects, 'datasets',
+      ['create$', 'update$', 'list$', 'listSuccess$', 'routeList$'],
+    );
+  });
+
+  describe('provides ProjectEffects with correct', () => {
+    testEffects<Project, ProjectEffects>(ProjectEffects, 'projects',
+      ['create$', 'update$', 'get$', 'list$', 'routeList$'],
+    );
+  });
+
+  describe('provides UserEffects with correct', () => {
+    testEffects<User, UserEffects>(UserEffects, 'users',
+      ['create$', 'update$', 'get$'],
+    );
   });
 });
