@@ -4,7 +4,9 @@ import { Actions } from '@ngrx/effects';
 import { provideMockActions } from '@ngrx/effects/testing';
 import { hot } from 'jasmine-marbles';
 import { Observable } from 'rxjs/Observable';
+import * as uuid from 'uuid';
 
+import { fakeUUIDs } from '../../testing';
 import { ApiService } from '../api';
 import { routerNavigation } from './testing';
 
@@ -24,6 +26,7 @@ interface Item {
   id: string;
   name: string;
   project_id?: string;
+  created_by?: string;
 }
 
 const fakeType = 'items';
@@ -32,23 +35,40 @@ const fakeName = (i: number) => 'Fake item ' + i;
 
 const fakeProjectId = (i: number) => 'fake-project-' + i;
 
-const fakeItem = (i: number, project = true) => ({
+const user_ids = fakeUUIDs(10);
+
+const fakeClientId = (i: number) => 'fake-client-' + i;
+
+const fakeMemberId = (i: number) =>
+  i % 2 ? user_ids[Math.ceil(i / 2)] : fakeClientId(Math.ceil(i / 2));
+
+const fakeItem = (i: number, project = true, member = true) => ({
   id: String(i),
   name: fakeName(i),
   project_id: project ? fakeProjectId(Math.ceil(i / 2)) : undefined,
+  created_by: member ? fakeMemberId(i) : undefined,
 });
 
-const fakeItems = (limit: number, project = true) =>
-  Array.from({ length: limit }, (d, i) => fakeItem(i + 1, project));
+const fakeItems = (limit: number, project = true, member = true) =>
+  Array.from({ length: limit }, (d, i) => fakeItem(i + 1, project, member));
 
 const fakeProjects = () => ({
   [fakeProjectId(1)]: {},
   [fakeProjectId(2)]: {},
 });
 
+const fakeUsers = () => ({
+  [user_ids[1]]: {},
+  [user_ids[2]]: {},
+});
+
+const fakeClients = () => ({
+  [fakeClientId(1)]: {},
+  [fakeClientId(2)]: {},
+});
+
 @Injectable()
 class TestEffectsService extends EffectsService<Item> {
-
   constructor(actions$: Actions, api: ApiService, store: Store) {
     super(fakeType, actions$, api, store);
   }
@@ -70,8 +90,16 @@ describe('EffectsService', () => {
 
     store = jasmine.createSpyObj('Store', ['select']);
     spyOn(selectors, 'createSelectors').and.callFake(type => {
-      if (type === 'projects') {
-        return { itemMap: Observable.of(fakeProjects()) };
+      switch (type) {
+        case 'projects': return {
+          itemMap: Observable.of(fakeProjects()),
+        };
+        case 'users': return {
+          itemMap: Observable.of(fakeUsers()),
+        };
+        case 'clients': return {
+          itemMap: Observable.of(fakeClients()),
+        };
       }
     });
     store.select.and.callFake(selected => selected);
@@ -269,15 +297,20 @@ describe('EffectsService', () => {
       a: listSuccess<Item>(fakeType)(fakeItems(8)),
       b: get('projects')(fakeProjectId(3)),
       c: get('projects')(fakeProjectId(4)),
-      d: listSuccess<Item>(fakeType)(fakeItems(8, false)),
-      g: listSuccess<Item>(fakeType)(fakeItems(4)),
+      d: get('users')(user_ids[3]),
+      g: get('users')(user_ids[4]),
+      h: get('clients')(fakeClientId(3)),
+      k: get('clients')(fakeClientId(4)),
+      n: listSuccess<Item>(fakeType)(fakeItems(8, false, false)),
+      p: listSuccess<Item>(fakeType)(fakeItems(4)),
       o: otherAction(),
     });
 
-    it('outputs GET actions for all project IDs not in the store in response to LIST_SUCCESS action', () => {
-      actions = hot('a---|', values());
+    it('outputs GET actions for all project, user and client IDs not in the store ' +
+       'in response to LIST_SUCCESS action', () => {
+      actions = hot('a-------|', values());
 
-      expect(effects.listSuccess$).toBeObservable(hot('(bc)|', values()));
+      expect(effects.listSuccess$).toBeObservable(hot('(bcdghk)|', values()));
     });
 
     describe('does not output any actions if', () => {
@@ -285,9 +318,9 @@ describe('EffectsService', () => {
 
       it('input action is not LIST_SUCCESS', () => action = 'o');
 
-      it('input list does not contain project IDs', () => action = 'd');
+      it('input list does not contain project or member IDs', () => action = 'n');
 
-      it('all of project IDs are in the store', () => action = 'g');
+      it('all of project and member IDs are in the store', () => action = 'p');
 
       afterEach(() => {
         actions = hot(action + '|', values());

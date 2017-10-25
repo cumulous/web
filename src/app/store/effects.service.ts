@@ -1,9 +1,10 @@
 import { Actions } from '@ngrx/effects';
 import { Observable } from 'rxjs/Observable';
+import * as isUUID from 'validator/lib/isUUID';
 
-import { ApiService, ListResponse, Project } from '../api';
+import { ApiService, Client, ListResponse, Project, User } from '../api';
 
-import { Store } from './models';
+import { Store, StoreItem } from './models';
 import { createSelectors } from './selectors';
 
 import {
@@ -59,10 +60,17 @@ export abstract class EffectsService<Item> {
   readonly listSuccess$ = this.actions$
     .filter(listSuccess<Item>(this.type).match)
     .map(action => action.payload)
-    .mergeMap(items => this.getDetails<Project>('projects',
-      items.map(item => item['project_id']),
-      this.projects$,
-    ));
+    .mergeMap(items => {
+      const projects = this.getIds(items, 'project_id');
+
+      const members = this.getIds(items, 'created_by');
+      const users = members.filter(id => isUUID(id));
+      const clients = members.filter(id => !isUUID(id));
+
+      return this.getDetails('projects', projects, this.projects$)
+        .merge(this.getDetails('users', users, this.users$))
+        .merge(this.getDetails('clients', clients, this.clients$));
+    });
 
   private readonly route$ = this.actions$
     .filter(routerNavigation.match)
@@ -74,6 +82,8 @@ export abstract class EffectsService<Item> {
     .switchMap(route => Observable.of(list(this.type)(route.params)));
 
   private readonly projects$: Observable<{ [id: string]: Project }>;
+  private readonly users$: Observable<{ [id: string]: User }>;
+  private readonly clients$: Observable<{ [id: string]: Client }>;
 
   constructor(
     private readonly type: string,
@@ -81,17 +91,25 @@ export abstract class EffectsService<Item> {
     private readonly api: ApiService,
     store: Store,
   ) {
-    this.projects$ = this.selectProjects(store);
+    this.projects$ = this.selectItems('projects', store);
+    this.users$ = this.selectItems('users', store);
+    this.clients$ = this.selectItems('clients', store);
   }
 
-  private selectProjects(store: Store) {
-    const projects = createSelectors<Project>('projects');
-    return store.select(projects.itemMap);
+  private selectItems<T extends StoreItem>(type: string, store: Store) {
+    const selectors = createSelectors<T>(type);
+    return store.select(selectors.itemMap);
+  }
+
+  private getIds(items: Item[], prop: string) {
+    return items
+      .map(item => item[prop])
+      .filter(id => id);
   }
 
   private getDetails<T>(type: string, ids: string[], storedMap: Observable<{ [id: string]: T }>) {
     return storedMap
-      .map(stored => ids.filter(id => id && !stored[id]))
+      .map(stored => ids.filter(id => !stored[id]))
       .filter(newIds => newIds.length > 0)
       .map(newIds => new Set(newIds))
       .map(newIds => Array.from(newIds))
