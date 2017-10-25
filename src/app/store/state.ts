@@ -2,9 +2,8 @@ import { Params } from '@angular/router';
 import { EntityState } from '@ngrx/entity';
 import { RouterReducerState } from '@ngrx/router-store';
 
+import { Analysis, Client, Dataset, Project, User } from '../api';
 import { Property } from './models';
-
-import { Project, Dataset, Analysis } from '../api';
 
 export interface AuthState {
   token?: string;
@@ -35,5 +34,7 @@ export interface State {
   projects: ItemsState<Project>;
   datasets: ItemsState<Dataset>;
   analyses: ItemsState<Analysis>;
+  users: ItemsState<User>;
+  clients: ItemsState<Client>;
   routerReducer: RouterReducerState<RouterState>;
 }

@@ -8,6 +8,8 @@ import { apiReducer } from './api/reducer';
 import { projectsReducer } from './projects/reducer';
 import { datasetsReducer } from './datasets/reducer';
 import { analysesReducer } from './analyses/reducer';
+import { usersReducer } from './users/reducer';
+import { clientsReducer } from './clients/reducer';
 import { storageReducer } from './storage';
 
 export const reducers: ActionReducerMap<State> = {
@@ -16,6 +18,8 @@ export const reducers: ActionReducerMap<State> = {
   projects: projectsReducer,
   datasets: datasetsReducer,
   analyses: analysesReducer,
+  users: usersReducer,
+  clients: clientsReducer,
   routerReducer,
 };
 

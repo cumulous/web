@@ -5,7 +5,7 @@ import { Action, Store } from '@ngrx/store';
 
 import { environment } from '../../environments/environment';
 
-import { ApiService, Project, Dataset, Analysis } from '../api';
+import { Analysis, ApiService, Client, Dataset, Project, User } from '../api';
 
 import { AuthService } from '../auth/auth.service';
 import { AuthEffects } from './auth/effects';
@@ -29,7 +29,7 @@ describe('StoreModule', () => {
   });
 
   const fakeProject = () => ({
-    id: 'Fake id',
+    id: 'fake-project-id',
     name: 'Fake project',
     created_at: fakeCreatedAt,
     created_by: 'Fake author',
@@ -37,7 +37,7 @@ describe('StoreModule', () => {
   });
 
   const fakeDataset = () => ({
-    id: 'Fake id',
+    id: 'fake-dataset-id',
     project_id: 'Fake project id',
     created_at: fakeCreatedAt,
     created_by: 'Fake author',
@@ -45,11 +45,23 @@ describe('StoreModule', () => {
   });
 
   const fakeAnalysis = () => ({
-    id: 'Fake id',
+    id: 'fake-analysis-id',
     project_id: 'Fake project id',
     created_at: fakeCreatedAt,
     created_by: 'Fake author',
     status: 'active' as any,
+  });
+
+  const fakeUser = () => ({
+    id: 'fake-user-id',
+    name: 'John Doe',
+    email: 'johndoe@example.org',
+  });
+
+  const fakeClient = () => ({
+    id: 'fake-client-id',
+    name: 'Machine account for John Doe',
+    email: 'johndoe@example.org',
   });
 
   let store: Store<State>;
@@ -167,6 +179,8 @@ describe('StoreModule', () => {
       store.dispatch(createSuccess<Project>('projects')(fakeProject()));
       store.dispatch(createSuccess<Dataset>('datasets')(fakeDataset()));
       store.dispatch(createSuccess<Analysis>('analyses')(fakeAnalysis()));
+      store.dispatch(createSuccess<User>('users')(fakeUser()));
+      store.dispatch(createSuccess<Client>('clients')(fakeClient()));
       store.dispatch(logout());
 
       store.first().subscribe(state => {
@@ -203,6 +217,16 @@ describe('StoreModule', () => {
       it('analyses', () => {
         type = 'analyses';
         action = createSuccess<Analysis>(type)(fakeAnalysis());
+      });
+
+      it('users', () => {
+        type = 'users';
+        action = createSuccess<User>(type)(fakeUser());
+      });
+
+      it('clients', () => {
+        type = 'clients';
+        action = createSuccess<Client>(type)(fakeClient());
       });
 
       afterEach(done => {
@@ -242,6 +266,16 @@ describe('StoreModule', () => {
       it('analyses', () => {
         type = 'analyses';
         action = createSuccess<Analysis>(type)(fakeAnalysis());
+      });
+
+      it('users', () => {
+        type = 'users';
+        action = createSuccess<User>(type)(fakeUser());
+      });
+
+      it('clients', () => {
+        type = 'clients';
+        action = createSuccess<Client>(type)(fakeClient());
       });
 
       afterEach(done => {
