@@ -6,5 +6,5 @@ Feature: Showing a list of projects
 Scenario: Showing the list of projects
   Given I am on the "Projects" page
   Then I should see a tabulated list of projects with columns
-    | Name | Description | Date Created | Status |
+    | Name | Description | Date Created | Created By | Status |
   And the projects should be sorted by date in descending order

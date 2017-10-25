@@ -45,7 +45,7 @@ Use `npm run build:prod` for a production build.
 ## Testing
 
 Currently, testing is configured against the [Chrome](https://www.google.com/chrome/) browser.
-Please make sure the most recent version (>= 55) is installed.
+Please make sure the most recent version (>= 60.0.3112.0) is installed.
 
 ### Unit tests
 

@@ -5,6 +5,6 @@ export const properties = [
   new Property('name'),
   new Property('description'),
   new Property('created_at', 'Date Created'),
-  new Property('created_by', 'Created By', false),
+  new Property('created_by', 'Created By'),
   new Property('status'),
 ];
