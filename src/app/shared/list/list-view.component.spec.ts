@@ -1,8 +1,12 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { debugElement, debugElements, elementsText, fakeUUIDs, selectElement } from '../../../testing';
+import {
+  debugComponent, debugElement, debugElements,
+  elementsText, fakeUUIDs, selectElement,
+} from '../../../testing';
 
 import { ListModule } from './list.module';
+import { ListCellComponent } from './list-cell.component';
 import { ListViewComponent } from './list-view.component';
 import { ListColumn } from './models';
 
@@ -150,24 +154,14 @@ describe('ListViewComponent', () => {
         expect(rowText).toContain(fakeItem(i).description);
       });
     });
-    it('project names', () => {
-      expect(rowsText.length).toBeGreaterThan(knownProjectsCount);
-      rowsText.map((rowText, i) => {
-        if (i < knownProjectsCount) {
-          expect(rowText).toContain(fakeProjectName(i));
-        } else {
-          expect(rowText).not.toContain(fakeProjectName(i));
-        }
-      });
-    });
-    it('project loading indicators', () => {
+    it('item projects', () => {
       const rows = debugElements(fixture, '.list-row');
       rows.map((row, i) => {
-        const indicator = debugElement(row, 'mat-progress-spinner');
+        const cell = debugComponent(row, ListCellComponent);
         if (i < knownProjectsCount) {
-          expect(indicator).toBeFalsy();
+          expect(cell.item).toEqual(fakeProject(i));
         } else {
-          expect(indicator).toBeTruthy();
+          expect(cell.item).toBeFalsy();
         }
       });
     });

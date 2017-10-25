@@ -4,6 +4,7 @@ import { MatProgressSpinnerModule } from '@angular/material';
 import { NgxDatatableModule } from '@swimlane/ngx-datatable';
 
 import { ListComponent } from './list.component';
+import { ListCellComponent } from './list-cell.component';
 import { ListViewComponent } from './list-view.component';
 
 @NgModule({
@@ -14,6 +15,7 @@ import { ListViewComponent } from './list-view.component';
   ],
   declarations: [
     ListComponent,
+    ListCellComponent,
     ListViewComponent,
   ],
   exports: [

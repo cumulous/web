@@ -8,19 +8,21 @@ function root<T> (fixture: ComponentFixture<T> | DebugElement) {
   return fixture instanceof DebugElement ? fixture : fixture.debugElement;
 }
 
-export function debugElement<T> (fixture: ComponentFixture<T> | DebugElement, locator: string | Type<any>) {
-  if (typeof locator === 'string') {
+export function debugElement<T> (fixture: ComponentFixture<T> | DebugElement, locator: string | Type<any> = '') {
+  if (locator === '') {
+    return root(fixture);
+  } else if (typeof locator === 'string') {
     return root(fixture).query(By.css(locator));
   } else {
     return root(fixture).query(By.directive(locator));
   }
 }
 
-export function debugComponent<T> (fixture: ComponentFixture<T>, component: Type<any>) {
+export function debugComponent<T> (fixture: ComponentFixture<T> | DebugElement, component: Type<any>) {
   return debugElement(fixture, component).injector.get(component);
 }
 
-export function debugElements<T> (fixture: ComponentFixture<T>, locator: string | Type<any>) {
+export function debugElements<T> (fixture: ComponentFixture<T> | DebugElement, locator: string | Type<any>) {
   if (typeof locator === 'string') {
     return root(fixture).queryAll(By.css(locator));
   } else {
@@ -28,16 +30,20 @@ export function debugElements<T> (fixture: ComponentFixture<T>, locator: string 
   }
 }
 
-export function selectElement<T> (fixture: ComponentFixture<T>, locator: string | Type<any>) {
+export function selectElement<T> (fixture: ComponentFixture<T> | DebugElement, locator: string | Type<any> = '') {
   return debugElement(fixture, locator).nativeElement;
 }
 
-export function selectElements<T> (fixture: ComponentFixture<T>, locator: string | Type<any>) {
+export function selectElements<T> (fixture: ComponentFixture<T> | DebugElement, locator: string | Type<any>) {
   return debugElements(fixture, locator)
     .map(element => element.nativeElement);
 }
 
-export function elementsText<T> (fixture: ComponentFixture<T>, locator: string | Type<any>) {
+export function elementText<T> (fixture: ComponentFixture<T> | DebugElement, locator: string | Type<any> = '') {
+  return selectElement(fixture, locator).textContent.trim();
+}
+
+export function elementsText<T> (fixture: ComponentFixture<T> | DebugElement, locator: string | Type<any>) {
   return selectElements(fixture, locator)
     .map(element => element.textContent.trim());
 }

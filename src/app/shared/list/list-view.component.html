@@ -19,12 +19,7 @@
 </ng-template>
 
 <ng-template #projectTemplate let-id="value">
-  <mat-progress-spinner
-    *ngIf="!projects[id]"
-    mode="indeterminate"
-    strokeWidth="3"
-    [diameter]="25"
-  ></mat-progress-spinner>
-
-  {{ projects[id]?.name }}
+  <app-list-cell
+    [item]="projects[id]"
+  ></app-list-cell>
 </ng-template>
