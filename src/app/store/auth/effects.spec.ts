@@ -1,13 +1,14 @@
 import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { EffectsMetadata, getEffectsMetadata } from '@ngrx/effects';
 import { provideMockActions } from '@ngrx/effects/testing';
 import { hot } from 'jasmine-marbles';
 
 import { Observable } from 'rxjs/Observable';
 
 import { AuthService } from '../../auth/auth.service';
-import { EffectsMetadata, getEffectsMetadata, routerNavigation } from '../testing';
+import { routerNavigation } from '../testing';
 
 import { login, loginSuccess, loginRedirect, logout } from '../actions';
 import { AuthEffects } from './effects';
