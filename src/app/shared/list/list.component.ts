@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 
 import { Observable } from 'rxjs/Observable';
 
-import { Project } from '../../api';
+import { Client, Project, User } from '../../api';
 import { createSelectors, Property, StoreItem, Store } from '../../store';
 
 import { ListColumn, ListViewRequest } from './models';
@@ -25,6 +25,8 @@ export class ListComponent<Item extends StoreItem> implements OnInit {
   isLoading$: Observable<boolean>;
   rows$: Observable<Item[]>;
   projects$: Observable<{ [id: string]: Project }>;
+  users$: Observable<{ [id: string]: User }>;
+  clients$: Observable<{ [id: string]: Client }>;
   columns$: Observable<ListColumn[]>;
 
   constructor(
@@ -39,9 +41,13 @@ export class ListComponent<Item extends StoreItem> implements OnInit {
   private setupSelectors() {
     const selectors = createSelectors<Item>(this.type);
     const projectsSelector = createSelectors<Project>('projects');
+    const usersSelector = createSelectors<User>('users');
+    const clientsSelector = createSelectors<Client>('clients');
 
     this.isLoading$ = this.store.select(selectors.isLoading);
     this.projects$ = this.store.select(projectsSelector.itemMap);
+    this.users$ = this.store.select(usersSelector.itemMap);
+    this.clients$ = this.store.select(clientsSelector.itemMap);
     this.rows$ = this.store.select(selectors.itemList);
     this.columns$ = this.store.select(selectors.propertyList)
       .map(properties => properties
@@ -65,8 +71,9 @@ export class ListComponent<Item extends StoreItem> implements OnInit {
 
   private getTemplate(propName: string) {
     const templates = {
-      created_at: this.view.dateTemplate,
       project_id: this.view.projectTemplate,
+      created_at: this.view.dateTemplate,
+      created_by: this.view.memberTemplate,
     };
     return templates[propName];
   }

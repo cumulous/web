@@ -1,7 +1,7 @@
 import { Component, ElementRef, EventEmitter, Input,
          OnInit, Output, TemplateRef, ViewChild } from '@angular/core';
 
-import { Project } from '../../api';
+import { Client, Project, User } from '../../api';
 import { ListColumn, ListViewRequest } from './models';
 
 @Component({
@@ -13,10 +13,13 @@ export class ListViewComponent<Item> implements OnInit {
   @ViewChild('table', { read: ElementRef }) private readonly table: ElementRef;
   @ViewChild('dateTemplate') readonly dateTemplate: TemplateRef<any>;
   @ViewChild('projectTemplate') readonly projectTemplate: TemplateRef<any>;
+  @ViewChild('memberTemplate') readonly memberTemplate: TemplateRef<any>;
 
   @Input() columns: ListColumn[] = [];
   @Input() rows: Item[] = [];
   @Input() projects: { [id: string]: Project } = {};
+  @Input() users: { [id: string]: User } = {};
+  @Input() clients: { [id: string]: Client } = {};
   @Input() isLoading = false;
 
   @Input() headerHeight = 42;

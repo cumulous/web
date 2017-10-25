@@ -2,6 +2,8 @@
   [columns]="columns$ | async"
   [rows]="rows$ | async"
   [projects]="projects$ | async"
+  [users]="users$ | async"
+  [clients]="clients$ | async"
   [isLoading]="isLoading$ | async"
   (list)="onList($event)"
   (open)="open.emit($event)"

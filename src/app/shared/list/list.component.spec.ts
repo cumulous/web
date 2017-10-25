@@ -46,19 +46,36 @@ describe('ListComponent', () => {
     status: 'Fake project status',
   });
 
-  const fakeProjects = (count = 2) => {
-    const projectsMap: { [id: string]: Project } = {};
+  const fakeUser = (i: number) => ({
+    id: 'fake-user-id-' + i,
+    name: 'Fake user name ' + i,
+    email: 'fake-user-' + i + '@example.org',
+  });
+
+  const fakeClient = (i: number) => ({
+    id: 'fake-client-id-' + i,
+    name: 'Fake client name ' + i,
+    email: 'fake-client-' + i + '@example.org',
+  });
+
+  function createMap<T>(createItem: (i: number) => T, count = 2) {
+    const map: { [id: string]: T } = {};
     for (let i = 0; i < count; i++) {
-      projectsMap[i] = fakeProject(i);
+      map[i] = createItem(i);
     }
-    return projectsMap;
+    return map;
   };
+
+  const fakeProjects = (count?: number) => createMap(fakeProject, count);
+  const fakeUsers = (count?: number) => createMap(fakeUser, count);
+  const fakeClients = (count?: number) => createMap(fakeClient, count);
 
   const fakeProperties = () => [
     new Property('id', 'ID', false),
     new Property('name'),
     new Property('project_id', 'Project'),
     new Property('created_at', 'Date Created'),
+    new Property('created_by', 'Created By'),
   ];
 
   let fixture: ComponentFixture<ListComponent<Item>>;
@@ -70,6 +87,8 @@ describe('ListComponent', () => {
 
   let itemSubjects: SubjectsMap;
   let projectSubjects: SubjectsMap;
+  let userSubjects: SubjectsMap;
+  let clientSubjects: SubjectsMap;
   let createSelectors: jasmine.Spy;
 
   beforeEach(() => {
@@ -102,10 +121,20 @@ describe('ListComponent', () => {
       itemMap: new BehaviorSubject(fakeProjects()),
     };
 
+    userSubjects = {
+      itemMap: new BehaviorSubject(fakeUsers()),
+    };
+
+    clientSubjects = {
+      itemMap: new BehaviorSubject(fakeClients()),
+    };
+
     createSelectors = spyOn(storeModule, 'createSelectors').and.callFake(type => {
       switch (type) {
         case 'items': return itemSubjects;
         case 'projects': return projectSubjects;
+        case 'users': return userSubjects;
+        case 'clients': return clientSubjects;
       }
     });
 
@@ -121,7 +150,7 @@ describe('ListComponent', () => {
   });
 
   it('selects propertyList state from the store and transforms it into listViewComponent.columns', () => {
-    expect(view.columns.length).toBe(3);
+    expect(view.columns.length).toBe(4);
     expect(view.columns[0]).toEqual(jasmine.objectContaining({
       prop: 'name', name: 'Name',
     }));
@@ -130,6 +159,9 @@ describe('ListComponent', () => {
     }));
     expect(view.columns[2]).toEqual(jasmine.objectContaining({
       prop: 'created_at', name: 'Date Created', cellTemplate: view.dateTemplate,
+    }));
+    expect(view.columns[3]).toEqual(jasmine.objectContaining({
+      prop: 'created_by', name: 'Created By', cellTemplate: view.memberTemplate,
     }));
   });
 
@@ -141,8 +173,28 @@ describe('ListComponent', () => {
     });
   });
 
-  it('selects project entitites from the store and assigns it to listViewComponent.projects', () => {
-    expect(view.projects).toEqual(fakeProjects());
+  describe('selects corresponding entities from the store and assigns them to listViewComponent', () => {
+    let itemsType: string;
+    let createItems: () => { [id: string]: any };
+
+    it('projects', () => {
+      itemsType = 'projects';
+      createItems = fakeProjects;
+    });
+
+    it('users', () => {
+      itemsType = 'users';
+      createItems = fakeUsers;
+    });
+
+    it('clients', () => {
+      itemsType = 'clients';
+      createItems = fakeClients;
+    });
+
+    afterEach(() => {
+      expect(view[itemsType]).toEqual(createItems());
+    });
   });
 
   it('applies updates to listViewComponent.isLoading from the store', () => {
@@ -169,10 +221,34 @@ describe('ListComponent', () => {
     });
   });
 
-  it('applies updates to listViewComponent.projects from the store', () => {
-    projectSubjects.itemMap.next(fakeProjects(3));
-    fixture.detectChanges();
-    expect(view.projects).toEqual(fakeProjects(3));
+  describe('applies updates from the store to listViewComponent', () => {
+    let itemsType: string;
+    let createItems: (count: number) => { [id: string]: any };
+    let subjects: SubjectsMap;
+
+    it('projects', () => {
+      itemsType = 'projects';
+      createItems = fakeProjects;
+      subjects = projectSubjects;
+    });
+
+    it('users', () => {
+      itemsType = 'users';
+      createItems = fakeUsers;
+      subjects = userSubjects;
+    });
+
+    it('clients', () => {
+      itemsType = 'clients';
+      createItems = fakeClients;
+      subjects = clientSubjects;
+    });
+
+    afterEach(() => {
+      subjects.itemMap.next(createItems(4));
+      fixture.detectChanges();
+      expect(view[itemsType]).toEqual(createItems(4));
+    });
   });
 
   it('calls router.navigate once with correct parameters on (list) event from ListViewComponent', () => {

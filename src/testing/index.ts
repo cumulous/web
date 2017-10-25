@@ -22,6 +22,11 @@ export function debugComponent<T> (fixture: ComponentFixture<T> | DebugElement, 
   return debugElement(fixture, component).injector.get(component);
 }
 
+export function debugComponents<T> (fixture: ComponentFixture<T> | DebugElement, component: Type<any>) {
+  return debugElements(fixture, component)
+    .map(element => element.injector.get(component));
+}
+
 export function debugElements<T> (fixture: ComponentFixture<T> | DebugElement, locator: string | Type<any>) {
   if (typeof locator === 'string') {
     return root(fixture).queryAll(By.css(locator));

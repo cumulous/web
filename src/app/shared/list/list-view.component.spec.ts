@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import {
-  debugComponent, debugElement, debugElements,
+  debugComponents, debugElement, debugElements,
   elementsText, fakeUUIDs, selectElement,
 } from '../../../testing';
 
@@ -13,36 +13,51 @@ import { ListColumn } from './models';
 interface Item {
   id: string;
   name: string;
-  created_at: string;
   project_id: string;
+  created_at: string;
+  created_by: string;
   description: string;
 }
 
 const item_ids = fakeUUIDs(100);
 const project_ids = fakeUUIDs(100);
+const user_ids = fakeUUIDs(100);
 
 const now = new Date().getTime();
+
+const fakeProject = (i: number) => ({
+  id: project_ids[i],
+  name: 'Fake project ' + i,
+  created_at: new Date(now - i * 1E8).toISOString(),
+  created_by: 'Fake project creator ' + i,
+  status: 'active',
+});
+
+const fakeUser = (i: number) => ({
+  id: user_ids[i],
+  name: 'Fake user name ' + i,
+  email: 'fake_user_' + i + '@example.com',
+});
+
+const fakeClientId = (i: number) => 'fake-client-id-' + i;
+
+const fakeClient = (i: number) => ({
+  id: fakeClientId(i),
+  name: 'Fake user name ' + i,
+  email: 'fake_user_' + i + '@example.com',
+});
 
 const fakeItem = (i: number): Item => ({
   id: item_ids[i],
   name: 'Fake item ' + i,
-  created_at: new Date(now - i * 1E9).toISOString(),
   project_id: project_ids[i],
+  created_at: new Date(now - i * 1E9).toISOString(),
+  created_by: i % 2 ? user_ids[i] : fakeClientId(i),
   description: 'Item ' + i,
 });
 
 const fakeItems = (offset: number, limit: number) =>
   Array.from({length: limit}, (d, i) => fakeItem(offset + i));
-
-const fakeProjectName = (i: number) => 'Fake project ' + i;
-
-const fakeProject = (i: number) => ({
-  id: project_ids[i],
-  name: fakeProjectName(i),
-  created_at: new Date(now - i * 1E8).toISOString(),
-  created_by: 'Fake project creator ' + i,
-  status: 'active',
-});
 
 export function pageSize(fixture: ComponentFixture<ListViewComponent<Item>>) {
   const page = debugElement(fixture, '.list').nativeElement;
@@ -74,6 +89,7 @@ describe('ListViewComponent', () => {
       new ListColumn('description', 'Description', undefined, 'item-description'),
       new ListColumn('project_id', 'Project', component.projectTemplate),
       new ListColumn('created_at', 'Date Created', component.dateTemplate),
+      new ListColumn('created_by', 'Created By', component.memberTemplate),
     ];
 
     component.pageLimit = pageSize(fixture) + itemPageSurplus;
@@ -82,7 +98,7 @@ describe('ListViewComponent', () => {
   it('correctly displays column names', () => {
     fixture.detectChanges();
     expect(elementsText(fixture, '.list-column'))
-      .toEqual(['Name', 'Description', 'Project', 'Date Created']);
+      .toEqual(['Name', 'Description', 'Project', 'Date Created', 'Created By']);
   });
 
   describe('emits initial list() with correct parameters if', () => {
@@ -126,15 +142,25 @@ describe('ListViewComponent', () => {
   });
 
   describe('displays correct', () => {
-    const knownProjectsCount = 2;
+    const detailedCellsCount = 4;
 
     let rowsText: string[];
     beforeEach(() => {
       component.rows = fakeItems(0, pageSize(fixture));
 
       project_ids.forEach((id, i) => {
-        if (i < knownProjectsCount) {
+        if (i < detailedCellsCount) {
           component.projects[id] = fakeProject(i);
+        }
+      });
+
+      user_ids.forEach((id, i) => {
+        if (i < detailedCellsCount) {
+          if (i % 2) {
+            component.users[id] = fakeUser(i);
+          } else {
+            component.clients[fakeClientId(i)] = fakeClient(i);
+          }
         }
       });
 
@@ -154,14 +180,20 @@ describe('ListViewComponent', () => {
         expect(rowText).toContain(fakeItem(i).description);
       });
     });
-    it('item projects', () => {
+    it('item project and creator names', () => {
       const rows = debugElements(fixture, '.list-row');
+      expect(rows.length).toBeGreaterThan(detailedCellsCount);
+
       rows.map((row, i) => {
-        const cell = debugComponent(row, ListCellComponent);
-        if (i < knownProjectsCount) {
-          expect(cell.item).toEqual(fakeProject(i));
+        const items = debugComponents(row, ListCellComponent)
+          .map(cell => cell.item);
+
+        if (i < detailedCellsCount) {
+          expect(items).toEqual([fakeProject(i), i % 2 ? fakeUser(i) : fakeClient(i)]);
         } else {
-          expect(cell.item).toBeFalsy();
+          items.forEach(item => {
+            expect(item).toBeFalsy();
+          });
         }
       });
     });

@@ -23,3 +23,9 @@
     [item]="projects[id]"
   ></app-list-cell>
 </ng-template>
+
+<ng-template #memberTemplate let-id="value">
+  <app-list-cell
+    [item]="users[id] || clients[id]"
+  ></app-list-cell>
+</ng-template>
