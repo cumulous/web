@@ -15,5 +15,5 @@ export class Property {
 }
 
 export interface StoreItem {
-  id: any;
+  id: string;
 }

@@ -25,7 +25,7 @@ import {
 } from './actions';
 
 import { reducers } from './reducers';
-import { Store as StoreModel } from './models';
+import { Store as StoreModel, StoreItem } from './models';
 import { State } from './state';
 import { StoreModule } from './store.module';
 
@@ -345,7 +345,7 @@ describe('StoreModule', () => {
     expect(effects).toBeDefined();
   });
 
-  function testEffects<Item, E extends EffectsService<Item>>
+  function testEffects<Item extends StoreItem, E extends EffectsService<Item>>
       (effectsClass: Type<E>, itemsType: string, props: [keyof E]) {
 
     let effects: E;

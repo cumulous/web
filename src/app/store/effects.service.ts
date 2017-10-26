@@ -15,7 +15,7 @@ import {
   routerNavigation,
 } from './actions';
 
-export abstract class EffectsService<Item> {
+export abstract class EffectsService<Item extends StoreItem> {
 
   readonly create$ = this.actions$
     .filter(create<Item>(this.type).match)
