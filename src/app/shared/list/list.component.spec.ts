@@ -173,7 +173,7 @@ describe('ListComponent', () => {
 
   describe('selects corresponding entities from the store and assigns them to listViewComponent', () => {
     let itemsType: string;
-    let createItems: <T>() => { [id: string]: T };
+    let createItems: () => { [id: string]: any };
 
     it('projects', () => {
       itemsType = 'projects';
@@ -221,7 +221,7 @@ describe('ListComponent', () => {
 
   describe('applies updates from the store to listViewComponent', () => {
     let itemsType: string;
-    let createItems: <T>(count: number) => { [id: string]: T };
+    let createItems: (count: number) => { [id: string]: any };
     let subjects: SubjectsMap;
 
     it('projects', () => {

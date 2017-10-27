@@ -55,7 +55,7 @@ export class ApiService {
 
   get<R>(path: string[], params?: RequestParams): Observable<R> {
     return this.request<R>(path, (url, headers) =>
-      this.http.get(url, {
+      this.http.get<R>(url, {
         headers,
         params: this.params(params),
       })
@@ -64,13 +64,13 @@ export class ApiService {
 
   post<B, R>(path: string[], body?: B): Observable<R> {
     return this.request<R>(path, (url, headers) =>
-      this.http.post(url, body, { headers })
+      this.http.post<R>(url, body, { headers })
     );
   }
 
   patch<B, R>(path: string[], body?: B): Observable<R> {
     return this.request<R>(path, (url, headers) =>
-      this.http.patch(url, body, { headers })
+      this.http.patch<R>(url, body, { headers })
     );
   }
 }

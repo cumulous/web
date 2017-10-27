@@ -199,10 +199,10 @@ describe('ListViewComponent', () => {
     });
     it('item creation dates', () => {
       rowsText.map((rowText, i) => {
-        const createdAt = new Date(fakeItem(i).created_at);
-        const createdDate = createdAt.toLocaleDateString();
-        const createdTime = createdAt.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
-        expect(rowText).toContain(createdDate + ', ' + createdTime);
+        const createdAt = new Date(fakeItem(i).created_at).toLocaleDateString([],
+          { month: 'numeric', day: 'numeric', year: '2-digit', hour: 'numeric', minute: 'numeric' },
+        );
+        expect(rowText).toContain(createdAt);
       });
     });
   });
