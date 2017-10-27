@@ -56,7 +56,7 @@ export class AuthEffects {
   @Effect()
   readonly routeLogout$ = this.route$
     .filter(route => route.params.logout === 'true')
-    .map(route => logout());
+    .map(() => logout());
 
   constructor(
     private readonly actions$: Actions,

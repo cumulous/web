@@ -29,7 +29,7 @@ export abstract class AuthService {
     return this.config
       .withLatestFrom(this.token)
       .map(([config, token]) => this.isValid(token, config.expiresIn))
-      .catch(err => Observable.of(false));
+      .catch(() => Observable.of(false));
   }
 
   private isValid(token: string, expiresIn: number) {

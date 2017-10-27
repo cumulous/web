@@ -57,7 +57,7 @@ const fakeItem = (i: number): Item => ({
 });
 
 const fakeItems = (offset: number, limit: number) =>
-  Array.from({length: limit}, (d, i) => fakeItem(offset + i));
+  Array.from({length: limit}, (_d, i) => fakeItem(offset + i));
 
 export function pageSize(fixture: ComponentFixture<ListViewComponent<Item>>) {
   const page = debugElement(fixture, '.list').nativeElement;

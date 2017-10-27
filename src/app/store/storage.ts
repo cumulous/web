@@ -8,7 +8,7 @@ import { State } from './state';
 export function storageReducer(reducer: ActionReducer<State>): ActionReducer<State> {
   return (state: State, action: Action) => {
     const keys = ['auth', 'projects', 'datasets', 'analyses', 'users', 'clients'];
-    const reviver = (key: string, value: any) => value;
+    const reviver = (_key: string, value: any) => value;
 
     if (isType(action, storage) && keys.includes(action.payload)) {
       const rehydratedState = rehydrateApplicationState(

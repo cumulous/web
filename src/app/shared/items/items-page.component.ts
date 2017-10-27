@@ -16,7 +16,7 @@ export class ItemsPageComponent<Item> {
     // TODO
   }
 
-  onOpen(item: Item) {
+  onOpen(_item: Item) {
     // TODO
   }
 }

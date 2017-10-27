@@ -11,7 +11,6 @@ import { Property, Store } from '../../store';
 import { ListComponent } from './list.component';
 import { ListModule } from './list.module';
 import { ListViewComponent } from './list-view.component';
-import { ListColumn } from './models';
 
 interface Item {
   id: string;

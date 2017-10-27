@@ -19,10 +19,6 @@ interface State {
 describe('createSelectors() returns correct', () => {
   const fakePropName = 'prop';
 
-  const fakeProperties = () => [
-    new Property(fakePropName),
-  ];
-
   const fakePropState = () => ({
     ids: [fakePropName],
     entities: {
@@ -160,7 +156,7 @@ describe('authSelectors provides correct', () => {
   let selector: string;
   let expected: any;
 
-  const reducer = (state: AuthState, action: Action) => state;
+  const reducer = (state: AuthState) => state;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -209,7 +205,7 @@ it('apiBaseSelector provides correct baseUrl selector', () => {
     baseUrl: fakeBaseUrl,
   });
 
-  const reducer = (state: ApiState, action: Action) => state;
+  const reducer = (state: ApiState) => state;
 
   TestBed.configureTestingModule({
     imports: [

@@ -1,4 +1,4 @@
-import { createFeatureSelector, createSelector, Store } from '@ngrx/store';
+import { createFeatureSelector, createSelector } from '@ngrx/store';
 
 import { entityAdapter, propertyAdapter } from './adapters';
 import { StoreItem } from './models';

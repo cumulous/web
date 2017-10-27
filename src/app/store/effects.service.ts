@@ -32,7 +32,7 @@ export abstract class EffectsService<Item extends StoreItem> {
     .map(action => action.payload)
     .mergeMap(payload =>
       this.api.patch([this.type, payload.id], payload.changes)
-        .map((response: Item) =>
+        .map(() =>
           updateSuccess<Item>(this.type)(payload)
         )
     );

@@ -13,12 +13,13 @@ describe('CoreModule', () => {
     });
   });
 
-  it('throws an error if imported more than once', (done) => {
+  it('throws an error if imported more than once', () => {
+    let module: CoreModule | undefined = undefined;
     try {
-      new CoreModule(TestBed.get(CoreModule));
+      module = new CoreModule(TestBed.get(CoreModule));
     } catch (err) {
       expect(err.message).toContain('already');
-      done();
     }
+    expect(module).toBeUndefined();
   });
 });

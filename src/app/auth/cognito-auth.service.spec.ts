@@ -3,7 +3,7 @@ import { CognitoAuth } from 'amazon-cognito-auth-js/dist/amazon-cognito-auth';
 
 import { Observable } from 'rxjs/Observable';
 
-import { authSelectors, Store } from '../store';
+import { Store } from '../store';
 import { CognitoAuthService } from './cognito-auth.service';
 
 describe('CognitoAuthService', () => {

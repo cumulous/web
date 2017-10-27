@@ -5,7 +5,6 @@ import { provideMockActions } from '@ngrx/effects/testing';
 import { Action } from '@ngrx/store';
 import { hot } from 'jasmine-marbles';
 import { Observable } from 'rxjs/Observable';
-import * as uuid from 'uuid';
 
 import { fakeUUIDs } from '../../testing';
 import { ApiService, ListParams } from '../api';
@@ -51,7 +50,7 @@ const fakeItem = (i: number, project = true, member = true) => ({
 });
 
 const fakeItems = (limit: number, project = true, member = true) =>
-  Array.from({ length: limit }, (d, i) => fakeItem(i + 1, project, member));
+  Array.from({ length: limit }, (_d, i) => fakeItem(i + 1, project, member));
 
 const fakeProjects = () => ({
   [fakeProjectId(1)]: {},

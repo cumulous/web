@@ -1,7 +1,7 @@
 import { Type } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
-import { EffectsMetadata, getEffectsMetadata } from '@ngrx/effects';
+import { getEffectsMetadata } from '@ngrx/effects';
 import { RouterStateSerializer } from '@ngrx/router-store';
 import { Action, Store } from '@ngrx/store';
 

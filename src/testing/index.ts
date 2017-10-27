@@ -61,5 +61,5 @@ export function dispatchEvent<F, T> (fixture: ComponentFixture<F>, locator: stri
 }
 
 export function fakeUUIDs(count: number) {
-  return Array.from({length: count}, (d, i) => uuid());
+  return Array.from({length: count}, () => uuid());
 }

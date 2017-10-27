@@ -11,7 +11,7 @@ export class AuthGuardService implements CanActivate {
     private readonly router: Router,
   ) {}
 
-  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
+  canActivate(_route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
     return this.auth.isAuthenticated
       .do(authed => authed || this.router.navigate(['/login', {
         from: state.url,
