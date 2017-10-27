@@ -38,8 +38,8 @@ hooks(({Before}) => {
   });
 });
 
-export const navigateTo = location =>
-  browser.get(location);
+export const navigateTo = url =>
+  browser.get(url);
 
 export const locationOf = page =>
     `/${page.toLowerCase()}`;

@@ -6,8 +6,8 @@
     "build": "ng build",
     "build:prod": "ng build -prod",
     "e2e": "ng e2e -e prod",
-    "lint": "ng lint",
-    "lint:fix": "ng lint --fix",
+    "lint": "ng lint --type-check",
+    "lint:fix": "npm run lint -- --fix",
     "ng": "ng",
     "start": "run-p serve:app serve:coverage",
     "serve:coverage": "lite-server",
@@ -52,7 +52,7 @@
     "@types/node": "^8.0.47",
     "chai": "^4.1.2",
     "chai-as-promised": "^7.1.1",
-    "codelyzer": "^2.1.1",
+    "codelyzer": "^3.2.2",
     "cucumber": "^3.0.1",
     "ini": "^1.3.4",
     "jasmine-core": "^2.6.1",
@@ -73,7 +73,7 @@
     "protractor-cucumber-framework": "^4.0.3",
     "request-promise-native": "^1.0.4",
     "ts-node": "^3.0.2",
-    "tslint": "^4.5.1",
+    "tslint": "^5.8.0",
     "typescript": "^2.5.3",
     "uuid": "^3.1.0"
   }
