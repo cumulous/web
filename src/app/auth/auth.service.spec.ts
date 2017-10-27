@@ -14,10 +14,6 @@ class AuthTestService extends AuthService {
     super(store);
   }
 
-  get config() {
-    return super.config;
-  }
-
   login() {
     return new Observable<void>();
   }
