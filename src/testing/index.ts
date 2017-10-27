@@ -4,11 +4,11 @@ import { By } from '@angular/platform-browser';
 
 import * as uuid from 'uuid';
 
-function root<T> (fixture: ComponentFixture<T> | DebugElement) {
+function root<F> (fixture: ComponentFixture<F> | DebugElement) {
   return fixture instanceof DebugElement ? fixture : fixture.debugElement;
 }
 
-export function debugElement<T> (fixture: ComponentFixture<T> | DebugElement, locator: string | Type<any> = '') {
+export function debugElement<F, T> (fixture: ComponentFixture<F> | DebugElement, locator: string | Type<T> = '') {
   if (locator === '') {
     return root(fixture);
   } else if (typeof locator === 'string') {
@@ -18,16 +18,16 @@ export function debugElement<T> (fixture: ComponentFixture<T> | DebugElement, lo
   }
 }
 
-export function debugComponent<T> (fixture: ComponentFixture<T> | DebugElement, component: Type<any>) {
+export function debugComponent<F, T> (fixture: ComponentFixture<F> | DebugElement, component: Type<T>) {
   return debugElement(fixture, component).injector.get(component);
 }
 
-export function debugComponents<T> (fixture: ComponentFixture<T> | DebugElement, component: Type<any>) {
+export function debugComponents<F, T> (fixture: ComponentFixture<F> | DebugElement, component: Type<T>) {
   return debugElements(fixture, component)
     .map(element => element.injector.get(component));
 }
 
-export function debugElements<T> (fixture: ComponentFixture<T> | DebugElement, locator: string | Type<any>) {
+export function debugElements<F, T> (fixture: ComponentFixture<F> | DebugElement, locator: string | Type<T>) {
   if (typeof locator === 'string') {
     return root(fixture).queryAll(By.css(locator));
   } else {
@@ -35,25 +35,25 @@ export function debugElements<T> (fixture: ComponentFixture<T> | DebugElement, l
   }
 }
 
-export function selectElement<T> (fixture: ComponentFixture<T> | DebugElement, locator: string | Type<any> = '') {
+export function selectElement<F, T> (fixture: ComponentFixture<F> | DebugElement, locator: string | Type<T> = '') {
   return debugElement(fixture, locator).nativeElement;
 }
 
-export function selectElements<T> (fixture: ComponentFixture<T> | DebugElement, locator: string | Type<any>) {
+export function selectElements<F, T> (fixture: ComponentFixture<F> | DebugElement, locator: string | Type<T>) {
   return debugElements(fixture, locator)
     .map(element => element.nativeElement);
 }
 
-export function elementText<T> (fixture: ComponentFixture<T> | DebugElement, locator: string | Type<any> = '') {
+export function elementText<F, T> (fixture: ComponentFixture<F> | DebugElement, locator: string | Type<T> = '') {
   return selectElement(fixture, locator).textContent.trim();
 }
 
-export function elementsText<T> (fixture: ComponentFixture<T> | DebugElement, locator: string | Type<any>) {
+export function elementsText<F, T> (fixture: ComponentFixture<F> | DebugElement, locator: string | Type<T>) {
   return selectElements(fixture, locator)
     .map(element => element.textContent.trim());
 }
 
-export function dispatchEvent<T> (fixture: ComponentFixture<T>, locator: string | Type<any>,
+export function dispatchEvent<F, T> (fixture: ComponentFixture<F>, locator: string | Type<T>,
                                   eventName: string, eventData?: any) {
   const element = selectElement(fixture, locator);
   element.dispatchEvent(new CustomEvent(eventName, { detail: eventData }));

@@ -30,7 +30,7 @@ export class AuthEffects {
   @Effect({ dispatch: false })
   readonly loginRedirect$ = this.actions$
     .filter(loginRedirect.match)
-    .do(action => this.router.navigateByUrl(action.payload || ''));
+    .do(action => this.router.navigateByUrl(action.payload));
 
   @Effect({ dispatch: false })
   readonly logout$ = this.actions$
@@ -45,13 +45,13 @@ export class AuthEffects {
   @Effect()
   readonly routeLogin$ = this.route$
     .filter(route => route.url === '/login' || route.params.from)
-    .map(route => login(route.params.from));
+    .map(route => login(route.params.from || ''));
 
   @Effect()
   readonly routeLoginResponse$ = this.route$
-    .filter(route => route.url.includes('access_token='))
-    .map(route => route.url.match(/access_token=([^&]*)/)[1])
-    .map(token => loginSuccess(token));
+    .map(route => route.url.match(/access_token=([^&]*)/))
+    .filter(matches => matches !== null)
+    .map(matches => loginSuccess(matches![1]));
 
   @Effect()
   readonly routeLogout$ = this.route$

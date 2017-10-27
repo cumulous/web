@@ -6,11 +6,11 @@ import { Analysis, Client, Dataset, Project, User } from '../api';
 import { Property } from './models';
 
 export interface AuthState {
-  token?: string;
-  fromUrl?: string;
+  token: string;
+  fromUrl: string;
   config: {
-    expiresIn: number,
-    [key: string]: any,
+    expiresIn: number;
+    [key: string]: any;
   };
 }
 

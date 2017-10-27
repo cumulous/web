@@ -43,7 +43,7 @@ describe('StoreModule', () => {
     name: 'Fake project',
     created_at: fakeCreatedAt,
     created_by: 'Fake author',
-    status: 'active' as any,
+    status: 'active',
   });
 
   const fakeDataset = () => ({
@@ -51,7 +51,7 @@ describe('StoreModule', () => {
     project_id: 'Fake project id',
     created_at: fakeCreatedAt,
     created_by: 'Fake author',
-    status: 'active' as any,
+    status: 'active',
   });
 
   const fakeAnalysis = () => ({
@@ -59,7 +59,7 @@ describe('StoreModule', () => {
     project_id: 'Fake project id',
     created_at: fakeCreatedAt,
     created_by: 'Fake author',
-    status: 'active' as any,
+    status: 'active',
   });
 
   const fakeUser = () => ({
@@ -125,6 +125,7 @@ describe('StoreModule', () => {
 
       store.first().subscribe(state => {
         expect(state.auth).toEqual({
+          token: '',
           fromUrl: fakeUrl,
           config: environment.auth,
         });
@@ -138,6 +139,7 @@ describe('StoreModule', () => {
       store.first().subscribe(state => {
         expect(state.auth).toEqual({
           token: fakeToken,
+          fromUrl: '',
           config: environment.auth,
         });
         done();
@@ -149,7 +151,8 @@ describe('StoreModule', () => {
 
       store.first().subscribe(state => {
         expect(state.auth).toEqual({
-          fromUrl: undefined,
+          token: '',
+          fromUrl: '',
           config: environment.auth,
         });
         done();
@@ -160,9 +163,7 @@ describe('StoreModule', () => {
       store.dispatch({ type: 'test' });
 
       store.first().subscribe(state => {
-        expect(state.auth).toEqual({
-          config: environment.auth,
-        });
+        expect(state.auth).toBe(initState.auth);
         done();
       });
     });
@@ -206,7 +207,7 @@ describe('StoreModule', () => {
 
     describe('stores part of state to localStorage for', () => {
 
-      const jsonCopy = (obj: any) =>
+      const jsonCopy = obj =>
         JSON.parse(JSON.stringify(obj));
 
       it('auth', () => {
@@ -242,7 +243,7 @@ describe('StoreModule', () => {
       afterEach(done => {
         store.dispatch(action);
 
-        const stored = JSON.parse(localStorage.getItem(type));
+        const stored = JSON.parse(String(localStorage.getItem(type)));
 
         store.select(state => state[type]).subscribe(reduced => {
           expect(stored).toEqual(jsonCopy(reduced));

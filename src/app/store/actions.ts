@@ -2,10 +2,11 @@ import { RouterNavigationPayload, ROUTER_NAVIGATION } from '@ngrx/router-store';
 
 import { actionCreatorFactory } from 'typescript-fsa';
 
+import { ListParams } from '../api';
 import { StoreItem } from './models';
 import { RouterState } from './state';
 
-function action<Payload>(family: string, type: string) {
+function action<Payload>(family: string | null, type: string) {
   const actionCreator = actionCreatorFactory(family);
   return actionCreator<Payload>(type);
 }
@@ -17,7 +18,7 @@ export const logout = actionCreatorFactory('auth')('LOGOUT');
 
 export const storage = action<string>('@ngrx/store', 'storage');
 
-export type CreatePayload<Item extends StoreItem> = Partial<Item>;
+type CreatePayload<Item extends StoreItem> = Partial<Item>;
 
 export function create<Item extends StoreItem>(type: string) {
   return action<CreatePayload<Item>>(type, 'CREATE');
@@ -27,7 +28,7 @@ export function createSuccess<Item extends StoreItem>(type: string) {
   return action<Item>(type, 'CREATE_SUCCESS');
 }
 
-export interface UpdatePayload<Item extends StoreItem> {
+interface UpdatePayload<Item extends StoreItem> {
   id: string;
   changes: Partial<Item>;
 }
@@ -48,12 +49,8 @@ export function getSuccess<Item extends StoreItem>(type: string) {
   return action<Item>(type, 'GET_SUCCESS');
 }
 
-export interface ListPayload {
-  limit?: number;
-}
-
 export function list(type: string) {
-  return action<ListPayload>(type, 'LIST');
+  return action<ListParams>(type, 'LIST');
 }
 
 export function listSuccess<Item extends StoreItem>(type: string) {
@@ -61,4 +58,4 @@ export function listSuccess<Item extends StoreItem>(type: string) {
 }
 
 export const routerNavigation =
-  action<RouterNavigationPayload<RouterState>>(undefined, ROUTER_NAVIGATION);
+  action<RouterNavigationPayload<RouterState>>(null, ROUTER_NAVIGATION);

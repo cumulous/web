@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { EffectsMetadata, getEffectsMetadata } from '@ngrx/effects';
 import { provideMockActions } from '@ngrx/effects/testing';
+import { Action } from '@ngrx/store';
 import { hot } from 'jasmine-marbles';
 
 import { Observable } from 'rxjs/Observable';
@@ -19,7 +20,7 @@ describe('AuthEffects', () => {
 
   let effects: AuthEffects;
   let metadata: EffectsMetadata<AuthEffects>;
-  let actions: Observable<any>;
+  let actions: Observable<Action>;
   let authService: jasmine.SpyObj<AuthService>;
   let auth: jasmine.SpyObj<any>;
   let router: Router;
@@ -83,41 +84,20 @@ describe('AuthEffects', () => {
   });
 
   describe('loginRedirect$', () => {
-    describe('navigates router to correct url once ' +
-             'in response to LOGIN_REDIRECT whose url is', () => {
-      let fromUrl: string;
-      let expected: string;
-
-      it('defined', () => {
-        fromUrl = fakeUrl;
-        expected = fakeUrl;
+    it('navigates router to correct url once in response to LOGIN_REDIRECT', () => {
+      const values = () => ({
+        a: loginRedirect(fakeUrl),
+        b: jasmine.any(Object),
       });
 
-      it('empty', () => {
-        fromUrl = '';
-        expected = '';
-      });
+      actions = hot('a|', values());
 
-      it('undefined', () => {
-        fromUrl = undefined;
-        expected = '';
-      });
+      spyOn(router, 'navigateByUrl').and.returnValue(Promise.resolve(true));
 
-      afterEach(() => {
-        const values = () => ({
-          a: loginRedirect(fromUrl),
-          b: jasmine.any(Object),
-        });
+      expect(effects.loginRedirect$).toBeObservable(hot('b|', values()));
 
-        actions = hot('a|', values());
-
-        spyOn(router, 'navigateByUrl').and.returnValue(Promise.resolve(true));
-
-        expect(effects.loginRedirect$).toBeObservable(hot('b|', values()));
-
-        expect(router.navigateByUrl).toHaveBeenCalledTimes(1);
-        expect(router.navigateByUrl).toHaveBeenCalledWith(expected);
-      });
+      expect(router.navigateByUrl).toHaveBeenCalledTimes(1);
+      expect(router.navigateByUrl).toHaveBeenCalledWith(fakeUrl);
     });
 
     it('does not dispatch an action', () => {
@@ -149,29 +129,26 @@ describe('AuthEffects', () => {
   describe('routeLogin$', () => {
     describe('dispatches LOGIN once with correct url if routerState url', () => {
       let url: string;
-      let from: string;
+      let params: {
+        from?: string;
+      };
       let expected: string;
 
       it('is /login', () => {
         url = '/login';
-        from = undefined;
-        expected = undefined;
+        params = {};
+        expected = '';
       });
 
       it('starts with /login and defines "from" parameter', () => {
-        from = fakeUrl;
-        url = '/login;param=...;from=' + from;
-        expected = from;
+        url = '/login;param=...;from=' + fakeUrl;
+        params = { from: fakeUrl };
+        expected = fakeUrl;
       });
 
       afterEach(() => {
         const values = () => ({
-          a: routerNavigation({
-            url,
-            params: {
-              from,
-            },
-          }),
+          a: routerNavigation({ url, params }),
           b: login(expected),
         });
 
@@ -187,7 +164,7 @@ describe('AuthEffects', () => {
 
     describe('does not dispatch LOGIN if routerState url', () => {
       let url: string;
-      let from: string;
+      let from: string | undefined;
 
       it('does not start with /login', () => {
         url = fakeUrl;
@@ -285,36 +262,33 @@ describe('AuthEffects', () => {
 
     describe('does not dispatch LOGOUT if routerState url', () => {
       let url: string;
-      let param: string;
+      let params: {
+        logout?: string;
+      };
 
       it('does not start with /login', () => {
         url = fakeUrl;
-        param = undefined;
+        params = {};
       });
 
       it('does not start with /login, but param "logout" is "true"', () => {
         url = fakeUrl + ';logout=true;param=...';
-        param = 'true';
+        params = { logout: 'true' };
       });
 
       it('starts with /login, but param "logout" is not defined', () => {
         url = '/login;param=...';
-        param = undefined;
+        params = {};
       });
 
       it('starts with /login, but param "logout" is not "true"', () => {
         url = '/login;param=...;logout=value;param2=...';
-        param = 'value';
+        params = { logout: 'value' };
       });
 
       afterEach(() => {
         const values = () => ({
-          a: routerNavigation({
-            url,
-            params: {
-              logout: param,
-            },
-          }),
+          a: routerNavigation({ url, params }),
         });
 
         actions = hot('a|', values());

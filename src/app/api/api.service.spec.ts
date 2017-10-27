@@ -7,18 +7,22 @@ import { AuthService } from '../auth/auth.service';
 import { apiBaseSelector, Store } from '../store';
 
 import { ApiModule } from './api.module';
-import { ApiService } from './api.service';
+import { ApiService, RequestParams } from './api.service';
 
 describe('ApiService', () => {
   const fakeToken = 'fake.token.1234';
   const fakeBaseUrl = 'https://api.example.org/v2';
+  const fakeStrParam = '';
+  const fakeNumParam = 0;
 
   const fakeHeaders = () => ({
     Authorization: [fakeToken],
   });
 
   const fakeParams = () => ({
-    param: 'value',
+    strParam: fakeStrParam,
+    numParam: fakeNumParam,
+    undefParam: undefined,
   });
 
   const fakeBody = () => ({
@@ -57,7 +61,7 @@ describe('ApiService', () => {
   });
 
   const checkHeaders = (httpHeaders: HttpHeaders) => {
-    const headers: { [key: string]: string[] } = {};
+    const headers: { [key: string]: string[] | null } = {};
 
     httpHeaders.keys().forEach(key => {
       headers[key] = httpHeaders.getAll(key);
@@ -69,7 +73,7 @@ describe('ApiService', () => {
   describe('get() returns result of httpClient.get() called once with correct parameters for', () => {
     let path: string[];
     let url: string;
-    let params: any;
+    let params: RequestParams | undefined;
     let httpParams: HttpParams;
 
     beforeEach(() => {
@@ -78,8 +82,9 @@ describe('ApiService', () => {
 
       params = fakeParams();
 
-      httpParams = new HttpParams();
-      httpParams = httpParams.set('param', params.param);
+      httpParams = new HttpParams()
+        .set('strParam', fakeStrParam)
+        .set('numParam', String(fakeNumParam));
 
       http.get.and.returnValue(Observable.of(fakeResult()));
     });

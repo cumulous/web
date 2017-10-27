@@ -33,7 +33,7 @@ describe('ToolbarComponent', () => {
 
   it('displays "Create" button inside the toolbar', () => {
     expect(buttonCreate instanceof HTMLButtonElement).toBe(true);
-    expect(buttonCreate.textContent.trim()).toBe('Create');
+    expect(buttonCreate.textContent!.trim()).toBe('Create');
   });
 
   it('emits empty (create) event if "Create" button is clicked', done => {

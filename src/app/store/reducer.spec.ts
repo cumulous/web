@@ -5,13 +5,14 @@ import {
 
 import { Property } from './models';
 import { createReducer } from './reducer';
+import { ItemsState } from './state';
 
 interface Action {
   type: string;
 }
 
 interface Item {
-  id: any;
+  id: string;
   name: string;
 }
 
@@ -63,7 +64,7 @@ describe('reducer factory generates a reducer that', () => {
   const initEntities = inputState.entities;
   const initEntity0 = inputState.entities[0];
 
-  let reducer: (state: any, action: Action) => any;
+  let reducer: (state: ItemsState<Item> | undefined, action: Action) => ItemsState<Item>;
 
   beforeEach(() => {
     reducer = createReducer<Item>(fakeFamily, fakeProperties());

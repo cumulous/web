@@ -1,3 +1,5 @@
+import { actionCreatorFactory, ActionCreator } from 'typescript-fsa';
+
 import {
   create, createSuccess, update, updateSuccess,
   get, getSuccess, list, listSuccess,
@@ -14,18 +16,14 @@ describe('store creates action of correct type and shape using', () => {
   const fakeName = 'fake-name';
   const fakeLimit = 42;
 
-  let action: any;
   let type: string;
   let payload: () => any;
-  let factory: (payload: any) => {
-    type: string;
-    payload: any;
-  };
+  let factory: ActionCreator<any>;
 
   beforeEach(() => {
-    type = undefined;
+    type = '';
     payload = () => undefined;
-    factory = undefined;
+    factory = actionCreatorFactory()(type);
   });
 
   it('create() factory', () => {
@@ -100,7 +98,7 @@ describe('store creates action of correct type and shape using', () => {
   });
 
   afterEach(() => {
-    action = factory(payload());
+    const action = factory(payload());
     expect(action).toEqual({
       type: fakeFamily + '/' + type,
       payload: payload(),

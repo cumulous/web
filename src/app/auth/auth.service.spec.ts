@@ -27,12 +27,17 @@ class AuthTestService extends AuthService {
   }
 }
 
+interface Config {
+  expiresIn: number;
+  clientId: string;
+};
+
 describe('AuthService', () => {
   const fakeToken = 'fake-token';
   const fakeExpiresIn = 7200;
   const fakeUrl = 'fake-url';
 
-  const fakeConfig = () => ({
+  const fakeConfig = (): Config => ({
     expiresIn: fakeExpiresIn,
     clientId: 'fake-client-id',
   });
@@ -89,8 +94,8 @@ describe('AuthService', () => {
     const fakeJwt = (iat: number = now) =>
       jwt.jws.JWS.sign('HS256', {alg: 'HS256', typ: 'JWT'}, {iat}, {rstr: 'secret'});
 
-    let config: any;
-    let token: string;
+    let config: Config;
+    let token: string | undefined;
     let expected: boolean;
 
     beforeEach(() => {
@@ -111,14 +116,6 @@ describe('AuthService', () => {
     });
     it('token is invalid', () => {
       token = 'ey.ab.cd';
-      expected = false;
-    });
-    it('config is undefined', () => {
-      config = undefined;
-      expected = false;
-    });
-    it('config.expiresIn is undefined', () => {
-      config.expiresIn = undefined;
       expected = false;
     });
 

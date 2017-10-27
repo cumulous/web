@@ -11,7 +11,7 @@ describe('SessionComponent', () => {
   let fixture: ComponentFixture<SessionComponent>;
 
   let router: Router;
-  let button: any;
+  let button: HTMLButtonElement;
 
   beforeEach(() => {
     spyOn(Router.prototype, 'navigate');
@@ -32,7 +32,7 @@ describe('SessionComponent', () => {
   });
 
   it('should display a "Log Out" button if authenticated', () => {
-    expect(button.textContent.trim()).toBe('Log Out');
+    expect(button.textContent!.trim()).toBe('Log Out');
   });
 
   it('should correctly navigate the router if the "Log Out" button is clicked', () => {

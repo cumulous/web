@@ -6,6 +6,10 @@ import { Observable } from 'rxjs/Observable';
 import { AuthService } from '../auth/auth.service';
 import { apiBaseSelector, Store } from '../store';
 
+export interface RequestParams {
+  [key: string]: string | number | undefined;
+};
+
 @Injectable()
 export class ApiService {
   constructor(
@@ -29,11 +33,16 @@ export class ApiService {
       }));
   }
 
-  private params<P>(params?: P): HttpParams {
-    return Object.keys(params || {}).reduce(
-      (p, k) => p.set(k, params[k]),
-      new HttpParams(),
-    );
+  private params(params?: RequestParams): HttpParams {
+    if (params === undefined) {
+      return new HttpParams();
+    }
+    return Object.keys(params)
+      .filter(k => params[k] !== undefined)
+      .reduce(
+        (p, k) => p.set(k, String(params[k])),
+        new HttpParams(),
+      );
   }
 
   private request<R>(
@@ -44,7 +53,7 @@ export class ApiService {
       .mergeMap(([url, headers]) => requester(url, headers));
   }
 
-  get<P, R>(path: string[], params?: P): Observable<R> {
+  get<R>(path: string[], params?: RequestParams): Observable<R> {
     return this.request<R>(path, (url, headers) =>
       this.http.get(url, {
         headers,

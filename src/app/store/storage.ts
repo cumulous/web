@@ -5,7 +5,7 @@ import { isType } from 'typescript-fsa';
 import { storage } from './actions';
 import { State } from './state';
 
-export function storageReducer(reducer: ActionReducer<any>): ActionReducer<any> {
+export function storageReducer(reducer: ActionReducer<State>): ActionReducer<State> {
   return (state: State, action: Action) => {
     const keys = ['auth', 'projects', 'datasets', 'analyses', 'users', 'clients'];
     const reviver = (key: string, value: any) => value;

@@ -7,6 +7,8 @@ import { login, loginSuccess, loginRedirect, logout } from '../actions';
 import { AuthState, State } from '../state';
 
 const initialState = {
+  token: '',
+  fromUrl: '',
   config: { ...environment.auth },
 };
 
@@ -18,13 +20,13 @@ export function loginReducer(state: AuthState = initialState, action: Action) {
     return { ...state, token: action.payload };
   }
   if (isType(action, loginRedirect)) {
-    return { ...state, fromUrl: undefined };
+    return { ...state, fromUrl: '' };
   }
   return state;
 };
 
-export function logoutReducer(reducer: ActionReducer<any>) {
-  return (state: State, action: Action) => {
+export function logoutReducer(reducer: ActionReducer<State>) {
+  return (state: State | undefined, action: Action) => {
     if (isType(action, logout)) {
       state = undefined;
     }

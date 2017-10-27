@@ -5,8 +5,6 @@ import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 
 import { debugComponent } from '../../../testing';
 
-import { Project } from '../../api';
-
 import * as storeModule from '../../store';
 import { Property, Store } from '../../store';
 
@@ -175,7 +173,7 @@ describe('ListComponent', () => {
 
   describe('selects corresponding entities from the store and assigns them to listViewComponent', () => {
     let itemsType: string;
-    let createItems: () => { [id: string]: any };
+    let createItems: <T>() => { [id: string]: T };
 
     it('projects', () => {
       itemsType = 'projects';
@@ -223,7 +221,7 @@ describe('ListComponent', () => {
 
   describe('applies updates from the store to listViewComponent', () => {
     let itemsType: string;
-    let createItems: (count: number) => { [id: string]: any };
+    let createItems: <T>(count: number) => { [id: string]: T };
     let subjects: SubjectsMap;
 
     it('projects', () => {

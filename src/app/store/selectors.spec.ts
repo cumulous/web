@@ -6,7 +6,7 @@ import { apiBaseSelector, authSelectors, createSelectors } from './selectors';
 import { ApiState, AuthState, ItemsState } from './state';
 
 interface Item {
-  id: any;
+  id: string;
   name: string;
 }
 

@@ -6,9 +6,10 @@ import { RouterState } from './state';
 export class RouterSerializer implements RouterStateSerializer<RouterState> {
 
   serialize(routerState: RouterStateSnapshot): RouterState {
+    const child = routerState.root.firstChild;
     return {
       url: routerState.url,
-      params: routerState.root.firstChild.params,
+      params: child ? child.params : {},
     };
   }
 }

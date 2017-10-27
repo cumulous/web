@@ -2,12 +2,13 @@ import { Injectable } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { Actions } from '@ngrx/effects';
 import { provideMockActions } from '@ngrx/effects/testing';
+import { Action } from '@ngrx/store';
 import { hot } from 'jasmine-marbles';
 import { Observable } from 'rxjs/Observable';
 import * as uuid from 'uuid';
 
 import { fakeUUIDs } from '../../testing';
-import { ApiService } from '../api';
+import { ApiService, ListParams } from '../api';
 import { routerNavigation } from './testing';
 
 import {
@@ -81,7 +82,7 @@ describe('EffectsService', () => {
   });
 
   let effects: TestEffectsService;
-  let actions: Observable<any>;
+  let actions: Observable<Action>;
   let api: jasmine.SpyObj<ApiService>;
   let store: jasmine.SpyObj<Store>;
 
@@ -354,7 +355,7 @@ describe('EffectsService', () => {
 
     describe('does not output LIST action if routerState url', () => {
       let url: string;
-      let params: any;
+      let params: ListParams;
 
       it('does not start with matching item type', () => {
         url = '/other_items';
