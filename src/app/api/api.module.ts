@@ -1,6 +1,7 @@
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 
+import { ApiInterceptor } from './api.interceptor';
 import { ApiService } from './api.service';
 
 @NgModule({
@@ -9,6 +10,7 @@ import { ApiService } from './api.service';
   ],
   providers: [
     ApiService,
+    { provide: HTTP_INTERCEPTORS, useClass: ApiInterceptor, multi: true },
   ],
 })
 export class ApiModule {}
