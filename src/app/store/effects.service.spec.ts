@@ -1,3 +1,4 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { Actions } from '@ngrx/effects';
@@ -7,7 +8,7 @@ import { hot } from 'jasmine-marbles';
 import { Observable } from 'rxjs/Observable';
 
 import { fakeUUIDs } from '../../testing';
-import { ApiService, ListParams } from '../api';
+import { ListParams } from '../api';
 import { routerNavigation } from './testing';
 
 import {
@@ -69,8 +70,8 @@ const fakeClients = () => ({
 
 @Injectable()
 class TestEffectsService extends EffectsService<Item> {
-  constructor(actions$: Actions, api: ApiService, store: Store) {
-    super(fakeType, actions$, api, store);
+  constructor(actions$: Actions, http: HttpClient, store: Store) {
+    super(fakeType, actions$, http, store);
   }
 }
 
@@ -82,11 +83,11 @@ describe('EffectsService', () => {
 
   let effects: TestEffectsService;
   let actions: Observable<Action>;
-  let api: jasmine.SpyObj<ApiService>;
+  let http: jasmine.SpyObj<HttpClient>;
   let store: jasmine.SpyObj<Store>;
 
   beforeEach(() => {
-    api = jasmine.createSpyObj('ApiService', ['get', 'post', 'patch']);
+    http = jasmine.createSpyObj('HttpClient', ['get', 'post', 'patch']);
 
     store = jasmine.createSpyObj('Store', ['select']);
     spyOn(selectors, 'createSelectors').and.callFake(type => {
@@ -108,7 +109,7 @@ describe('EffectsService', () => {
       providers: [
         TestEffectsService,
         provideMockActions(() => actions),
-        { provide: ApiService, useValue: api },
+        { provide: HttpClient, useValue: http },
         { provide: Store, useValue: store },
       ],
     });
@@ -135,17 +136,17 @@ describe('EffectsService', () => {
     beforeEach(() => {
       actions = hot('a|', values());
 
-      api.post.and.returnValue(hot('b|', values()));
+      http.post.and.returnValue(hot('b|', values()));
     });
 
-    it('calls api.post() once with correct parameters in response to CREATE action', () => {
+    it('calls http.post() once with correct parameters in response to CREATE action', () => {
       expect(effects.create$).toBeObservable(hot('c|', values()));
 
-      expect(api.post).toHaveBeenCalledTimes(1);
-      expect(api.post).toHaveBeenCalledWith([fakeType], fakeRequest());
+      expect(http.post).toHaveBeenCalledTimes(1);
+      expect(http.post).toHaveBeenCalledWith(fakeType, fakeRequest());
     });
 
-    it('outputs CREATE_SUCCESS action with result of api.post() in response to CREATE action', () => {
+    it('outputs CREATE_SUCCESS action with result of http.post() in response to CREATE action', () => {
       expect(effects.create$).toBeObservable(hot('d|', values()));
     });
 
@@ -153,7 +154,7 @@ describe('EffectsService', () => {
       actions = hot('o|', values());
 
       expect(effects.create$).toBeObservable(hot('-|', values()));
-      expect(api.post).not.toHaveBeenCalled();
+      expect(http.post).not.toHaveBeenCalled();
     });
   });
 
@@ -166,11 +167,14 @@ describe('EffectsService', () => {
       },
     });
 
-    const fakeResponse = () => fakeRequest();
+    const fakeResponse = () => ({
+      id: '1',
+      changes: fakeItem(1),
+    });
 
     const values = () => ({
       a: update<Item>(fakeType)(fakeRequest()),
-      b: fakeResponse(),
+      b: fakeItem(1),
       c: jasmine.anything(),
       d: updateSuccess<Item>(fakeType)(fakeResponse()),
       o: otherAction(),
@@ -179,19 +183,21 @@ describe('EffectsService', () => {
     beforeEach(() => {
       actions = hot('a|', values());
 
-      api.patch.and.returnValue(hot('b|', values()));
+      http.patch.and.returnValue(hot('b|', values()));
     });
 
-    it('calls api.patch() once with correct parameters in response to UPDATE action', () => {
+    it('calls http.patch() once with correct parameters in response to UPDATE action', () => {
       expect(effects.update$).toBeObservable(hot('c|', values()));
 
-      expect(api.patch).toHaveBeenCalledTimes(1);
-      expect(api.patch).toHaveBeenCalledWith(
-        [fakeType, fakeRequest().id], fakeRequest().changes,
+      expect(http.patch).toHaveBeenCalledTimes(1);
+      expect(http.patch).toHaveBeenCalledWith(
+        fakeType + '/' + fakeRequest().id, {
+          params: fakeRequest().changes,
+        },
       );
     });
 
-    it('outputs UPDATE_SUCCESS action with result of api.patch() in response to UPDATE action', () => {
+    it('outputs UPDATE_SUCCESS action with result of http.patch() in response to UPDATE action', () => {
       expect(effects.update$).toBeObservable(hot('d|', values()));
     });
 
@@ -199,7 +205,7 @@ describe('EffectsService', () => {
       actions = hot('o|', values());
 
       expect(effects.update$).toBeObservable(hot('-|', values()));
-      expect(api.patch).not.toHaveBeenCalled();
+      expect(http.patch).not.toHaveBeenCalled();
     });
   });
 
@@ -220,17 +226,17 @@ describe('EffectsService', () => {
     beforeEach(() => {
       actions = hot('a|', values());
 
-      api.get.and.returnValue(hot('b|', values()));
+      http.get.and.returnValue(hot('b|', values()));
     });
 
-    it('calls api.get() once with correct parameters in response to GET action', () => {
+    it('calls http.get() once with correct parameters in response to GET action', () => {
       expect(effects.get$).toBeObservable(hot('c|', values()));
 
-      expect(api.get).toHaveBeenCalledTimes(1);
-      expect(api.get).toHaveBeenCalledWith([fakeType, fakeRequest()]);
+      expect(http.get).toHaveBeenCalledTimes(1);
+      expect(http.get).toHaveBeenCalledWith(fakeType + '/' + fakeRequest());
     });
 
-    it('outputs GET_SUCCESS action with result of api.get() in response to GET action', () => {
+    it('outputs GET_SUCCESS action with result of http.get() in response to GET action', () => {
       expect(effects.get$).toBeObservable(hot('d|', values()));
     });
 
@@ -238,14 +244,18 @@ describe('EffectsService', () => {
       actions = hot('o|', values());
 
       expect(effects.get$).toBeObservable(hot('-|', values()));
-      expect(api.get).not.toHaveBeenCalled();
+      expect(http.get).not.toHaveBeenCalled();
     });
   });
 
   describe('list$', () => {
 
-    const fakeRequest = () => ({
+    const fakeInput = () => ({
       limit: 42,
+    });
+
+    const fakeRequest = () => ({
+      limit: '42',
     });
 
     const fakeResponse = () => ({
@@ -253,7 +263,7 @@ describe('EffectsService', () => {
     });
 
     const values = () => ({
-      a: list(fakeType)(fakeRequest()),
+      a: list(fakeType)(fakeInput()),
       b: fakeResponse(),
       c: jasmine.anything(),
       d: listSuccess<Item>(fakeType)(fakeItems(2)),
@@ -263,23 +273,23 @@ describe('EffectsService', () => {
     beforeEach(() => {
       actions = hot('a|', values());
 
-      api.get.and.returnValue(hot('b|', values()));
+      http.get.and.returnValue(hot('b|', values()));
     });
 
-    it('calls api.get() once with correct parameters in response to LIST action', () => {
+    it('calls http.get() once with correct parameters in response to LIST action', () => {
       expect(effects.list$).toBeObservable(hot('c|', values()));
 
-      expect(api.get).toHaveBeenCalledTimes(1);
-      expect(api.get).toHaveBeenCalledWith([fakeType], fakeRequest());
+      expect(http.get).toHaveBeenCalledTimes(1);
+      expect(http.get).toHaveBeenCalledWith(fakeType, { params: fakeRequest() });
     });
 
-    it('outputs LIST_SUCCESS action with result of api.get() in response to LIST action', () => {
+    it('outputs LIST_SUCCESS action with result of http.get() in response to LIST action', () => {
       expect(effects.list$).toBeObservable(hot('d|', values()));
     });
 
     it('cancels in-flight request due to an earlier response', () => {
       actions = hot('aa--|', values());
-      api.get.and.returnValues(hot('---b|', values()), hot('--b-|', values()));
+      http.get.and.returnValues(hot('---b|', values()), hot('--b-|', values()));
       expect(effects.list$).toBeObservable(hot('--c-|', values()));
     });
 
@@ -287,7 +297,7 @@ describe('EffectsService', () => {
       actions = hot('o|', values());
 
       expect(effects.list$).toBeObservable(hot('-|', values()));
-      expect(api.get).not.toHaveBeenCalled();
+      expect(http.get).not.toHaveBeenCalled();
     });
   });
 

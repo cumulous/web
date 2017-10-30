@@ -1,7 +1,8 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Actions, Effect } from '@ngrx/effects';
 
-import { ApiService, Dataset } from '../../api';
+import { Dataset } from '../../api';
 
 import { Store } from '../models';
 import { EffectsService } from '../effects.service';
@@ -17,9 +18,9 @@ export class DatasetEffects extends EffectsService<Dataset> {
 
   constructor(
     actions$: Actions,
-    api: ApiService,
+    http: HttpClient,
     store: Store,
   ) {
-    super('datasets', actions$, api, store);
+    super('datasets', actions$, http, store);
   }
 }

@@ -1,7 +1,8 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Actions, Effect } from '@ngrx/effects';
 
-import { ApiService, Analysis } from '../../api';
+import { Analysis } from '../../api';
 
 import { Store } from '../models';
 import { EffectsService } from '../effects.service';
@@ -17,9 +18,9 @@ export class AnalysisEffects extends EffectsService<Analysis> {
 
   constructor(
     actions$: Actions,
-    api: ApiService,
+    http: HttpClient,
     store: Store,
   ) {
-    super('analyses', actions$, api, store);
+    super('analyses', actions$, http, store);
   }
 }

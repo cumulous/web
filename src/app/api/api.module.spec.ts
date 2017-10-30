@@ -8,6 +8,7 @@ import { AuthService } from '../auth/auth.service';
 import { Store } from '../store';
 
 import { ApiModule } from './api.module';
+import { requestParams } from './index';
 
 describe('ApiModule sets up an interceptor that', () => {
   const fakeToken = 'fake.token.1234';
@@ -72,3 +73,24 @@ describe('ApiModule sets up an interceptor that', () => {
     httpMock.verify();
   });
 });
+
+describe('ApiModule', () => {
+  it('exports requestParams() function that converts params to a string map', () => {
+    const request = requestParams({
+      str: 'value',
+      num: 0,
+      undef: undefined,
+      str2: 'value2',
+      num2: 1,
+      undef2: undefined,
+    });
+    expect(request).toEqual({
+      params: {
+        str: 'value',
+        num: '0',
+        str2: 'value2',
+        num2: '1',
+      },
+    });
+  });
+})

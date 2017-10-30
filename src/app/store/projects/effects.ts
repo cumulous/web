@@ -1,7 +1,8 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Actions, Effect } from '@ngrx/effects';
 
-import { ApiService, Project } from '../../api';
+import { Project } from '../../api';
 
 import { Store } from '../models';
 import { EffectsService } from '../effects.service';
@@ -17,9 +18,9 @@ export class ProjectEffects extends EffectsService<Project> {
 
   constructor(
     actions$: Actions,
-    api: ApiService,
+    http: HttpClient,
     store: Store,
   ) {
-    super('projects', actions$, api, store);
+    super('projects', actions$, http, store);
   }
 }

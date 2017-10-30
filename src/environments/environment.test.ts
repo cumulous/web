@@ -1,7 +1,7 @@
 export const environment = {
   production: false,
   api: {
-    baseUrl: '/api',
+    baseUrl: '/api/',
   },
   auth: {
     clientId: '1234567890abcdef',

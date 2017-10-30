@@ -1,8 +1,9 @@
+import { HttpClient } from '@angular/common/http';
 import { Actions } from '@ngrx/effects';
 import { Observable } from 'rxjs/Observable';
 import * as isUUID from 'validator/lib/isUUID';
 
-import { ApiService, Client, ListResponse, Project, User } from '../api';
+import { Client, ListResponse, Project, requestParams, User } from '../api';
 
 import { Store, StoreItem } from './models';
 import { createSelectors } from './selectors';
@@ -19,42 +20,36 @@ export abstract class EffectsService<Item extends StoreItem> {
 
   readonly create$ = this.actions$
     .filter(create<Item>(this.type).match)
-    .map(action => action.payload)
-    .mergeMap(payload =>
-      this.api.post([this.type], payload)
-        .map((response: Item) =>
-          createSuccess<Item>(this.type)(response)
-        )
+    .mergeMap(({ payload }) =>
+      this.http.post<Item>(this.type, payload)
+        .map(item => createSuccess<Item>(this.type)(item))
     );
 
   readonly update$ = this.actions$
     .filter(update<Item>(this.type).match)
-    .map(action => action.payload)
-    .mergeMap(payload =>
-      this.api.patch([this.type, payload.id], payload.changes)
-        .map(() =>
-          updateSuccess<Item>(this.type)(payload)
-        )
+    .mergeMap(({ payload }) =>
+      this.http.patch<Item>(
+        this.type + '/' + payload.id,
+        requestParams(payload.changes),
+      )
+      .map(item => updateSuccess<Item>(this.type)({
+        id: payload.id,
+        changes: item,
+      }))
     );
 
   readonly get$ = this.actions$
     .filter(get(this.type).match)
-    .map(action => action.payload)
-    .mergeMap(payload =>
-      this.api.get([this.type, payload])
-        .map((response: Item) =>
-          getSuccess<Item>(this.type)(response)
-        )
+    .mergeMap(({ payload }) =>
+      this.http.get<Item>(this.type + '/' + payload)
+        .map(item => getSuccess<Item>(this.type)(item))
     );
 
   readonly list$ = this.actions$
     .filter(list(this.type).match)
-    .map(action => action.payload)
-    .switchMap(payload =>
-      this.api.get([this.type], payload)
-        .map((response: ListResponse<Item>) =>
-          listSuccess<Item>(this.type)(response.items)
-        )
+    .switchMap(({ payload }) =>
+      this.http.get<ListResponse<Item>>(this.type, requestParams(payload))
+        .map(response => listSuccess<Item>(this.type)(response.items))
     );
 
   readonly listSuccess$ = this.actions$
@@ -88,7 +83,7 @@ export abstract class EffectsService<Item extends StoreItem> {
   constructor(
     readonly type: string,
     private readonly actions$: Actions,
-    private readonly api: ApiService,
+    private readonly http: HttpClient,
     store: Store,
   ) {
     this.projects$ = this.selectItems('projects', store);
@@ -107,7 +102,8 @@ export abstract class EffectsService<Item extends StoreItem> {
       .filter(id => id);
   }
 
-  private getDetails<T>(type: string, ids: string[], storedMap: Observable<{ [id: string]: T }>) {
+  private getDetails<T>
+      (type: string, ids: string[], storedMap: Observable<{ [id: string]: T }>) {
     return storedMap
       .map(stored => ids.filter(id => !stored[id]))
       .filter(newIds => newIds.length > 0)

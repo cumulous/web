@@ -53,8 +53,8 @@ if [ ! -f "${AUTH_CONFIG}" ] || [ ! -f "${API_CONFIG}" ]; then
       };
     " | cut -c 7- > "src/environments/environment${suffix}.ts"
   }
-  configure_environment false "/api-proxy"
-  configure_environment true "https://${API_DOMAIN}" .prod
+  configure_environment false "/api-proxy/"
+  configure_environment true "https://${API_DOMAIN}/" .prod
 
   echo "
     {

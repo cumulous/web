@@ -1,3 +1,4 @@
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { Type } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -7,7 +8,7 @@ import { Action, Store } from '@ngrx/store';
 
 import { environment } from '../../environments/environment';
 
-import { Analysis, ApiService, Client, Dataset, Project, User } from '../api';
+import { Analysis, Client, Dataset, Project, User } from '../api';
 
 import { AuthService } from '../auth/auth.service';
 import { AuthEffects } from './auth/effects';
@@ -79,12 +80,12 @@ describe('StoreModule', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [
+        HttpClientTestingModule,
         RouterTestingModule,
         StoreModule,
       ],
       providers: [
         { provide: AuthEffects, useValue: {} },
-        { provide: ApiService, useValue: {} },
       ],
     });
 
@@ -330,12 +331,12 @@ describe('StoreModule', () => {
 
     TestBed.configureTestingModule({
       imports: [
+        HttpClientTestingModule,
         RouterTestingModule,
         StoreModule,
       ],
       providers: [
         { provide: AuthService, useValue: {} },
-        { provide: ApiService, useValue: {} },
         { provide: StoreModel, useValue: store },
       ],
     });
