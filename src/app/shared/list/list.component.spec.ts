@@ -86,7 +86,6 @@ describe('ListComponent', () => {
   let projectSubjects: SubjectsMap;
   let userSubjects: SubjectsMap;
   let clientSubjects: SubjectsMap;
-  let createSelectors: jasmine.Spy;
 
   beforeEach(() => {
     routerSpy = jasmine.createSpyObj('Router', ['navigate']);
@@ -126,7 +125,7 @@ describe('ListComponent', () => {
       itemMap: new BehaviorSubject(fakeClients()),
     };
 
-    createSelectors = spyOn(storeModule, 'createSelectors').and.callFake(type => {
+    spyOn(storeModule, 'createSelectors').and.callFake(type => {
       switch (type) {
         case 'items': return itemSubjects;
         case 'projects': return projectSubjects;
