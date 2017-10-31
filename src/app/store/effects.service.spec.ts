@@ -191,9 +191,8 @@ describe('EffectsService', () => {
 
       expect(http.patch).toHaveBeenCalledTimes(1);
       expect(http.patch).toHaveBeenCalledWith(
-        fakeType + '/' + fakeRequest().id, {
-          params: fakeRequest().changes,
-        },
+        fakeType + '/' + fakeRequest().id,
+        fakeRequest().changes,
       );
     });
 
