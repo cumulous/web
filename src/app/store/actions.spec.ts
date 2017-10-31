@@ -1,8 +1,11 @@
-import { actionCreatorFactory, ActionCreator } from 'typescript-fsa';
+import { Action, ActionCreator, actionCreatorFactory } from 'typescript-fsa';
 
 import {
-  create, createSuccess, update, updateSuccess,
-  get, getSuccess, list, listSuccess,
+  login, loginSuccess, loginFailure, loginRedirect, logout,
+  create, createSuccess, createFailure,
+  update, updateSuccess, updateFailure,
+  get, getSuccess, getFailure,
+  list, listSuccess, listFailure,
 } from './actions';
 
 interface Item {
@@ -17,13 +20,50 @@ describe('store creates action of correct type and shape using', () => {
   const fakeLimit = 42;
 
   let type: string;
+  let family: string;
   let payload: () => any;
   let factory: ActionCreator<any>;
 
   beforeEach(() => {
     type = '';
+    family = fakeFamily;
     payload = () => undefined;
     factory = actionCreatorFactory()(type);
+  });
+
+  it('login() factory', () => {
+    type = 'LOGIN';
+    family = 'auth';
+    payload = () => 'fake-from-url';
+    factory = login;
+  });
+
+  it('loginSuccess() factory', () => {
+    type = 'LOGIN_SUCCESS';
+    family = 'auth';
+    payload = () => 'fake-token';
+    factory = loginSuccess;
+  });
+
+  it('loginFailure() factory', () => {
+    type = 'LOGIN_FAILURE';
+    family = 'auth';
+    payload = () => new Error('LOGIN error');
+    factory = loginFailure;
+  });
+
+  it('loginRedirect() factory', () => {
+    type = 'LOGIN_REDIRECT';
+    family = 'auth';
+    payload = () => 'fake-from-url';
+    factory = loginRedirect;
+  });
+
+  it('logout() factory', () => {
+    type = 'LOGOUT';
+    family = 'auth';
+    payload = () => undefined;
+    factory = logout;
   });
 
   it('create() factory', () => {
@@ -41,6 +81,12 @@ describe('store creates action of correct type and shape using', () => {
       name: fakeName,
     });
     factory = createSuccess<Item>(fakeFamily);
+  });
+
+  it('createFailure() factory', () => {
+    type = 'CREATE_FAILURE';
+    payload = () => new Error('CREATE error');
+    factory = createFailure(fakeFamily);
   });
 
   it('update() factory', () => {
@@ -65,6 +111,12 @@ describe('store creates action of correct type and shape using', () => {
     factory = updateSuccess<Item>(fakeFamily);
   });
 
+  it('updateFailure() factory', () => {
+    type = 'UPDATE_FAILURE';
+    payload = () => new Error('UPDATE error');
+    factory = updateFailure(fakeFamily);
+  });
+
   it('get() factory', () => {
     type = 'GET';
     payload = () => fakeId;
@@ -78,6 +130,14 @@ describe('store creates action of correct type and shape using', () => {
       name: fakeName,
     });
     factory = getSuccess<Item>(fakeFamily);
+  });
+
+  it('getFailure() factory', () => {
+    type = 'GET_FAILURE';
+    payload = () => Object.assign({
+      id: fakeId,
+    }, new Error('GET error'));
+    factory = getFailure(fakeFamily);
   });
 
   it('list() factory', () => {
@@ -97,11 +157,21 @@ describe('store creates action of correct type and shape using', () => {
     factory = listSuccess<Item>(fakeFamily);
   });
 
+  it('listFailure() factory', () => {
+    type = 'LIST_FAILURE';
+    payload = () => new Error('LIST error');
+    factory = listFailure(fakeFamily);
+  });
+
   afterEach(() => {
     const action = factory(payload());
-    expect(action).toEqual({
-      type: fakeFamily + '/' + type,
+    const expected: Action<any> = {
+      type: family + '/' + type,
       payload: payload(),
-    });
+    };
+    if (expected.payload instanceof Error) {
+      expected.error = true;
+    }
+    expect(action).toEqual(expected);
   });
 });
