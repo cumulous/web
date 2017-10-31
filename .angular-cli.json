@@ -1,7 +1,7 @@
 {
   "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
   "project": {
-    "name": "sassy-ui"
+    "name": "Cumulous-web"
   },
   "apps": [
     {
@@ -48,13 +48,6 @@
     }
   ],
   "test": {
-    "codeCoverage": {
-      "exclude": [
-        "src/polyfills.ts",
-        "src/test.ts",
-        "src/testing/**/*.ts"
-      ]
-    },
     "karma": {
       "config": "./karma.conf.js"
     }

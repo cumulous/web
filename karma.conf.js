@@ -37,9 +37,7 @@ module.exports = function (config) {
     angularCli: {
       environment: 'test',
     },
-    reporters: config.angularCli && config.angularCli.codeCoverage
-              ? ['progress', 'coverage-istanbul']
-              : ['progress', 'kjhtml'],
+    reporters: ['progress', 'kjhtml'],
     port: 8081,
     colors: true,
     logLevel: config.LOG_INFO,
