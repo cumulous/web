@@ -48,6 +48,13 @@
     }
   ],
   "test": {
+    "codeCoverage": {
+      "exclude": [
+        "src/polyfills.ts",
+        "src/test.ts",
+        "src/testing/**/*.ts"
+      ]
+    },
     "karma": {
       "config": "./karma.conf.js"
     }
