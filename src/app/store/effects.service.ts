@@ -9,10 +9,10 @@ import { Store, StoreItem } from './models';
 import { createSelectors } from './selectors';
 
 import {
-  create, createSuccess,
-  update, updateSuccess,
-  get, getSuccess,
-  list, listSuccess,
+  create, createSuccess, createFailure,
+  update, updateSuccess, updateFailure,
+  get, getSuccess, getFailure,
+  list, listSuccess, listFailure,
   routerNavigation,
 } from './actions';
 
@@ -21,8 +21,14 @@ export abstract class EffectsService<Item extends StoreItem> {
   readonly create$ = this.actions$
     .filter(create<Item>(this.type).match)
     .mergeMap(({ payload }) =>
-      this.http.post<Item>(this.type, payload)
-        .map(item => createSuccess<Item>(this.type)(item))
+      this.http.post<Item>(
+        this.type,
+        payload,
+      ).map(item =>
+        createSuccess<Item>(this.type)(item),
+      ).catch(err => Observable.of(
+        createFailure(this.type)(err),
+      ))
     );
 
   readonly update$ = this.actions$
@@ -31,25 +37,43 @@ export abstract class EffectsService<Item extends StoreItem> {
       this.http.patch<Item>(
         this.type + '/' + payload.id,
         payload.changes,
-      )
-      .map(item => updateSuccess<Item>(this.type)({
-        id: payload.id,
-        changes: item,
-      }))
+      ).map(item =>
+        updateSuccess<Item>(this.type)({
+          id: payload.id,
+          changes: item,
+        })
+      ).catch(err => Observable.of(
+        updateFailure(this.type)(err),
+      ))
     );
 
   readonly get$ = this.actions$
     .filter(get(this.type).match)
     .mergeMap(({ payload }) =>
-      this.http.get<Item>(this.type + '/' + payload)
-        .map(item => getSuccess<Item>(this.type)(item))
+      this.http.get<Item>(
+        this.type + '/' + payload,
+      ).map(item =>
+        getSuccess<Item>(this.type)(item),
+      ).catch(err => Observable.of(
+        getFailure<Item>(this.type)(
+          Object.assign(err, {
+            id: payload,
+          }),
+        ),
+      ))
     );
 
   readonly list$ = this.actions$
     .filter(list(this.type).match)
     .switchMap(({ payload }) =>
-      this.http.get<ListResponse<Item>>(this.type, requestParams(payload))
-        .map(response => listSuccess<Item>(this.type)(response.items))
+      this.http.get<ListResponse<Item>>(
+        this.type,
+        requestParams(payload),
+      ).map(response =>
+        listSuccess<Item>(this.type)(response.items),
+      ).catch(err => Observable.of(
+        listFailure(this.type)(err),
+      ))
     );
 
   readonly listSuccess$ = this.actions$

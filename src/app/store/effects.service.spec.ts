@@ -12,10 +12,10 @@ import { ListParams } from '../api';
 import { routerNavigation } from './testing';
 
 import {
-  create, createSuccess,
-  update, updateSuccess,
-  get, getSuccess,
-  list, listSuccess,
+  create, createSuccess, createFailure,
+  update, updateSuccess, updateFailure,
+  get, getSuccess, getFailure,
+  list, listSuccess, listFailure,
 } from './actions';
 
 import { Store } from './models';
@@ -43,8 +43,10 @@ const fakeClientId = (i: number) => 'fake-client-' + i;
 const fakeMemberId = (i: number) =>
   i % 2 ? user_ids[Math.ceil(i / 2)] : fakeClientId(Math.ceil(i / 2));
 
+const fakeItemId = (i: number) => 'fake-item-' + i;
+
 const fakeItem = (i: number, project = true, member = true) => ({
-  id: String(i),
+  id: fakeItemId(i),
   name: fakeName(i),
   project_id: project ? fakeProjectId(Math.ceil(i / 2)) : undefined,
   created_by: member ? fakeMemberId(i) : undefined,
@@ -125,11 +127,14 @@ describe('EffectsService', () => {
 
     const fakeResponse = () => fakeItem(1);
 
+    const fakeError = () => Error('CREATE error');
+
     const values = () => ({
       a: create<Item>(fakeType)(fakeRequest()),
       b: fakeResponse(),
       c: jasmine.anything(),
       d: createSuccess<Item>(fakeType)(fakeResponse()),
+      e: createFailure(fakeType)(fakeError()),
       o: otherAction(),
     });
 
@@ -148,6 +153,12 @@ describe('EffectsService', () => {
 
     it('outputs CREATE_SUCCESS action with result of http.post() in response to CREATE action', () => {
       expect(effects.create$).toBeObservable(hot('d|', values()));
+    });
+
+    it('outputs CREATE_FAILURE action with an error from http.post() in response to CREATE action', () => {
+      http.post.and.returnValue(hot('#|', values(), fakeError()));
+
+      expect(effects.create$).toBeObservable(hot('e|', values()));
     });
 
     it('restricts input action to CREATE', () => {
@@ -172,11 +183,14 @@ describe('EffectsService', () => {
       changes: fakeItem(1),
     });
 
+    const fakeError = () => Error('UPDATE error');
+
     const values = () => ({
       a: update<Item>(fakeType)(fakeRequest()),
       b: fakeItem(1),
       c: jasmine.anything(),
       d: updateSuccess<Item>(fakeType)(fakeResponse()),
+      e: updateFailure(fakeType)(fakeError()),
       o: otherAction(),
     });
 
@@ -200,6 +214,12 @@ describe('EffectsService', () => {
       expect(effects.update$).toBeObservable(hot('d|', values()));
     });
 
+    it('outputs UPDATE_FAILURE action with an error from http.patch() in response to UPDATE action', () => {
+      http.patch.and.returnValue(hot('#|', values(), fakeError()));
+
+      expect(effects.update$).toBeObservable(hot('e|', values()));
+    });
+
     it('restricts input action to UPDATE', () => {
       actions = hot('o|', values());
 
@@ -210,15 +230,22 @@ describe('EffectsService', () => {
 
   describe('get$', () => {
 
-    const fakeRequest = () => '1';
+    const fakeRequest = () => fakeItemId(1);
 
     const fakeResponse = () => fakeItem(1);
+
+    const fakeError = () => Error('GET error');
+
+    const fakeFailure = () => Object.assign(fakeError(), {
+      id: fakeRequest(),
+    });
 
     const values = () => ({
       a: get(fakeType)(fakeRequest()),
       b: fakeResponse(),
       c: jasmine.anything(),
       d: getSuccess<Item>(fakeType)(fakeResponse()),
+      e: getFailure(fakeType)(fakeFailure()),
       o: otherAction(),
     });
 
@@ -237,6 +264,12 @@ describe('EffectsService', () => {
 
     it('outputs GET_SUCCESS action with result of http.get() in response to GET action', () => {
       expect(effects.get$).toBeObservable(hot('d|', values()));
+    });
+
+    it('outputs GET_FAILURE action with an error from http.get() in response to GET action', () => {
+      http.get.and.returnValue(hot('#|', values(), fakeError()));
+
+      expect(effects.get$).toBeObservable(hot('e|', values()));
     });
 
     it('restricts input action to GET', () => {
@@ -261,11 +294,14 @@ describe('EffectsService', () => {
       items: fakeItems(2),
     });
 
+    const fakeError = () => Error('LIST error');
+
     const values = () => ({
       a: list(fakeType)(fakeInput()),
       b: fakeResponse(),
       c: jasmine.anything(),
       d: listSuccess<Item>(fakeType)(fakeItems(2)),
+      e: listFailure(fakeType)(fakeError()),
       o: otherAction(),
     });
 
@@ -284,6 +320,12 @@ describe('EffectsService', () => {
 
     it('outputs LIST_SUCCESS action with result of http.get() in response to LIST action', () => {
       expect(effects.list$).toBeObservable(hot('d|', values()));
+    });
+
+    it('outputs LIST_FAILURE action with an error from http.get() in response to LIST action', () => {
+      http.get.and.returnValue(hot('#|', values(), fakeError()));
+
+      expect(effects.list$).toBeObservable(hot('e|', values()));
     });
 
     it('cancels in-flight request due to an earlier response', () => {
