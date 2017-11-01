@@ -58,8 +58,8 @@ export function getSuccess<Item extends StoreItem>(type: string) {
   return action<Item>(type, 'GET_SUCCESS');
 }
 
-export function getFailure(type: string) {
-  return action<Error & { id: string }>(type, 'GET_FAILURE');
+export function getFailure<Item extends StoreItem>(type: string) {
+  return action<Item>(type, 'GET_FAILURE');
 }
 
 export function list(type: string) {

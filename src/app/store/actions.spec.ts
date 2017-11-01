@@ -48,7 +48,7 @@ describe('store creates action of correct type and shape using', () => {
   it('loginFailure() factory', () => {
     type = 'LOGIN_FAILURE';
     family = 'auth';
-    payload = () => new Error('LOGIN error');
+    payload = () => Error('LOGIN error');
     factory = loginFailure;
   });
 
@@ -85,7 +85,7 @@ describe('store creates action of correct type and shape using', () => {
 
   it('createFailure() factory', () => {
     type = 'CREATE_FAILURE';
-    payload = () => new Error('CREATE error');
+    payload = () => Error('CREATE error');
     factory = createFailure(fakeFamily);
   });
 
@@ -113,7 +113,7 @@ describe('store creates action of correct type and shape using', () => {
 
   it('updateFailure() factory', () => {
     type = 'UPDATE_FAILURE';
-    payload = () => new Error('UPDATE error');
+    payload = () => Error('UPDATE error');
     factory = updateFailure(fakeFamily);
   });
 
@@ -134,10 +134,10 @@ describe('store creates action of correct type and shape using', () => {
 
   it('getFailure() factory', () => {
     type = 'GET_FAILURE';
-    payload = () => Object.assign({
+    payload = () => Object.assign(Error('GET error'), {
       id: fakeId,
-    }, new Error('GET error'));
-    factory = getFailure(fakeFamily);
+    });
+    factory = getFailure<Item>(fakeFamily);
   });
 
   it('list() factory', () => {
@@ -159,7 +159,7 @@ describe('store creates action of correct type and shape using', () => {
 
   it('listFailure() factory', () => {
     type = 'LIST_FAILURE';
-    payload = () => new Error('LIST error');
+    payload = () => Error('LIST error');
     factory = listFailure(fakeFamily);
   });
 

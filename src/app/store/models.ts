@@ -14,6 +14,6 @@ export class Property {
   ) {}
 }
 
-export interface StoreItem {
+export type StoreItem = {
   id: string;
-}
+} | Error;

@@ -1,6 +1,8 @@
 import {
-  create, createSuccess, update, updateSuccess,
-  get, getSuccess, list, listSuccess,
+  create, createSuccess, createFailure,
+  update, updateSuccess, updateFailure,
+  get, getSuccess, getFailure,
+  list, listSuccess, listFailure,
 } from './actions';
 
 import { Property } from './models';
@@ -104,6 +106,16 @@ describe('reducer factory generates a reducer that', () => {
     });
   });
 
+  it('corectly reduces CREATE_FAILURE action', () => {
+    const err = Error('CREATE failure');
+    const action = createFailure(fakeFamily)(err);
+    const state = reducer(inputState, action);
+    expect(state.requestCount).toBe(0);
+    expect(state.properties).toBe(initProperties);
+    expect(state.ids).toBe(initIds);
+    expect(state.entities).toBe(initEntities);
+  });
+
   it('corectly reduces UPDATE action', () => {
     const action = update<Item>(fakeFamily)({
       id: fakeId(1),
@@ -135,6 +147,16 @@ describe('reducer factory generates a reducer that', () => {
     });
   });
 
+  it('corectly reduces UPDATE_FAILURE action', () => {
+    const err = Error('UPDATE failure');
+    const action = updateFailure(fakeFamily)(err);
+    const state = reducer(inputState, action);
+    expect(state.requestCount).toBe(0);
+    expect(state.properties).toBe(initProperties);
+    expect(state.ids).toBe(initIds);
+    expect(state.entities).toBe(initEntities);
+  });
+
   it('corectly reduces GET action', () => {
     const action = get(fakeFamily)(fakeId(2));
     const state = reducer(inputState, action);
@@ -156,6 +178,24 @@ describe('reducer factory generates a reducer that', () => {
     expect(state.entities).toEqual({
       [fakeId(1)]: fakeItem(1),
       [fakeId(2)]: fakeItem(2),
+    });
+  });
+
+  it('corectly reduces GET_FAILURE action', () => {
+    const errItem = () => Object.assign(Error('GET failure'), {
+      id: fakeId(2),
+    });
+    const action = getFailure<Item>(fakeFamily)(errItem());
+    const state = reducer(inputState, action);
+    expect(state.requestCount).toBe(0);
+    expect(state.properties).toBe(initProperties);
+    expect(state.ids).toEqual([
+      fakeId(1),
+      fakeId(2),
+    ]);
+    expect(state.entities).toEqual({
+      [fakeId(1)]: fakeItem(1),
+      [fakeId(2)]: errItem(),
     });
   });
 
@@ -186,6 +226,16 @@ describe('reducer factory generates a reducer that', () => {
       [fakeId(2)]: fakeItem(2),
       [fakeId(3)]: fakeItem(3),
     });
+  });
+
+  it('corectly reduces LIST_FAILURE action', () => {
+    const err = Error('LIST failure');
+    const action = listFailure(fakeFamily)(err);
+    const state = reducer(inputState, action);
+    expect(state.requestCount).toBe(0);
+    expect(state.properties).toBe(initProperties);
+    expect(state.ids).toBe(initIds);
+    expect(state.entities).toBe(initEntities);
   });
 
   afterEach(() => {
