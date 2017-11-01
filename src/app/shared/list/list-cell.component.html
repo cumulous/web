@@ -5,4 +5,12 @@
   [diameter]="25"
 ></mat-progress-spinner>
 
-{{ item?.name }}
+<div *ngIf="item?.statusText; else itemName"
+  [style.color]="'red'"
+>
+  {{ item.statusText }}
+</div>
+
+<ng-template #itemName>
+  {{ item?.name }}
+</ng-template>

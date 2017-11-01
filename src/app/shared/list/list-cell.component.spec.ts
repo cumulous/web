@@ -7,14 +7,22 @@ import { ListCellComponent } from './list-cell.component';
 
 interface Item {
   name: string;
+  statusText?: string;
 }
 
 describe('ListCellComponent', () => {
   const fakeName = 'Fake Name';
+  const fakeStatus = 'Failure';
 
-  const fakeItem = () => ({
-    name: fakeName,
-  });
+  const fakeItem = (statusText?: string) => {
+    const item: Item = {
+      name: fakeName,
+    };
+    if (statusText) {
+      item.statusText = statusText;
+    };
+    return item;
+  };
 
   let fixture: ComponentFixture<ListCellComponent<Item>>;
   let component: ListCellComponent<Item>;
@@ -50,10 +58,17 @@ describe('ListCellComponent', () => {
     expect(elementText(fixture)).toBe('');
   });
 
-  it('shows item name when item is defined', () => {
+  it('shows item name when item is defined, but statusText is not', () => {
     component.item = fakeItem();
     fixture.detectChanges();
 
     expect(elementText(fixture)).toBe(fakeName);
+  });
+
+  it('shows statusText when item and its statusText are defined', () => {
+    component.item = fakeItem(fakeStatus);
+    fixture.detectChanges();
+
+    expect(elementText(fixture)).toBe(fakeStatus);
   });
 });
