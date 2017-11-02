@@ -20,7 +20,9 @@ export interface ApiState {
 
 export interface RouterState {
   url: string;
-  params: Params;
+  params: {
+    [outlet: string]: Params;
+  };
 }
 
 export interface ItemsState<Item> extends EntityState<Item> {

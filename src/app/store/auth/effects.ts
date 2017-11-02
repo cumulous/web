@@ -44,8 +44,8 @@ export class AuthEffects {
 
   @Effect()
   readonly routeLogin$ = this.route$
-    .filter(route => route.url === '/login' || route.params.from)
-    .map(route => login(route.params.from || ''));
+    .filter(route => route.url === '/login' || route.params.primary.from)
+    .map(route => login(route.params.primary.from || ''));
 
   @Effect()
   readonly routeLoginResponse$ = this.route$
@@ -55,7 +55,7 @@ export class AuthEffects {
 
   @Effect()
   readonly routeLogout$ = this.route$
-    .filter(route => route.params.logout === 'true')
+    .filter(route => route.params.primary.logout === 'true')
     .map(() => logout());
 
   constructor(

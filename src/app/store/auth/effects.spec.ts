@@ -12,6 +12,7 @@ import { AuthService } from '../../auth/auth.service';
 import { routerNavigation } from '../testing';
 
 import { login, loginSuccess, loginRedirect, logout } from '../actions';
+import { RouterState } from '../state';
 import { AuthEffects } from './effects';
 
 describe('AuthEffects', () => {
@@ -127,28 +128,34 @@ describe('AuthEffects', () => {
   });
 
   describe('routeLogin$', () => {
+    let payload: RouterState;
+
     describe('dispatches LOGIN once with correct url if routerState url', () => {
-      let url: string;
-      let params: {
-        from?: string;
-      };
       let expected: string;
 
       it('is /login', () => {
-        url = '/login';
-        params = {};
+        payload = {
+          url: '/login',
+          params: {
+            primary: {},
+          },
+        };
         expected = '';
       });
 
-      it('starts with /login and defines "from" parameter', () => {
-        url = '/login;param=...;from=' + fakeUrl;
-        params = { from: fakeUrl };
+      it('starts with /login and defines "from" parameter in the primary outlet', () => {
+        payload = {
+          url: '/login;param=...;from=' + fakeUrl,
+          params: {
+            primary: { from: fakeUrl },
+          },
+        };
         expected = fakeUrl;
       });
 
       afterEach(() => {
         const values = () => ({
-          a: routerNavigation({ url, params }),
+          a: routerNavigation(payload),
           b: login(expected),
         });
 
@@ -163,32 +170,34 @@ describe('AuthEffects', () => {
     });
 
     describe('does not dispatch LOGIN if routerState url', () => {
-      let url: string;
-      let from: string | undefined;
-
       it('does not start with /login', () => {
-        url = fakeUrl;
-        from = undefined;
+        payload = {
+          url: fakeUrl,
+          params: {},
+        };
       });
 
-      it('does not start with /login, but defines "from" parameter', () => {
-        from = '1234';
-        url = fakeUrl + ';from=' + from;
+      it('does not start with /login, but defines "from" parameter in the primary outlet', () => {
+        payload = {
+          url: fakeUrl + ';from=1234',
+          params: {
+            primary: { from: '1234' },
+          },
+        };
       });
 
-      it('starts with /login, but does not define "from" parameter', () => {
-        url = '/login;param=...';
-        from = undefined;
+      it('starts with /login, but does not define "from" parameter in the primary outlet', () => {
+        payload = {
+          url: '/login;param=...',
+          params: {
+            primary: {},
+          },
+        };
       });
 
       afterEach(() => {
         const values = () => ({
-          a: routerNavigation({
-            url,
-            params: {
-              from,
-            },
-          }),
+          a: routerNavigation(payload),
         });
 
         actions = hot('a|', values());
@@ -203,6 +212,7 @@ describe('AuthEffects', () => {
       const values = () => ({
         a: routerNavigation({
           url: '/login#token_type=Bearer&access_token=' + fakeToken + '&expires_in=3600',
+          params: {},
         }),
         b: loginSuccess(fakeToken),
       });
@@ -232,6 +242,7 @@ describe('AuthEffects', () => {
         const values = () => ({
           a: routerNavigation({
             url,
+            params: {},
           }),
         });
 
@@ -243,12 +254,13 @@ describe('AuthEffects', () => {
   });
 
   describe('routeLogout$', () => {
-    it('dispatches LOGOUT once if routerState url starts with /login and param "logout" is "true"', () => {
+    it('dispatches LOGOUT once if routerState url starts with /login, ' +
+       'and "logout" parameter is "true" in the primary outlet', () => {
       const values = () => ({
         a: routerNavigation({
           url: '/login;param=...;logout=true;param2=...',
           params: {
-            logout: 'true',
+            primary: { logout: 'true' },
           },
         }),
         b: logout(),
@@ -261,34 +273,45 @@ describe('AuthEffects', () => {
     });
 
     describe('does not dispatch LOGOUT if routerState url', () => {
-      let url: string;
-      let params: {
-        logout?: string;
-      };
+      let payload: RouterState;
 
       it('does not start with /login', () => {
-        url = fakeUrl;
-        params = {};
+        payload = {
+          url: fakeUrl,
+          params: {},
+        };
       });
 
-      it('does not start with /login, but param "logout" is "true"', () => {
-        url = fakeUrl + ';logout=true;param=...';
-        params = { logout: 'true' };
+      it('does not start with /login, but "logout" parameter is "true" in the primary outlet', () => {
+        payload = {
+          url: fakeUrl + ';logout=true;param=...',
+          params: {
+            primary: { logout: 'true' },
+          },
+        };
       });
 
-      it('starts with /login, but param "logout" is not defined', () => {
-        url = '/login;param=...';
-        params = {};
+      it('starts with /login, but "logout" parameter is not defined in the primary outlet', () => {
+        payload = {
+          url: '/login;param=...',
+          params: {
+            primary: {},
+          },
+        };
       });
 
-      it('starts with /login, but param "logout" is not "true"', () => {
-        url = '/login;param=...;logout=value;param2=...';
-        params = { logout: 'value' };
+      it('starts with /login, but "logout" parameter is not "true" in the primary outlet', () => {
+        payload = {
+          url: '/login;param=...;logout=value;param2=...',
+          params: {
+            primary: { logout: 'value' },
+          },
+        };
       });
 
       afterEach(() => {
         const values = () => ({
-          a: routerNavigation({ url, params }),
+          a: routerNavigation(payload),
         });
 
         actions = hot('a|', values());

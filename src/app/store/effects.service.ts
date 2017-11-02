@@ -97,8 +97,8 @@ export abstract class EffectsService<Item extends StoreItem> {
     .filter(route => route.url.startsWith('/' + this.type));
 
   readonly routeList$ = this.route$
-    .filter(route => route.params.limit)
-    .switchMap(route => Observable.of(list(this.type)(route.params)));
+    .filter(route => route.params.primary.limit)
+    .switchMap(route => Observable.of(list(this.type)(route.params.primary)));
 
   private readonly projects$: Observable<{ [id: string]: Project }>;
   private readonly users$: Observable<{ [id: string]: User }>;

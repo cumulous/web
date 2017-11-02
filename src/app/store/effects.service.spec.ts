@@ -8,7 +8,6 @@ import { hot } from 'jasmine-marbles';
 import { Observable } from 'rxjs/Observable';
 
 import { fakeUUIDs } from '../../testing';
-import { ListParams } from '../api';
 import { routerNavigation } from './testing';
 
 import {
@@ -20,6 +19,7 @@ import {
 
 import { Store } from './models';
 import * as selectors from './selectors';
+import { RouterState } from './state';
 
 import { EffectsService } from './effects.service';
 
@@ -393,7 +393,9 @@ describe('EffectsService', () => {
       const values = () => ({
         a: routerNavigation({
           url: '/items;param=...;limit=' + fakeLimit + ';param2=...',
-          params: fakeParams(),
+          params: {
+            primary: fakeParams(),
+          },
         }),
         b: list(fakeType)(fakeParams()),
       });
@@ -404,27 +406,36 @@ describe('EffectsService', () => {
     });
 
     describe('does not output LIST action if routerState url', () => {
-      let url: string;
-      let params: ListParams;
+      let payload: RouterState;
 
       it('does not start with matching item type', () => {
-        url = '/other_items';
-        params = {};
+        payload = {
+          url: '/other_items',
+          params: {},
+        };
       });
 
       it('does not start with matching item type, but does define "limit" param', () => {
-        url = '/other_items;limit=' + fakeLimit + ';param=...';
-        params = fakeParams();
+        payload = {
+          url: '/other_items;limit=' + fakeLimit + ';param=...',
+          params: {
+            primary: fakeParams(),
+          },
+        };
       });
 
-      it('starts with matching item type, but param "limit" is not defined', () => {
-        url = '/items;param=...';
-        params = {};
+      it('starts with matching item type, but "limit" parameter is not defined in the primary outlet', () => {
+        payload = {
+          url: '/items;param=...',
+          params: {
+            primary: {},
+          },
+        };
       });
 
       afterEach(() => {
         const values = () => ({
-          a: routerNavigation({ url, params }),
+          a: routerNavigation(payload),
         });
 
         actions = hot('a|', values());

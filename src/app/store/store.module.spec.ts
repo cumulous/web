@@ -99,15 +99,17 @@ describe('StoreModule', () => {
     const routerState = {
       url: fakeUrl,
       root: {
-        firstChild: {
-          params: fakeQueryParams(),
-        },
+        children: [
+          { outlet: 'primary', params: fakeQueryParams() },
+        ],
       },
     };
     const state = serializer.serialize(routerState);
     expect(state).toEqual({
       url: fakeUrl,
-      params: fakeQueryParams(),
+      params: {
+        primary: fakeQueryParams(),
+      },
     });
   });
 
