@@ -4,6 +4,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { AuthGuardService as AuthGuard } from './auth/auth-guard.service';
 
 import { LoginComponent } from './login/login.component';
+import { NotificationComponent } from './notification/notification.component';
 
 const routes: Routes = [
   {
@@ -29,6 +30,11 @@ const routes: Routes = [
   {
     path: 'login',
     component: LoginComponent,
+  },
+  {
+    path: 'message',
+    component: NotificationComponent,
+    outlet: 'notification',
   },
   {
     path: '',

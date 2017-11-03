@@ -1,11 +1,13 @@
 <nav *ngIf="linkActive$ | async" mat-tab-nav-bar>
   <a mat-tab-link *ngFor="let link of links"
-    [routerLink]="'/' + link.path"
     routerLinkActive #rla="routerLinkActive"
-    [active]="rla.isActive">
+    [routerLink]="[{ outlets: { primary: link.path, notification: null }}]"
+    [active]="rla.isActive"
+  >
     {{link.label}}
   </a>
   <app-session-control></app-session-control>
 </nav>
 
 <router-outlet></router-outlet>
+<router-outlet name="notification"></router-outlet>

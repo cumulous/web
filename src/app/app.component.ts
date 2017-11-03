@@ -7,7 +7,7 @@ import { storage } from './store/actions';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
+  styleUrls: ['./app.component.css'],
 })
 export class AppComponent implements OnInit {
 
@@ -27,11 +27,13 @@ export class AppComponent implements OnInit {
 
   readonly linkActive$ = this.router.events
     .filter(event => event instanceof NavigationEnd)
-    .map((event: NavigationEnd) => {
-      const url = event.urlAfterRedirects.substr(1);
-      return this.links.map(link => link.path)
-        .some(path => url.startsWith(path));
-    });
+    .map((event: NavigationEnd) =>
+      event.urlAfterRedirects.substr(1)
+    )
+    .map(url => this.links
+      .map(link => link.path)
+      .some(path => url.startsWith(path))
+    );
 
   constructor(
     private readonly renderer: Renderer2,

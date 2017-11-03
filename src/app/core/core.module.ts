@@ -4,6 +4,7 @@ import { MatTabsModule } from '@angular/material';
 import { ApiModule } from '../api/api.module';
 import { AuthModule } from '../auth/auth.module';
 import { LoginModule } from '../login/login.module';
+import { NotificationModule } from '../notification/notification.module';
 import { SessionModule } from '../session/session.module';
 import { StoreModule } from '../store/store.module';
 
@@ -14,6 +15,7 @@ import './rxjs';
     ApiModule,
     AuthModule,
     LoginModule,
+    NotificationModule,
     StoreModule,
   ],
   exports: [
