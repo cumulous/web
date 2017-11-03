@@ -1,4 +1,4 @@
-import { RouterStateSnapshot } from '@angular/router';
+import { Router, RouterStateSnapshot } from '@angular/router';
 import { RouterStateSerializer } from '@ngrx/router-store';
 
 import { RouterState } from './state';
@@ -15,4 +15,15 @@ export class RouterSerializer implements RouterStateSerializer<RouterState> {
     });
     return state;
   }
+}
+
+export function notify(router: Router, data: string | Error) {
+  return router.navigate([{
+    outlets: {
+      notification: ['message', {
+        text: typeof data === 'string' ? data : data.message,
+        class: typeof data === 'string' ? 'info' : 'error',
+      }],
+    },
+  }]);
 }
