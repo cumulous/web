@@ -19,3 +19,11 @@ ngx-datatable .progress-linear {
   position: fixed !important;
   top: 0;
 }
+
+.error {
+  color: mat-color($app-warn) !important;
+}
+
+.warning {
+  color: mat-color($app-accent) !important;
+}
