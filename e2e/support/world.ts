@@ -3,7 +3,7 @@ import * as chaiAsPromised from 'chai-as-promised';
 import { defineSupportCode as hooks } from 'cucumber';
 import { createWriteStream, readFileSync } from 'fs';
 import { parse } from 'ini';
-import { $, browser, by, element } from 'protractor';
+import { browser, by, element } from 'protractor';
 import { post } from 'request-promise-native';
 
 export { defineSupportCode as steps, TableDefinition as Table } from 'cucumber';

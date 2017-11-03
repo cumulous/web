@@ -1,4 +1,4 @@
-import { $, $$, link, location, locationOf, navigateTo, steps, Table } from '../support/world';
+import { $$, link, location, locationOf, navigateTo, steps, Table } from '../support/world';
 
 steps(({Given, When, Then}) => {
   Given(/^I am on the "(.*)" page$/, page =>
