@@ -2,7 +2,7 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { Type } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
-import { getEffectsMetadata } from '@ngrx/effects';
+import { EffectsMetadata, getEffectsMetadata } from '@ngrx/effects';
 import { RouterStateSerializer } from '@ngrx/router-store';
 import { Action, Store } from '@ngrx/store';
 
@@ -350,7 +350,7 @@ describe('StoreModule', () => {
   });
 
   function testEffects<Item extends StoreItem, E extends EffectsService<Item>>
-      (effectsClass: Type<E>, itemsType: string, props: [keyof E]) {
+      (effectsClass: Type<E>, itemsType: string, expected: EffectsMetadata<E>) {
 
     let effects: E;
 
@@ -364,42 +364,56 @@ describe('StoreModule', () => {
 
     it('metadata', () => {
       const metadata = getEffectsMetadata(effects);
-      const expected: typeof metadata = {};
-
-      props.forEach(prop => {
-        expected[prop] = { dispatch: true };
-      });
       expect(metadata).toEqual(expected);
     });
   }
 
   describe('provides AnalysisEffects with correct', () => {
-    testEffects<Analysis, AnalysisEffects>(AnalysisEffects, 'analyses',
-      ['create$', 'update$', 'list$', 'listSuccess$', 'routeList$'],
-    );
+    testEffects<Analysis, AnalysisEffects>(AnalysisEffects, 'analyses', {
+      create$: { dispatch: true },
+      update$: { dispatch: true },
+      list$: { dispatch: true },
+      listSuccess$: { dispatch: true },
+      listFailure$: { dispatch: false },
+      routeList$: { dispatch: true },
+    });
   });
 
   describe('provides ClientEffects with correct', () => {
-    testEffects<Client, ClientEffects>(ClientEffects, 'clients',
-      ['create$', 'update$', 'get$'],
-    );
+    testEffects<Client, ClientEffects>(ClientEffects, 'clients', {
+      create$: { dispatch: true },
+      update$: { dispatch: true },
+      get$: { dispatch: true },
+    });
   });
 
   describe('provides DatasetEffects with correct', () => {
-    testEffects<Dataset, DatasetEffects>(DatasetEffects, 'datasets',
-      ['create$', 'update$', 'list$', 'listSuccess$', 'routeList$'],
-    );
+    testEffects<Dataset, DatasetEffects>(DatasetEffects, 'datasets', {
+      create$: { dispatch: true },
+      update$: { dispatch: true },
+      list$: { dispatch: true },
+      listSuccess$: { dispatch: true },
+      listFailure$: { dispatch: false },
+      routeList$: { dispatch: true },
+    });
   });
 
   describe('provides ProjectEffects with correct', () => {
-    testEffects<Project, ProjectEffects>(ProjectEffects, 'projects',
-      ['create$', 'update$', 'get$', 'list$', 'routeList$'],
-    );
+    testEffects<Project, ProjectEffects>(ProjectEffects, 'projects', {
+      create$: { dispatch: true },
+      update$: { dispatch: true },
+      get$: { dispatch: true },
+      list$: { dispatch: true },
+      listFailure$: { dispatch: false },
+      routeList$: { dispatch: true },
+    });
   });
 
   describe('provides UserEffects with correct', () => {
-    testEffects<User, UserEffects>(UserEffects, 'users',
-      ['create$', 'update$', 'get$'],
-    );
+    testEffects<User, UserEffects>(UserEffects, 'users', {
+      create$: { dispatch: true },
+      update$: { dispatch: true },
+      get$: { dispatch: true },
+    });
   });
 });

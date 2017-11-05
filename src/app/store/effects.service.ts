@@ -1,12 +1,10 @@
 import { HttpClient } from '@angular/common/http';
+import { Router } from '@angular/router';
 import { Actions } from '@ngrx/effects';
 import { Observable } from 'rxjs/Observable';
 import * as isUUID from 'validator/lib/isUUID';
 
 import { Client, ListResponse, Project, requestParams, User } from '../api';
-
-import { Store, StoreItem } from './models';
-import { createSelectors } from './selectors';
 
 import {
   create, createSuccess, createFailure,
@@ -15,6 +13,10 @@ import {
   list, listSuccess, listFailure,
   routerNavigation,
 } from './actions';
+
+import { Store, StoreItem } from './models';
+import { notify } from './router';
+import { createSelectors } from './selectors';
 
 export abstract class EffectsService<Item extends StoreItem> {
 
@@ -78,11 +80,10 @@ export abstract class EffectsService<Item extends StoreItem> {
 
   readonly listSuccess$ = this.actions$
     .filter(listSuccess<Item>(this.type).match)
-    .map(action => action.payload)
-    .mergeMap(items => {
-      const projects = this.getIds(items, 'project_id');
+    .mergeMap(({ payload }) => {
+      const projects = this.getIds(payload, 'project_id');
+      const members = this.getIds(payload, 'created_by');
 
-      const members = this.getIds(items, 'created_by');
       const users = members.filter(id => isUUID(id));
       const clients = members.filter(id => !isUUID(id));
 
@@ -90,6 +91,10 @@ export abstract class EffectsService<Item extends StoreItem> {
         .merge(this.getDetails('users', users, this.users$))
         .merge(this.getDetails('clients', clients, this.clients$));
     });
+
+  readonly listFailure$ = this.actions$
+    .filter(listFailure(this.type).match)
+    .do(({ payload }) => notify(this.router, payload));
 
   private readonly route$ = this.actions$
     .filter(routerNavigation.match)
@@ -108,6 +113,7 @@ export abstract class EffectsService<Item extends StoreItem> {
     readonly type: string,
     private readonly actions$: Actions,
     private readonly http: HttpClient,
+    private readonly router: Router,
     store: Store,
   ) {
     this.projects$ = this.selectItems('projects', store);

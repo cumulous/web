@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
 import { Actions, Effect } from '@ngrx/effects';
 
 import { User } from '../../api';
@@ -17,8 +18,9 @@ export class UserEffects extends EffectsService<User> {
   constructor(
     actions$: Actions,
     http: HttpClient,
+    router: Router,
     store: Store,
   ) {
-    super('users', actions$, http, store);
+    super('users', actions$, http, router, store);
   }
 }

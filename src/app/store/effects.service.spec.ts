@@ -1,6 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
+import { Router } from '@angular/router';
+import { RouterTestingModule } from '@angular/router/testing';
 import { Actions } from '@ngrx/effects';
 import { provideMockActions } from '@ngrx/effects/testing';
 import { Action } from '@ngrx/store';
@@ -18,6 +20,7 @@ import {
 } from './actions';
 
 import { Store } from './models';
+import * as routerHelper from './router';
 import * as selectors from './selectors';
 import { RouterState } from './state';
 
@@ -72,8 +75,8 @@ const fakeClients = () => ({
 
 @Injectable()
 class TestEffectsService extends EffectsService<Item> {
-  constructor(actions$: Actions, http: HttpClient, store: Store) {
-    super(fakeType, actions$, http, store);
+  constructor(actions$: Actions, http: HttpClient, router: Router, store: Store) {
+    super(fakeType, actions$, http, router, store);
   }
 }
 
@@ -86,10 +89,13 @@ describe('EffectsService', () => {
   let effects: TestEffectsService;
   let actions: Observable<Action>;
   let http: jasmine.SpyObj<HttpClient>;
+  let router: Router;
   let store: jasmine.SpyObj<Store>;
 
   beforeEach(() => {
     http = jasmine.createSpyObj('HttpClient', ['get', 'post', 'patch']);
+
+    spyOn(routerHelper, 'notify');
 
     store = jasmine.createSpyObj('Store', ['select']);
     spyOn(selectors, 'createSelectors').and.callFake(type => {
@@ -108,6 +114,9 @@ describe('EffectsService', () => {
     store.select.and.callFake(selected => selected);
 
     TestBed.configureTestingModule({
+      imports: [
+        RouterTestingModule,
+      ],
       providers: [
         TestEffectsService,
         provideMockActions(() => actions),
@@ -117,6 +126,7 @@ describe('EffectsService', () => {
     });
 
     effects = TestBed.get(TestEffectsService);
+    router = TestBed.get(Router);
   });
 
   describe('create$', () => {
@@ -378,6 +388,33 @@ describe('EffectsService', () => {
 
         expect(effects.listSuccess$).toBeObservable(hot('-|', values()));
       });
+    });
+  });
+
+  describe('listFailure$', () => {
+
+    const fakeError = () => Error('LIST failure');
+
+    const values = () => ({
+      a: listFailure(fakeType)(fakeError()),
+      b: jasmine.anything(),
+      o: otherAction(),
+    });
+
+    it('calls notify() once with correct parameters in response to LIST_FAILURE action', () => {
+      actions = hot('a|', values());
+
+      expect(effects.listFailure$).toBeObservable(hot('b|', values()));
+
+      expect(routerHelper.notify).toHaveBeenCalledTimes(1);
+      expect(routerHelper.notify).toHaveBeenCalledWith(router, fakeError());
+    });
+
+    it('restricts input action to LIST_FAILURE', () => {
+      actions = hot('o|', values());
+
+      expect(effects.listFailure$).toBeObservable(hot('-|', values()));
+      expect(routerHelper.notify).not.toHaveBeenCalled();
     });
   });
 
