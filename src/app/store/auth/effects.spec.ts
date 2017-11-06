@@ -19,6 +19,10 @@ describe('AuthEffects', () => {
   const fakeUrl = '/fake/url';
   const fakeToken = 'fake-token-1234';
 
+  const otherAction = () => ({
+    type: 'OTHER',
+  });
+
   let effects: AuthEffects;
   let metadata: EffectsMetadata<AuthEffects>;
   let actions: Observable<Action>;
@@ -47,14 +51,15 @@ describe('AuthEffects', () => {
   });
 
   describe('login$', () => {
-    it('switches to authService.login() in response to LOGIN', () => {
-      const values = () => ({
-        a: login(fakeUrl),
-        b: jasmine.any(Object),
-        c: jasmine.any(Object),
-        d: jasmine.any(Object),
-      });
+    const values = () => ({
+      a: login(fakeUrl),
+      b: jasmine.any(Object),
+      c: jasmine.any(Object),
+      d: jasmine.any(Object),
+      o: otherAction(),
+    });
 
+    it('switches to authService.login() in response to LOGIN', () => {
       actions = hot('aa--|', values());
 
       auth.login.and.returnValues(hot('---b|', values()), hot('--c-|', values()));
@@ -62,43 +67,71 @@ describe('AuthEffects', () => {
       expect(effects.login$).toBeObservable(hot('--d-|', values()));
     });
 
+    it('restricts input action to LOGIN', () => {
+      actions = hot('o|', values());
+
+      expect(effects.login$).toBeObservable(hot('-|', values()));
+      expect(auth.login).not.toHaveBeenCalled();
+    });
+
     it('does not dispatch an action', () => {
       expect(metadata.login$).toEqual({ dispatch: false });
     });
   });
 
-  it('loginSuccess$ dispatches LOGIN_REDIRECT once in response to LOGIN_SUCCESS ' +
-     'with the first url from the store', () => {
+  describe('loginSuccess$', () => {
     const values = () => ({
       a: loginSuccess(fakeToken),
       b: fakeUrl,
       c: fakeUrl + 2,
       d: loginRedirect(fakeUrl),
+      o: otherAction(),
     });
 
-    actions = hot('a--|', values());
+    it('dispatches LOGIN_REDIRECT once in response to LOGIN_SUCCESS ' +
+       'with the first url from the store', () => {
+      actions = hot('a--|', values());
 
-    auth.fromUrl = hot('-bc|', values());
+      auth.fromUrl = hot('-bc|', values());
 
-    expect(effects.loginSuccess$).toBeObservable(hot('-d-|', values()));
-    expect(metadata.loginSuccess$).toEqual({ dispatch: true });
+      expect(effects.loginSuccess$).toBeObservable(hot('-d-|', values()));
+      expect(metadata.loginSuccess$).toEqual({ dispatch: true });
+    });
+
+    it('restricts input action to LOGIN_FAILURE', () => {
+      actions = hot('o|', values());
+
+      auth.fromUrl = hot('#|');
+
+      expect(effects.loginSuccess$).toBeObservable(hot('-|', values()));
+    });
   });
 
   describe('loginRedirect$', () => {
-    it('navigates router to correct url once in response to LOGIN_REDIRECT', () => {
-      const values = () => ({
-        a: loginRedirect(fakeUrl),
-        b: jasmine.any(Object),
-      });
+    const values = () => ({
+      a: loginRedirect(fakeUrl),
+      b: jasmine.any(Object),
+      o: otherAction(),
+    });
 
-      actions = hot('a|', values());
-
+    beforeEach(() => {
       spyOn(router, 'navigateByUrl').and.returnValue(Promise.resolve(true));
+    });
+
+    it('navigates router to correct url once in response to LOGIN_REDIRECT', () => {
+      actions = hot('a|', values());
 
       expect(effects.loginRedirect$).toBeObservable(hot('b|', values()));
 
       expect(router.navigateByUrl).toHaveBeenCalledTimes(1);
       expect(router.navigateByUrl).toHaveBeenCalledWith(fakeUrl);
+    });
+
+    it('restricts input action to LOGIN_REDIRECT', () => {
+      actions = hot('o|', values());
+
+      expect(effects.loginRedirect$).toBeObservable(hot('-|', values()));
+      expect(router.navigateByUrl).not.toHaveBeenCalled();
     });
 
     it('does not dispatch an action', () => {
@@ -107,19 +140,27 @@ describe('AuthEffects', () => {
   });
 
   describe('logout$', () => {
-    it('switches to authService.logout() in response to LOGOUT', () => {
-      const values = () => ({
-        a: logout(),
-        b: jasmine.any(Object),
-        c: jasmine.any(Object),
-        d: jasmine.any(Object),
-      });
+    const values = () => ({
+      a: logout(),
+      b: jasmine.any(Object),
+      c: jasmine.any(Object),
+      d: jasmine.any(Object),
+      o: otherAction(),
+    });
 
+    it('switches to authService.logout() in response to LOGOUT', () => {
       actions = hot('aa--|', values());
 
       auth.logout.and.returnValues(hot('---b|', values()), hot('--c-|', values()));
 
       expect(effects.logout$).toBeObservable(hot('--d-|', values()));
+    });
+
+    it('restricts input action to LOGOUT', () => {
+      actions = hot('o|', values());
+
+      expect(effects.logout$).toBeObservable(hot('-|', values()));
+      expect(auth.logout).not.toHaveBeenCalled();
     });
 
     it('does not dispatch an action', () => {

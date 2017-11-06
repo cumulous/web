@@ -30,7 +30,7 @@ export class AuthEffects {
   @Effect({ dispatch: false })
   readonly loginRedirect$ = this.actions$
     .filter(loginRedirect.match)
-    .do(action => this.router.navigateByUrl(action.payload));
+    .do(({ payload }) => this.router.navigateByUrl(payload));
 
   @Effect({ dispatch: false })
   readonly logout$ = this.actions$
